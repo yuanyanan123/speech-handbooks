@@ -148,6 +148,33 @@ def fix_text(html):
     return ''.join(parts)
 
 
+# ── 书名交叉引用：阵列、单通道、声纹与唤醒三本已并入《前端信号处理手册》 ──────────
+_PART = {'麦克风阵列手册': ('A', 'A 部分（阵列）'), '单通道增强手册': ('B', 'B 部分（单通道）'),
+         '声纹与唤醒手册': ('D', 'D 部分（唤醒与声纹）')}
+
+
+def fix_xref(html, inside=False):
+    """inside=True：在前端手册内部，写成 B17 节 / 本书内锚点；False：别的书里指过去，写成"前端手册 B17 节"。"""
+    pre = '' if inside else '前端手册 '
+    pfx = {'A': 'a', 'B': 'e', 'D': 'k'}
+    names = '|'.join(_PART)
+
+    def link(m):
+        L, _ = _PART[m.group(1)]
+        num = m.group(2)
+        if inside and num:
+            return '<a href="#%s%s">%s%s 节</a>' % (pfx[L], int(num), L, num)
+        return ('%s%s%s 节' % (pre, L, num)) if num else (pre + _PART[m.group(1)][1])
+    # 带链接的书名（可后接（NN 节））
+    html = re.sub(r'<a href="https://claude\.ai/artifact/[^"]+">(%s)</a>(?:[（(]\s*(\d\d) 节\s*[）)])?' % names, link, html)
+    # 书名（NN 节）/《书名》NN 节
+    html = re.sub(r'《?(%s)》?\s*[（(]\s*(\d\d) 节\s*[）)]' % names, link, html)
+    html = re.sub(r'《(%s)》\s*(\d\d) 节' % names, link, html)
+    # 单独的书名
+    html = re.sub(r'《?(%s)》?' % names, lambda m: pre + _PART[m.group(1)][1], html)
+    return html
+
+
 def array_scripts():
     """阵列那一半的交互（图表数据 + 脚本），原样搬来。"""
     h = SRC['A']
@@ -161,7 +188,7 @@ def main():
     a = retag(body_of(SRC['A']), 'A')
     b = retag(body_of(SRC['B']), 'B')
     d = retag(body_of(SRC['D']), 'D')
-    body = fix_text(book_fe.build_intro()) + a + b + fix_text(book_fe.build_echo()) + '<!--part-D-->' + d
+    body = fix_text(book_fe.build_intro()) + fix_xref(a + b, True) + fix_text(book_fe.build_echo()) + '<!--part-D-->' + fix_xref(d, True)
     ids = re.findall(r'\bid="([^"]+)"', body)
     dup = sorted({i for i in ids if ids.count(i) > 1})
     if dup:

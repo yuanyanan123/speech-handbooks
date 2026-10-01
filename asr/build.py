@@ -114,14 +114,9 @@ FOOT = '''<footer>
     增强过的模型也会更"知道自己不知道"、蒸馏要仔细调温度和 α。
     34–38 节的玩具声学世界不是语音识别：没有词、没有语言模型、没有解码，只量声学模型这一层。
     留着是因为错误的归因比错误的结论更常见。</p>
-    <p>姊妹篇：<a href="https://claude.ai/artifact/JkNwTFLFyfWYejCCzykVLQ">麦克风阵列手册</a>
-    ——多通道前端，从物理上限到工程落地；
-    <a href="https://claude.ai/artifact/5hcKYi2GKnDSKneRv7A87L">单通道增强手册</a>
-    ——一路麦克风时只剩统计假设；
+    <p>姊妹篇：前端信号处理手册——多通道阵列、单通道增强、回声消除与全双工、唤醒与声纹（原先分开的四本，现在合在一本里）；
     <a href="https://claude.ai/artifact/JoVn5ZfQeMhCGQbfScKuwC">TTS 合成手册</a>
-    ——从文字到声音；
-    <a href="https://claude.ai/artifact/WMzwGqiwAy6vi8MrLwJpgg">声纹与唤醒手册</a>
-    ——说话人确认与关键词唤醒。五本共用同一套记号与算例风格。</p>
+    ——从文字到声音。三本共用同一套记号与算例风格。</p>
   </footer>
 '''
 
@@ -160,6 +155,33 @@ SPY = '''
 
 # 旧章节正文里写死的节号（34–43 整体后移 5 位；两处早就指向附录的旧编号，一并改正）
 STALE = [('（37 节 J）', '（47 节 J）'), ('36 节 B2', '46 节 B2')]
+
+
+# ── 书名交叉引用：阵列、单通道、声纹与唤醒三本已并入《前端信号处理手册》 ──────────
+_PART = {'麦克风阵列手册': ('A', 'A 部分（阵列）'), '单通道增强手册': ('B', 'B 部分（单通道）'),
+         '声纹与唤醒手册': ('D', 'D 部分（唤醒与声纹）')}
+
+
+def fix_xref(html, inside=False):
+    """inside=True：在前端手册内部，写成 B17 节 / 本书内锚点；False：别的书里指过去，写成"前端手册 B17 节"。"""
+    pre = '' if inside else '前端手册 '
+    pfx = {'A': 'a', 'B': 'e', 'D': 'k'}
+    names = '|'.join(_PART)
+
+    def link(m):
+        L, _ = _PART[m.group(1)]
+        num = m.group(2)
+        if inside and num:
+            return '<a href="#%s%s">%s%s 节</a>' % (pfx[L], int(num), L, num)
+        return ('%s%s%s 节' % (pre, L, num)) if num else (pre + _PART[m.group(1)][1])
+    # 带链接的书名（可后接（NN 节））
+    html = re.sub(r'<a href="https://claude\.ai/artifact/[^"]+">(%s)</a>(?:[（(]\s*(\d\d) 节\s*[）)])?' % names, link, html)
+    # 书名（NN 节）/《书名》NN 节
+    html = re.sub(r'《?(%s)》?\s*[（(]\s*(\d\d) 节\s*[）)]' % names, link, html)
+    html = re.sub(r'《(%s)》\s*(\d\d) 节' % names, link, html)
+    # 单独的书名
+    html = re.sub(r'《?(%s)》?' % names, lambda m: pre + _PART[m.group(1)][1], html)
+    return html
 
 
 def toc_html():
@@ -204,7 +226,7 @@ def main():
     body = ''.join(o)
     for a_, b_ in STALE:
         body = body.replace(a_, b_)
-    body = fix_text(body)
+    body = fix_xref(fix_text(body))
     html = (HEAD + EXTRA + MAST + '<div class="wrap">\n<div class="cols">\n'
             + toc_html() + '\n<main>\n' + body + FOOT + '\n</main>\n</div>\n</div>\n'
             + SPY)

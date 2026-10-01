@@ -58,6 +58,33 @@ TOC = [
 ]
 
 
+# ── 书名交叉引用：阵列、单通道、声纹与唤醒三本已并入《前端信号处理手册》 ──────────
+_PART = {'麦克风阵列手册': ('A', 'A 部分（阵列）'), '单通道增强手册': ('B', 'B 部分（单通道）'),
+         '声纹与唤醒手册': ('D', 'D 部分（唤醒与声纹）')}
+
+
+def fix_xref(html, inside=False):
+    """inside=True：在前端手册内部，写成 B17 节 / 本书内锚点；False：别的书里指过去，写成"前端手册 B17 节"。"""
+    pre = '' if inside else '前端手册 '
+    pfx = {'A': 'a', 'B': 'e', 'D': 'k'}
+    names = '|'.join(_PART)
+
+    def link(m):
+        L, _ = _PART[m.group(1)]
+        num = m.group(2)
+        if inside and num:
+            return '<a href="#%s%s">%s%s 节</a>' % (pfx[L], int(num), L, num)
+        return ('%s%s%s 节' % (pre, L, num)) if num else (pre + _PART[m.group(1)][1])
+    # 带链接的书名（可后接（NN 节））
+    html = re.sub(r'<a href="https://claude\.ai/artifact/[^"]+">(%s)</a>(?:[（(]\s*(\d\d) 节\s*[）)])?' % names, link, html)
+    # 书名（NN 节）/《书名》NN 节
+    html = re.sub(r'《?(%s)》?\s*[（(]\s*(\d\d) 节\s*[）)]' % names, link, html)
+    html = re.sub(r'《(%s)》\s*(\d\d) 节' % names, link, html)
+    # 单独的书名
+    html = re.sub(r'《?(%s)》?' % names, lambda m: pre + _PART[m.group(1)][1], html)
+    return html
+
+
 def toc_html():
     o = ['<nav class="toc" aria-label="目录"><ol>']
     for part, items in TOC:
@@ -139,7 +166,7 @@ def main():
     num = {s: n for _, its in TOC for s, n, _ in its}
     b2 = book2.build()
     cut = b2.index('<div class="partmark"><span class="pn">Part Ⅶ</span>')       # 补篇插在难点与趋势之前
-    body = fix_text(book1.build() + b2[:cut] + more.build(num) + b2[cut:])
+    body = fix_xref(fix_text(book1.build() + b2[:cut] + more.build(num) + b2[cut:]))
     html = (HEAD + EXTRA + MAST + '<div class="wrap">\n<div class="cols">\n'
             + toc_html() + '\n<main>\n' + body + FOOT + '\n</main>\n</div>\n</div>\n')
     io.open('tts-handbook.html', 'w', encoding='utf-8').write(html)
