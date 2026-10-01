@@ -5,7 +5,9 @@ import re, json, io, sys
 
 h = io.open('frontend-handbook.html', encoding='utf-8').read()
 body = h[h.index('<main>'):h.index('</main>')]
-newpart = re.search(r'<section id="g0">.*?</section>', body, re.S).group(0) + body[body.index('<section id="f1">'):]
+_c0 = body.index('<section id="f1">')
+_c1 = body.index('<!--part-D-->')
+newpart = re.search(r'<section id="g0">.*?</section>', body, re.S).group(0) + body[_c0:_c1]
 txt = re.sub(r'<[^>]+>', '', re.sub(r'<svg.*?</svg>', '', newpart, flags=re.S))
 bad = []
 
@@ -30,7 +32,8 @@ chk(links <= set(ids), '目录链接都有对应 section' + ('' if links <= set(
 chk(set(ids) <= links, '每个 section 都在目录里' + ('' if set(ids) <= links else ' 漏：%s' % (set(ids) - links)))
 
 print('── 2. A、B 两部分与源文件一致 ' + '─' * 36)
-for L, p, f in (('A', 'a', '../array/array-handbook.html'), ('B', 'e', '../enh/enh-handbook.html')):
+for L, p, f in (('A', 'a', 'array/array-handbook.html'), ('B', 'e', 'enh/enh-handbook.html'),
+                ('D', 'k', 'sv/sv-handbook.html')):
     src = io.open(f, encoding='utf-8').read()
     ss = re.findall(r'<section id="s(\d+)"', src[src.index('<main>'):])
     mine = re.findall(r'<section id="%s(\d+)"' % p, body)
@@ -67,18 +70,18 @@ stray = re.findall(r'%[sdfrg]\b|%%', txt)
 chk(not stray, '正文无残留格式符' + ('' if not stray else ' 出现：%s' % set(stray)))
 raw = re.findall(r'\\(?:frac|sum|underbrace|mathbf|begin|cdot|log|boldsymbol)\b', txt)
 chk(not raw, '正文无裸 LaTeX' + ('' if not raw else ' 出现：%s' % set(raw)))
-K = json.load(open('fe_k.json'))
+K = json.load(open('aec/fe_k.json'))
 unused = [k for k, v in K.items() if v not in newpart]
 chk(not unused, '所有公式都用上了（%d 个）' % len(K) + ('' if not unused else ' 未用：%s' % unused))
-KI = json.load(open('fe_ki.json'))
+KI = json.load(open('aec/fe_ki.json'))
 print('    （行内公式 %d 个已渲染，正文暂未引用；留作术语用）' % len(KI))
-F = json.load(open('figs_fe.json'))
+F = json.load(open('aec/figs_fe.json'))
 for k, v in F.items():
     chk(v in newpart, '图 %s 已嵌入' % k)
 
 print('── 5. 数字和脚本对得上 ' + '─' * 39)
-AD = json.load(open('demo_aec_adapt.json')); DT = json.load(open('demo_aec_dtd.json'))
-DR = json.load(open('demo_aec_drift.json')); RS = json.load(open('demo_aec_res.json'))
+AD = json.load(open('aec/demo_aec_adapt.json')); DT = json.load(open('aec/demo_aec_dtd.json'))
+DR = json.load(open('aec/demo_aec_drift.json')); RS = json.load(open('aec/demo_aec_res.json'))
 RES0 = RS['res'][0]['near_segsnr']
 NUMS = {
     '%.2f' % AD['length_note']['d64_128']: '滤波器 64→128 ms 的 ERLE 收益',

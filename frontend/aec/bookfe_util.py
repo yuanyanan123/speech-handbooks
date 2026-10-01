@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """前端手册新增部分的正文公共件：公式块、图、表、小工具。"""
-import json
+import json, os
 
-K = json.load(open('fe_k.json'))
-KI = json.load(open('fe_ki.json'))
-F = json.load(open('figs_fe.json'))
-AD = json.load(open('demo_aec_adapt.json'))
-DT = json.load(open('demo_aec_dtd.json'))
-DR = json.load(open('demo_aec_drift.json'))
-RS = json.load(open('demo_aec_res.json'))
+HERE = os.path.dirname(os.path.abspath(__file__))
+_j = lambda n: json.load(open(os.path.join(HERE, n)))
+
+K = _j('fe_k.json')
+KI = _j('fe_ki.json')
+F = _j('figs_fe.json')
+AD = _j('demo_aec_adapt.json')
+DT = _j('demo_aec_dtd.json')
+DR = _j('demo_aec_drift.json')
+RS = _j('demo_aec_res.json')
 
 
 def ki(key):

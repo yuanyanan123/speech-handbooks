@@ -1,4 +1,4 @@
-# 中文语音技术手册 · 五本
+# 中文语音技术手册 · 三本
 
 一套自绘图、自算数的中文语音技术手册。**书里不写没跑过的数**：每一张表、每一张图、
 每一句"差 N 倍"，都由随书脚本现场算出来，可以自己重跑。
@@ -6,23 +6,25 @@
 每本都是一个单文件 HTML，公式用 KaTeX 预渲染、图是生成的内联 SVG，
 不依赖任何外部资源（字体以 base64 内嵌），双击就能看，明暗两套主题。
 
-## 五本书
+## 三本书
+
+声音进来、变成文字、再变回声音，三本书按这条链路分：
 
 | 目录 | 书名 | 覆盖什么 |
 |---|---|---|
-| `array/` | 麦克风阵列手册 | 多通道前端：几何与物理上限、DI/WNG、波束成形、DOA、去混响、分离、神经前端、球谐与双耳 |
-| `enh/` | 单通道增强手册 | 自由度为零之后：谱减到 log-MMSE、噪声估计、相位、掩码与神经降噪、评测与下游 |
+| `frontend/` | 前端信号处理手册 | **A 空间**（`array/`）：几何与物理上限、DI/WNG、波束成形、DOA、去混响、分离、神经前端、球谐与双耳；**B 统计**（`enh/`）：自由度为零之后，谱减到 log-MMSE、噪声估计、相位、掩码与神经降噪、评测与下游；**C 参考**（`aec/`）：回声消除与全双工；**D 入口**（`sv/`）：声纹与唤醒，同一套假设检验的两个极端 |
 | `asr/` | ASR 链路手册 | 解码与 WFST、CTC/RNN-T 对齐、剪枝与束搜索、融合、流式与说话人日志 |
 | `tts/` | TTS 合成手册 | 采样与校准、韵律与时长、声码器感受野、流式分块、音色克隆协议 |
-| `sv/` | 声纹与唤醒手册 | 同一套假设检验的两个极端：EER/minDCF、打分后端、误唤醒的泊松统计、自定义唤醒词 |
-| `frontend/` | 前端信号处理手册 | 把 `array` + `enh` 原样并入，加上新写的**回声消除与全双工**：空间、统计、参考三种信息各自的上限 |
+
+`frontend/` 是合订本：A、B、D 三部分各自是一本能独立 build 的手册，合订时原样并入
+（只改 id 与节号前缀），C 部分与总纲是新写的。
 
 ## 怎么重跑
 
-每本目录的结构是一样的：
+`asr/`、`tts/` 以及 `frontend/` 下的 `array/`、`enh/`、`sv/`、`aec/` 结构都一样：
 
 ```bash
-cd enh                      # 换成任意一本
+cd frontend/enh             # 换成任意一本（或 asr、tts）
 python demo_*.py            # 跑实验，各自写出同名 .json
 python figs_*.py            # 从 json 生成内联 SVG
 node   *.js                 # KaTeX 预渲染全部公式
@@ -31,27 +33,26 @@ python audit.py             # 全书自检，应为"未通过 0 项"
 python chk_over.py          # 1280px 明暗双主题的横向溢出检查
 ```
 
+前端合订本：先把 `enh/`、`sv/` 各自 build 好（`array/` 的 HTML 本身就是源），
+再 `cd frontend/aec` 跑 C 部分的 demo / figs / fe.js，最后在 `frontend/` 下
+`python build.py && python audit.py`。
+
 `build.py` 和 `*.js` 只从 `demo_*.json` 读数，**不手抄**。
 所以改了实验之后必须重跑对应的 demo、再 build，否则 `audit.py` 会报出来。
 
 依赖：`numpy`、`scipy`（部分）、`pyroomacoustics`（只有阵列那本用）、
-`katex`（npm）、`playwright` + chromium（只用于排版自检与截图）。
+`katex`（npm）、`playwright` + chromium（只用于排版自检与截图；
+没有 Playwright 自带浏览器时可用环境变量 `CHROMIUM_PATH` 指定）。
 
-> `frontend/` 是合订本：A、B 两部分从 `array/array-handbook.html`、`enh/enh-handbook.html` 原样搬来
-> （只改 id 前缀与节号前缀），C 部分（回声消除与全双工）是新写的。所以要先把那两本 build 好，
-> 再 `cd frontend && python demo_aec_*.py && python figs_fe.py && node fe.js && python build.py && python audit.py`。
-> `chk_over.py` 在没有 Playwright 自带浏览器时可用环境变量 `CHROMIUM_PATH` 指定 chromium。
-
-> `array/` 是最早写的一本，当时是靠一串一次性补丁脚本对 HTML 逐步打磨出来的，
-> 没有一个干净的 `build.py`。那本的 HTML 本身就是源。
-> 其余几本都是从脚本完整重建的。
+> `frontend/array/` 是最早写的一本，当时是靠一串一次性补丁脚本对 HTML 逐步打磨出来的，
+> 没有一个干净的 `build.py`。那本的 HTML 本身就是源。其余各本都是从脚本完整重建的。
 
 ## 一以贯之的三条规矩
 
 1. **每个数字都可复算。** 没有从论文里抄来的数，也没有凭印象写的量级。
 2. **猜错了就把猜错的过程留着。** 实验推翻假设的地方不会悄悄改掉，而是把
    原来的假设、推翻它的对照实验、以及为什么会猜错，一起写进正文。
-   五本加起来目前有二十多处。
+   各本加起来目前有二十多处。
 3. **能说什么、不能说什么要写清楚。** 信号大多是合成的，
    绝对数值不能直接和公开数据集上的结果比；可比的是形状、量级和趋势。
 
@@ -71,7 +72,7 @@ python chk_over.py          # 1280px 明暗双主题的横向溢出检查
 
 ## 在线版
 
-五本都发布在 claude.ai 的 artifact 上（私有链接）。
+原先的五本都发布在 claude.ai 的 artifact 上（私有链接）。
 仓库里的 HTML 和线上版本保持一致。
 
 ## 许可
