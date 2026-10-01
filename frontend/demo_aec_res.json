@@ -1,0 +1,177 @@
+{
+ "nl": [
+  {
+   "drive": 0.0,
+   "thd": 0.0,
+   "erle": 30.23,
+   "theory": null
+  },
+  {
+   "drive": 0.5,
+   "thd": 0.93,
+   "erle": 29.75,
+   "theory": 40.66
+  },
+  {
+   "drive": 0.8,
+   "thd": 2.26,
+   "erle": 27.94,
+   "theory": 32.92
+  },
+  {
+   "drive": 1.2,
+   "thd": 4.65,
+   "erle": 24.32,
+   "theory": 26.65
+  },
+  {
+   "drive": 1.8,
+   "thd": 8.91,
+   "erle": 19.6,
+   "theory": 21.0
+  },
+  {
+   "drive": 2.6,
+   "thd": 14.79,
+   "erle": 15.5,
+   "theory": 16.6
+  },
+  {
+   "drive": 4.0,
+   "thd": 23.9,
+   "erle": 11.57,
+   "theory": 12.43
+  }
+ ],
+ "nl_note": {
+  "clean": 30.23,
+  "thd1": 0.93,
+  "erle1": 29.75,
+  "drop1": 0.48,
+  "bind_thd": 4.65,
+  "bind_erle": 24.32,
+  "bind_drop": 5.91,
+  "worst_thd": 23.9,
+  "worst_erle": 11.57,
+  "worst_theory": 12.43
+ },
+ "res": [
+  {
+   "gamma": 0.0,
+   "erle": 30.25,
+   "near_segsnr": 31.03,
+   "near_stoi": 0.935
+  },
+  {
+   "gamma": 0.05,
+   "erle": 43.94,
+   "near_segsnr": 25.92,
+   "near_stoi": 0.931
+  },
+  {
+   "gamma": 0.1,
+   "erle": 45.62,
+   "near_segsnr": 23.27,
+   "near_stoi": 0.93
+  },
+  {
+   "gamma": 0.2,
+   "erle": 46.74,
+   "near_segsnr": 20.65,
+   "near_stoi": 0.928
+  },
+  {
+   "gamma": 0.5,
+   "erle": 47.53,
+   "near_segsnr": 17.27,
+   "near_stoi": 0.919
+  },
+  {
+   "gamma": 1.0,
+   "erle": 47.89,
+   "near_segsnr": 14.89,
+   "near_stoi": 0.91
+  },
+  {
+   "gamma": 2.0,
+   "erle": 48.05,
+   "near_segsnr": 12.76,
+   "near_stoi": 0.902
+  },
+  {
+   "gamma": 5.0,
+   "erle": 48.14,
+   "near_segsnr": 10.18,
+   "near_stoi": 0.888
+  },
+  {
+   "gamma": 10.0,
+   "erle": 48.19,
+   "near_segsnr": 8.47,
+   "near_stoi": 0.887
+  }
+ ],
+ "res_note": {
+  "erle_best_gamma": 10.0,
+  "erle_best": 48.19,
+  "q_best_gamma": 0.0,
+  "q_best": 31.03,
+  "stoi_best_gamma": 0.0,
+  "erle_at_q": 30.25,
+  "q_at_erle": 8.47,
+  "n_distinct": 2,
+  "knee_gamma": 0.05,
+  "knee_erle": 43.94,
+  "knee_q": 25.92,
+  "knee_erle_gain": 13.69,
+  "tail_erle_gain": 4.25,
+  "tail_q_loss": 17.45
+ },
+ "split": [
+  {
+   "l_ms": 32,
+   "name": "线性只做 32 ms + 强 RES",
+   "gamma": 20.0,
+   "erle": 21.31,
+   "near_segsnr": 6.87,
+   "near_stoi": 0.601
+  },
+  {
+   "l_ms": 64,
+   "name": "线性做 64 ms + 中 RES",
+   "gamma": 0.2,
+   "erle": 20.32,
+   "near_segsnr": 16.85,
+   "near_stoi": 0.802
+  },
+  {
+   "l_ms": 128,
+   "name": "线性做 128 ms + 弱 RES",
+   "gamma": 0.0,
+   "erle": 24.39,
+   "near_segsnr": 25.57,
+   "near_stoi": 0.881
+  }
+ ],
+ "split_note": {
+  "target": 20.0,
+  "best": "线性做 128 ms + 弱 RES",
+  "gap": 18.7
+ },
+ "const": {
+  "t60": 0.25,
+  "b": 256,
+  "mu": 0.5,
+  "dur": 16.0,
+  "nfft": 512,
+  "hop": 256,
+  "near_snr": 45.0,
+  "seeds": [
+   0,
+   1,
+   2
+  ],
+  "target": 20.0
+ },
+ "runtime_s": 58.3
+}

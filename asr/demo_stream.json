@@ -1,0 +1,165 @@
+{
+ "look": [
+  {
+   "look": 1,
+   "lat_ms": 40.0,
+   "ter": 37.38,
+   "gap": 34.2
+  },
+  {
+   "look": 2,
+   "lat_ms": 80.0,
+   "ter": 17.26,
+   "gap": 14.08
+  },
+  {
+   "look": 3,
+   "lat_ms": 120.0,
+   "ter": 8.54,
+   "gap": 5.36
+  },
+  {
+   "look": 4,
+   "lat_ms": 160.0,
+   "ter": 4.35,
+   "gap": 1.16
+  },
+  {
+   "look": 6,
+   "lat_ms": 240.0,
+   "ter": 2.59,
+   "gap": -0.6
+  },
+  {
+   "look": 8,
+   "lat_ms": 320.0,
+   "ter": 11.85,
+   "gap": 8.66
+  },
+  {
+   "look": 12,
+   "lat_ms": 480.0,
+   "ter": 36.13,
+   "gap": 32.95
+  },
+  {
+   "look": 20,
+   "lat_ms": 800.0,
+   "ter": 54.91,
+   "gap": 51.73
+  }
+ ],
+ "look_full": 3.18,
+ "look_best": {
+  "look": 6,
+  "lat_ms": 240.0,
+  "ter": 2.59,
+  "gap": -0.6
+ },
+ "cache": [
+  {
+   "chunk": 4,
+   "lat_ms": 160.0,
+   "hist": 16,
+   "per_layer_kb": 32.0,
+   "total_mb": 0.59
+  },
+  {
+   "chunk": 8,
+   "lat_ms": 320.0,
+   "hist": 32,
+   "per_layer_kb": 64.0,
+   "total_mb": 1.18
+  },
+  {
+   "chunk": 16,
+   "lat_ms": 640.0,
+   "hist": 64,
+   "per_layer_kb": 128.0,
+   "total_mb": 2.36
+  },
+  {
+   "chunk": 32,
+   "lat_ms": 1280.0,
+   "hist": 128,
+   "per_layer_kb": 256.0,
+   "total_mb": 4.72
+  },
+  {
+   "chunk": 64,
+   "lat_ms": 2560.0,
+   "hist": 256,
+   "per_layer_kb": 512.0,
+   "total_mb": 9.44
+  }
+ ],
+ "cache_100": 236.0,
+ "dia": [
+  {
+   "overlap": 0.0,
+   "der": 5.86,
+   "miss": 0.0,
+   "fa": 0.0,
+   "conf": 5.86,
+   "floor": 0.0
+  },
+  {
+   "overlap": 0.05,
+   "der": 9.16,
+   "miss": 3.32,
+   "fa": 0.0,
+   "conf": 5.84,
+   "floor": 3.32
+  },
+  {
+   "overlap": 0.1,
+   "der": 17.95,
+   "miss": 6.43,
+   "fa": 0.0,
+   "conf": 11.53,
+   "floor": 6.43
+  },
+  {
+   "overlap": 0.2,
+   "der": 20.01,
+   "miss": 11.52,
+   "fa": 0.0,
+   "conf": 8.49,
+   "floor": 11.52
+  },
+  {
+   "overlap": 0.3,
+   "der": 34.27,
+   "miss": 18.76,
+   "fa": 0.0,
+   "conf": 15.52,
+   "floor": 18.76
+  }
+ ],
+ "dia2": [
+  {
+   "overlap": 0.0,
+   "clu": 5.86,
+   "multi": 5.39,
+   "gain": 0.47
+  },
+  {
+   "overlap": 0.1,
+   "clu": 17.95,
+   "multi": 11.53,
+   "gain": 6.42
+  },
+  {
+   "overlap": 0.2,
+   "clu": 20.01,
+   "multi": 10.95,
+   "gain": 9.06
+  },
+  {
+   "overlap": 0.3,
+   "clu": 34.27,
+   "multi": 21.78,
+   "gain": 12.49
+  }
+ ]
+}

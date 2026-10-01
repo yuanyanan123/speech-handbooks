@@ -1,0 +1,20 @@
+node_modules/
+package-lock.json
+__pycache__/
+*.pyc
+
+# 中间产物与排版自检留下的截图
+*.bak*.html
+_prev*.html
+_prev*.png
+v_*.png
+n_s*.png
+z_*.png
+k_0*.png  m_0*.png  p_0*.png  q_0*.png  r_0*.png  w_0*.png
+diag_*.png
+shot_*.png
+*.log
+pass*.pdf
+
+# 大的中间数组
+*.npy

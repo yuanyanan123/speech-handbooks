@@ -1,0 +1,219 @@
+{
+ "ppm": [
+  {
+   "ppm": 0,
+   "erle": 29.83,
+   "slip_ms": 0.0,
+   "slip_samp": 0.0
+  },
+  {
+   "ppm": 1,
+   "erle": 29.54,
+   "slip_ms": 0.016,
+   "slip_samp": 0.26
+  },
+  {
+   "ppm": 2,
+   "erle": 28.91,
+   "slip_ms": 0.032,
+   "slip_samp": 0.51
+  },
+  {
+   "ppm": 5,
+   "erle": 26.93,
+   "slip_ms": 0.08,
+   "slip_samp": 1.28
+  },
+  {
+   "ppm": 10,
+   "erle": 22.98,
+   "slip_ms": 0.16,
+   "slip_samp": 2.56
+  },
+  {
+   "ppm": 20,
+   "erle": 18.04,
+   "slip_ms": 0.32,
+   "slip_samp": 5.12
+  },
+  {
+   "ppm": 50,
+   "erle": 12.93,
+   "slip_ms": 0.8,
+   "slip_samp": 12.8
+  },
+  {
+   "ppm": 100,
+   "erle": 9.63,
+   "slip_ms": 1.6,
+   "slip_samp": 25.6
+  }
+ ],
+ "ppm_note": {
+  "clean": 29.83,
+  "ppm_6db": 10,
+  "erle_100": 9.63,
+  "drop_100": 20.2
+ },
+ "len_drift": [
+  {
+   "l_ms": 32,
+   "cells": [
+    {
+     "ppm": 0,
+     "erle": 6.94
+    },
+    {
+     "ppm": 10,
+     "erle": 6.99
+    },
+    {
+     "ppm": 50,
+     "erle": 7.03
+    }
+   ],
+   "loss50": -0.09
+  },
+  {
+   "l_ms": 64,
+   "cells": [
+    {
+     "ppm": 0,
+     "erle": 14.27
+    },
+    {
+     "ppm": 10,
+     "erle": 14.15
+    },
+    {
+     "ppm": 50,
+     "erle": 12.5
+    }
+   ],
+   "loss50": 1.77
+  },
+  {
+   "l_ms": 128,
+   "cells": [
+    {
+     "ppm": 0,
+     "erle": 29.83
+    },
+    {
+     "ppm": 10,
+     "erle": 22.98
+    },
+    {
+     "ppm": 50,
+     "erle": 12.93
+    }
+   ],
+   "loss50": 16.9
+  },
+  {
+   "l_ms": 256,
+   "cells": [
+    {
+     "ppm": 0,
+     "erle": 39.17
+    },
+    {
+     "ppm": 10,
+     "erle": 19.04
+    },
+    {
+     "ppm": 50,
+     "erle": 9.72
+    }
+   ],
+   "loss50": 29.45
+  }
+ ],
+ "len_drift_note": {
+  "short": -0.09,
+  "long": 29.45,
+  "short_ms": 32,
+  "long_ms": 256
+ },
+ "delay": [
+  {
+   "off_ms": 0,
+   "erle": 29.83,
+   "head_left_ms": 128
+  },
+  {
+   "off_ms": 8,
+   "erle": 27.73,
+   "head_left_ms": 120
+  },
+  {
+   "off_ms": 32,
+   "erle": 22.56,
+   "head_left_ms": 96
+  },
+  {
+   "off_ms": 64,
+   "erle": 14.31,
+   "head_left_ms": 64
+  },
+  {
+   "off_ms": 96,
+   "erle": 7.0,
+   "head_left_ms": 32
+  },
+  {
+   "off_ms": 128,
+   "erle": -0.99,
+   "head_left_ms": 0
+  },
+  {
+   "off_ms": 160,
+   "erle": -1.01,
+   "head_left_ms": -32
+  }
+ ],
+ "delay_note": {
+  "clean": 29.83,
+  "cliff_ms": 64,
+  "last": -1.01,
+  "l_ms": 128
+ },
+ "change": [
+  {
+   "mix": 0.1,
+   "name": "轻微（挪一下手）",
+   "dip": 24.39,
+   "recover": 0.6
+  },
+  {
+   "mix": 0.3,
+   "name": "中等（转个身）",
+   "dip": 25.25,
+   "recover": 0.98
+  },
+  {
+   "mix": 1.0,
+   "name": "完全换一条（挡住喇叭）",
+   "dip": 30.99,
+   "recover": 1.66
+  }
+ ],
+ "change_note": {
+  "worst_dip": 30.99,
+  "worst_rec": 1.66
+ },
+ "const": {
+  "t60": 0.25,
+  "b": 256,
+  "mu": 0.5,
+  "l_ms": 128,
+  "dur": 16.0,
+  "near_snr": 40.0,
+  "seeds": [
+   0,
+   1,
+   2
+  ]
+ },
+ "runtime_s": 46.1
+}

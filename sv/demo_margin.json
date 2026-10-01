@@ -1,0 +1,82 @@
+{
+ "setup": {
+  "din": 40,
+  "hid": 64,
+  "emb": 16,
+  "latent": 10,
+  "spk_tr": 300,
+  "spk_te": 200,
+  "utt_tr": 40,
+  "s": 30.0,
+  "m": 0.2
+ },
+ "losses": [
+  {
+   "tag": "普通线性 softmax（对照）",
+   "eer": 3.76,
+   "intra_sd": 6.85,
+   "inter_deg": 32.6,
+   "aniso": 3.47,
+   "plda": 2.81,
+   "gap": 1.34
+  },
+  {
+   "tag": "余弦 softmax（无 margin）",
+   "eer": 2.86,
+   "intra_sd": 7.25,
+   "inter_deg": 41.3,
+   "aniso": 1.98,
+   "plda": 2.56,
+   "gap": 1.12
+  },
+  {
+   "tag": "AM-softmax（m=0.20）",
+   "eer": 2.94,
+   "intra_sd": 7.74,
+   "inter_deg": 43.7,
+   "aniso": 1.84,
+   "plda": 2.78,
+   "gap": 1.06
+  },
+  {
+   "tag": "AAM-softmax（m=0.20）",
+   "eer": 2.41,
+   "intra_sd": 7.0,
+   "inter_deg": 41.6,
+   "aniso": 1.98,
+   "plda": 2.26,
+   "gap": 1.07
+  }
+ ],
+ "gain": 15.7,
+ "msweep": [
+  {
+   "m": 0.0,
+   "eer": 2.78
+  },
+  {
+   "m": 0.05,
+   "eer": 2.65
+  },
+  {
+   "m": 0.1,
+   "eer": 2.57
+  },
+  {
+   "m": 0.2,
+   "eer": 2.36
+  },
+  {
+   "m": 0.3,
+   "eer": 2.26
+  },
+  {
+   "m": 0.4,
+   "eer": 2.18
+  },
+  {
+   "m": 0.5,
+   "eer": 2.23
+  }
+ ]
+}

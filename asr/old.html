@@ -1,0 +1,2623 @@
+<title>ASR 链路手册</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+SC:wght@400;450;500;600&family=Noto+Serif+SC:wght@600;700&display=swap">
+
+<style>
+/* ─── tokens ─────────────────────────────────────────────────────── */
+:root{
+  --bg:#f1f3f7;
+  --surface:#ffffff;
+  --surface-2:#e8ecf2;
+  --surface-3:#dfe4ec;
+  --text:#141922;
+  --text-2:#4b5464;
+  --text-3:#7b8598;
+  --border:#d5dae4;
+  --border-2:#bcc4d2;
+  --accent:#a8621a;
+  --accent-2:#8d5115;
+  --accent-soft:#f6e8d6;
+  --cool:#1c6a67;
+  --cool-soft:#dcecea;
+  --brick:#95382e;
+  --brick-soft:#f6e1de;
+  --code-bg:#eaeef4;
+
+  --f-head:"Noto Serif SC","IBM Plex Serif",Georgia,"Songti SC",serif;
+  --f-body:"IBM Plex Sans SC","IBM Plex Sans",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  --f-mono:"IBM Plex Mono","SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1218; --surface:#161a22; --surface-2:#1d222c; --surface-3:#252b37;
+    --text:#e3e7ef; --text-2:#a2abbc; --text-3:#767f92;
+    --border:#252b37; --border-2:#333b4a;
+    --accent:#dfa057; --accent-2:#efb877; --accent-soft:#33260f;
+    --cool:#5cb3ac; --cool-soft:#132d2c;
+    --brick:#d4776b; --brick-soft:#2f1c19;
+    --code-bg:#191e27;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1218; --surface:#161a22; --surface-2:#1d222c; --surface-3:#252b37;
+  --text:#e3e7ef; --text-2:#a2abbc; --text-3:#767f92;
+  --border:#252b37; --border-2:#333b4a;
+  --accent:#dfa057; --accent-2:#efb877; --accent-soft:#33260f;
+  --cool:#5cb3ac; --cool-soft:#132d2c;
+  --brick:#d4776b; --brick-soft:#2f1c19;
+  --code-bg:#191e27;
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--f-body);
+     font-size:15px;line-height:1.78;-webkit-font-smoothing:antialiased}
+::selection{background:var(--accent-soft);color:var(--text)}
+a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 35%,transparent)}
+a:hover{border-bottom-color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+.ruler{height:11px;
+  background-image:
+    repeating-linear-gradient(90deg, var(--border-2) 0 1px, transparent 1px 60px),
+    repeating-linear-gradient(90deg, var(--border) 0 1px, transparent 1px 12px);
+  background-size:100% 11px, 100% 6px;
+  background-position:bottom left, bottom left;background-repeat:repeat-x;
+  border-bottom:1px solid var(--border);}
+
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+header.masthead{padding:56px 0 30px}
+.eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+         color:var(--accent);margin:0 0 16px;font-weight:500}
+h1{font-family:var(--f-head);font-weight:700;font-size:clamp(34px,5.2vw,52px);line-height:1.12;
+   letter-spacing:-.01em;margin:0 0 16px;text-wrap:balance;max-width:16ch}
+.dek{font-size:17px;line-height:1.72;color:var(--text-2);max-width:58ch;margin:0}
+
+.specstrip{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:1px;
+  background:var(--border);border:1px solid var(--border);margin:36px 0 0;border-radius:3px;overflow:hidden}
+.spec{background:var(--surface);padding:13px 15px}
+.spec dt{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin:0 0 5px}
+.spec dd{margin:0;font-family:var(--f-mono);font-size:19px;font-weight:500;color:var(--text);font-variant-numeric:tabular-nums;line-height:1.25}
+.spec dd small{font-size:11.5px;color:var(--text-2);font-weight:400;margin-left:3px}
+
+.cols{display:block;padding:40px 0 90px}
+@media (min-width:1060px){.cols{display:grid;grid-template-columns:216px minmax(0,1fr);gap:56px;align-items:start}}
+nav.toc{display:none}
+@media (min-width:1060px){
+  nav.toc{display:block;position:sticky;top:20px;font-size:12.5px;line-height:1.45;
+          border-left:1px solid var(--border);max-height:calc(100vh - 40px);overflow-y:auto}
+  nav.toc ol{list-style:none;margin:0;padding:0}
+  nav.toc .part{font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+                color:var(--text-3);padding:14px 0 4px 14px;font-weight:500}
+  nav.toc .part:first-child{padding-top:0}
+  nav.toc a{display:block;padding:4.5px 0 4.5px 14px;color:var(--text-3);border:0;
+            border-left:2px solid transparent;margin-left:-1px;transition:color .15s,border-color .15s}
+  nav.toc a .num{font-family:var(--f-mono);font-size:10px;margin-right:7px;font-variant-numeric:tabular-nums}
+  nav.toc a:hover{color:var(--text)}
+  nav.toc a.on{color:var(--text);border-left-color:var(--accent);font-weight:500}
+  nav.toc a.on .num{color:var(--accent)}
+}
+
+main{max-width:770px;min-width:0}
+section{margin:0 0 58px;scroll-margin-top:20px}
+.partmark{margin:0 0 34px;padding:0 0 10px;border-bottom:2px solid var(--text);display:flex;
+          align-items:baseline;gap:12px;flex-wrap:wrap}
+.partmark .pn{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:500}
+.partmark h2{font-family:var(--f-head);font-size:22px;margin:0;font-weight:600}
+.partmark .pd{font-size:13px;color:var(--text-3);margin:0}
+
+h2{font-family:var(--f-head);font-weight:600;font-size:25px;line-height:1.3;margin:0 0 6px;
+   letter-spacing:-.005em;text-wrap:balance}
+h2 .num{font-family:var(--f-mono);font-size:12px;font-weight:500;color:var(--accent);
+        display:block;letter-spacing:.14em;margin-bottom:7px}
+.level{font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+       padding:1.5px 6px;border-radius:2px;vertical-align:3px;margin-left:8px;font-weight:500;
+       background:var(--surface-2);color:var(--text-3);border:1px solid var(--border)}
+.level.a{background:var(--cool-soft);color:var(--cool);border-color:color-mix(in srgb,var(--cool) 25%,transparent)}
+.level.b{background:var(--accent-soft);color:var(--accent-2);border-color:color-mix(in srgb,var(--accent) 25%,transparent)}
+.lede{color:var(--text-2);margin:0 0 20px;font-size:15.5px;max-width:60ch}
+h3{font-family:var(--f-body);font-weight:600;font-size:16.5px;margin:30px 0 8px}
+h4{font-family:var(--f-body);font-weight:600;font-size:14.5px;margin:20px 0 6px;color:var(--text)}
+p{margin:0 0 14px;max-width:64ch}
+ul,ol{margin:0 0 16px;padding-left:1.3em;max-width:64ch}
+li{margin:0 0 7px}
+li::marker{color:var(--text-3)}
+strong{font-weight:600}
+em{font-style:normal;color:var(--accent);font-weight:500}
+
+code{font-family:var(--f-mono);font-size:.875em;background:var(--code-bg);padding:1.5px 5px;
+     border-radius:3px;border:1px solid color-mix(in srgb,var(--border) 60%,transparent)}
+pre{margin:14px 0 18px;background:var(--code-bg);border:1px solid var(--border);border-radius:4px;
+    padding:14px 16px;overflow-x:auto;font-size:12.5px;line-height:1.7}
+pre code{background:none;border:0;padding:0;font-size:inherit}
+
+.tw{overflow-x:auto;margin:16px 0 20px;border:1px solid var(--border);border-radius:4px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:520px}
+th,td{text-align:left;padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+thead th{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+         color:var(--text-3);font-weight:500;background:var(--surface-2);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+td.num,th.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.hi{color:var(--accent);font-weight:600}
+.old{color:var(--text-3)}
+
+/* callouts */
+.tldr{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;
+      padding:13px 16px;margin:0 0 20px;font-size:14.5px}
+.tldr .tag{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+           color:var(--accent);display:block;margin-bottom:4px;font-weight:500}
+.tldr p{margin:0;max-width:none}
+.note{border-left:2px solid var(--cool);background:var(--cool-soft);padding:12px 16px;margin:18px 0;
+      border-radius:0 3px 3px 0;font-size:14px}
+.trap{border-left:2px solid var(--brick);background:var(--brick-soft);padding:12px 16px;margin:18px 0;
+      border-radius:0 3px 3px 0;font-size:14px}
+.note p:last-child,.trap p:last-child{margin-bottom:0}
+.note .tag,.trap .tag{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+                      display:block;margin-bottom:4px;font-weight:500}
+.note .tag{color:var(--cool)}
+.trap .tag{color:var(--brick)}
+.note p,.trap p,.tldr p{max-width:none}
+
+/* worked example */
+.ex{border:1px solid var(--border-2);border-radius:4px;background:var(--surface);
+    padding:16px 18px;margin:20px 0}
+.ex > .tag{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
+           color:var(--cool);display:block;margin:0 0 9px;font-weight:500}
+.ex h4{margin-top:0}
+.ex pre{background:var(--code-bg)}
+.ex p:last-child,.ex table:last-child{margin-bottom:0}
+.ex .tw{margin-bottom:12px}
+.dp{min-width:0;font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:12.5px}
+.dp td,.dp th{padding:6px 11px;text-align:center}
+.dp td:first-child,.dp th:first-child{text-align:left;color:var(--text-3)}
+.dp .best{background:var(--accent-soft);color:var(--accent-2);font-weight:600}
+.dp .void{color:var(--text-3)}
+
+figure{margin:22px 0;padding:0}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:12.5px;color:var(--text-3);margin-top:9px;max-width:60ch;line-height:1.6}
+.figbox{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:18px}
+
+/* generation matrix */
+.matrix table{min-width:640px;font-size:12.5px}
+.matrix td,.matrix th{padding:7px 10px}
+.matrix thead th{writing-mode:horizontal-tb;font-size:10px;text-align:center;line-height:1.3;white-space:normal;min-width:56px}
+.matrix thead th:first-child{text-align:left;min-width:150px}
+.matrix td.m{text-align:center;font-size:13px}
+.matrix .yes{color:var(--brick)}
+.matrix .no{color:var(--text-3);opacity:.5}
+.matrix .part-y{color:var(--accent)}
+.matrix tbody td:first-child{white-space:nowrap}
+.matrix .era{font-family:var(--f-mono);font-size:10.5px;color:var(--text-3);display:block;font-weight:400}
+
+/* pipeline / stages */
+.pipe{display:flex;flex-direction:column;margin:18px 0 8px}
+.stage{display:grid;grid-template-columns:26px minmax(0,1fr);gap:14px;align-items:start;
+       position:relative;padding-bottom:16px}
+.stage:last-child{padding-bottom:0}
+.stage::before{content:"";position:absolute;left:12.5px;top:26px;bottom:0;width:1px;background:var(--border-2)}
+.stage:last-child::before{display:none}
+.dot{width:26px;height:26px;border-radius:50%;background:var(--surface);border:1px solid var(--border-2);
+     display:grid;place-items:center;font-family:var(--f-mono);font-size:11px;color:var(--text-2);
+     font-weight:500;position:relative;z-index:1}
+.stage.key .dot{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.stage-body{padding-top:2px}
+.stage-body h4{margin:0 0 3px;font-size:14.5px}
+.stage-body p{margin:0 0 6px;font-size:13.5px;color:var(--text-2)}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.chip{font-family:var(--f-mono);font-size:11px;padding:2px 7px;border-radius:3px;background:var(--surface-2);
+      border:1px solid var(--border);color:var(--text-2);white-space:nowrap}
+.chip.a{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 30%,transparent);color:var(--accent-2)}
+
+.params{display:grid;gap:1px;background:var(--border);border:1px solid var(--border);
+        border-radius:4px;overflow:hidden;margin:18px 0}
+@media (min-width:640px){.params{grid-template-columns:1fr 1fr}}
+.pcard{background:var(--surface);padding:14px 16px}
+.pcard h4{margin:0 0 8px;font-size:12.5px;font-family:var(--f-mono);letter-spacing:.06em;
+          text-transform:uppercase;color:var(--text-3);font-weight:500}
+.pcard dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:12.5px;align-items:baseline}
+.pcard dt{font-family:var(--f-mono);color:var(--text-2);white-space:nowrap}
+.pcard dd{margin:0;font-family:var(--f-mono);font-variant-numeric:tabular-nums;color:var(--text);
+          text-align:right;font-weight:500}
+
+.gloss{margin:16px 0;border-top:1px solid var(--border)}
+.gitem{display:grid;grid-template-columns:158px minmax(0,1fr);gap:16px;padding:10px 0;
+       border-bottom:1px solid var(--border);font-size:13.5px}
+@media (max-width:600px){.gitem{grid-template-columns:1fr;gap:2px}}
+.gitem dt{font-family:var(--f-mono);font-size:12.5px;color:var(--accent);font-weight:500}
+.gitem dd{margin:0;color:var(--text-2)}
+
+/* 公式块 */
+.eq{margin:14px 0 16px;background:var(--surface);border:1px solid var(--border);
+    border-left:2px solid var(--accent);border-radius:0 4px 4px 0;padding:12px 16px;
+    overflow-x:auto;font-family:var(--f-mono);font-size:12.5px;line-height:1.8}
+.eq .lbl{display:block;font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
+         color:var(--accent);margin:0 0 7px;font-weight:500;font-family:var(--f-mono)}
+.eq pre{margin:0;background:none;border:0;padding:0;font-size:inherit;line-height:inherit}
+.why{font-size:13.5px;color:var(--text-2);margin:-6px 0 16px;padding-left:2px}
+.why strong{color:var(--text)}
+.symtab{margin:16px 0;border-top:1px solid var(--border)}
+.symrow{display:grid;grid-template-columns:86px minmax(0,1fr);gap:14px;padding:7px 0;
+        border-bottom:1px solid var(--border);font-size:13.5px}
+.symrow dt{font-family:var(--f-mono);color:var(--accent);font-weight:500;font-size:13px}
+.symrow dd{margin:0;color:var(--text-2)}
+
+.paths{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:5px;margin:12px 0 14px;
+       font-family:var(--f-mono);font-size:12.5px}
+.paths span{background:var(--code-bg);border:1px solid var(--border);border-radius:3px;
+            padding:3px 6px;text-align:center;letter-spacing:.06em}
+.paths span.k{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 30%,transparent);color:var(--accent-2)}
+
+footer{border-top:1px solid var(--border);padding:26px 0 60px;font-size:12.5px;color:var(--text-3)}
+footer p{max-width:62ch;margin:0 0 8px}
+footer a{color:var(--text-2)}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <p class="eyebrow">从声波到文字 · 六代技术脉络</p>
+    <h1>ASR 链路手册</h1>
+    <p class="dek">语音识别是怎么从"高斯混合 + 隐马尔可夫"一路走到"大模型直接听"的。每一代删掉了什么、为什么能删、代价是什么——配手算实例，从零开始也能读完。最后两节讲这行当下真正没解决的问题。</p>
+
+    <dl class="specstrip">
+      <div class="spec"><dt>采样率</dt><dd>16<small>kHz</small></dd></div>
+      <div class="spec"><dt>帧长 / 帧移</dt><dd>25<small>/</small>10<small>ms</small></dd></div>
+      <div class="spec"><dt>技术代际</dt><dd>6<small>代</small></dd></div>
+      <div class="spec"><dt>中文 CER 前沿</dt><dd>2.89<small>%</small></dd></div>
+      <div class="spec"><dt>正常语速</dt><dd>3–5<small>字/秒</small></dd></div>
+    </dl>
+  </header>
+</div>
+
+<div class="ruler"></div>
+
+<div class="wrap">
+<div class="cols">
+
+  <nav class="toc" aria-label="目录">
+    <ol>
+      <li class="part">导读</li>
+      <li><a href="#s0"><span class="num">—</span>怎么读这一页</a></li>
+      <li class="part">Ⅰ 基础</li>
+      <li><a href="#s1"><span class="num">01</span>声音变成数字</a></li>
+      <li><a href="#s2"><span class="num">02</span>难在哪：五个问题</a></li>
+      <li><a href="#s3"><span class="num">03</span>怎么衡量好坏</a></li>
+      <li class="part">Ⅱ 技术脉络</li>
+      <li><a href="#s4"><span class="num">04</span>六代地层图</a></li>
+      <li><a href="#s5"><span class="num">05</span>GMM-HMM</a></li>
+      <li><a href="#s6"><span class="num">06</span>DNN-HMM 混合</a></li>
+      <li><a href="#s7"><span class="num">07</span>chain / LF-MMI</a></li>
+      <li><a href="#s8"><span class="num">08</span>CTC</a></li>
+      <li><a href="#s9"><span class="num">09</span>RNN-T 与 AED</a></li>
+      <li><a href="#s10"><span class="num">10</span>预训练与弱监督</a></li>
+      <li><a href="#s11"><span class="num">11</span>LLM-ASR</a></li>
+      <li class="part">Ⅲ 机制拆解</li>
+      <li><a href="#s12"><span class="num">12</span>特征：解卷积</a></li>
+      <li><a href="#s13"><span class="num">13</span>决策树与 senone</a></li>
+      <li><a href="#s14"><span class="num">14</span>帧几何</a></li>
+      <li><a href="#s15"><span class="num">15</span>WFST 五件事</a></li>
+      <li><a href="#s16"><span class="num">16</span>自注意力与 Conformer</a></li>
+      <li><a href="#s17"><span class="num">17</span>beam search 与 lattice</a></li>
+      <li><a href="#s18"><span class="num">18</span>强制对齐与 GOP</a></li>
+      <li class="part">Ⅳ 工程落地</li>
+      <li><a href="#s19"><span class="num">19</span>选型速查</a></li>
+      <li><a href="#s20"><span class="num">20</span>前端信号处理</a></li>
+      <li><a href="#s21"><span class="num">21</span>VAD 与切分</a></li>
+      <li><a href="#s22"><span class="num">22</span>标点与 ITN</a></li>
+      <li><a href="#s23"><span class="num">23</span>热词偏置</a></li>
+      <li><a href="#s24"><span class="num">24</span>幻觉治理</a></li>
+      <li><a href="#s25"><span class="num">25</span>中文特有的坑</a></li>
+      <li><a href="#s26"><span class="num">26</span>说话人分离</a></li>
+      <li><a href="#s27"><span class="num">27</span>端侧与延迟预算</a></li>
+      <li><a href="#s28"><span class="num">28</span>数据与评测</a></li>
+      <li><a href="#s29"><span class="num">29</span>生产流水线</a></li>
+      <li><a href="#s30"><span class="num">30</span>怎么排查</a></li>
+      <li class="part">Ⅴ 前沿与未解</li>
+      <li><a href="#s31"><span class="num">31</span>当前的真正难点</a></li>
+      <li><a href="#s32"><span class="num">32</span>研究方向</a></li>
+      <li class="part">附录</li>
+      <li><a href="#s33"><span class="num">33</span>参数速查</a></li>
+      <li><a href="#s34"><span class="num">34</span>术语表</a></li>
+      <li><a href="#s35"><span class="num">35</span>符号约定</a></li>
+      <li><a href="#s36"><span class="num">36</span>特征与统计模型</a></li>
+      <li><a href="#s37"><span class="num">37</span>判别训练与端到端</a></li>
+      <li><a href="#s38"><span class="num">38</span>解码、评测与量化</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+  <!-- 导读 ─────────────────────────────────────────────────────── -->
+  <section id="s0">
+    <h2>怎么读这一页</h2>
+    <p>整页围绕一个式子展开。语音识别的全部工作，就是把它变成可计算的：</p>
+<pre><code>W* = argmax P(W|X) = argmax  P(X|W) · P(W)
+      W                W     ‾‾‾‾‾‾‾‾   ‾‾‾‾
+     最可能的文字            声学模型    语言模型
+                        「这段声音像不像」「这句话通不通」</code></pre>
+    <p>六代技术的区别，本质上只有一条：<strong>这个式子被拆成几块、每块交给谁算</strong>。第一代拆成五层、每层单独训练；最新一代干脆不拆，一个大模型端到端算完。</p>
+
+    <div class="tw">
+    <table>
+      <thead><tr><th>你是</th><th>建议路径</th></tr></thead>
+      <tbody>
+        <tr><td>完全没接触过</td><td>按顺序读 <strong>01 → 11</strong>。基础篇三节把术语铺垫好，脉络篇每节都有"一句话版"，看不懂公式可以跳过公式只看例子</td></tr>
+        <tr><td>会用但不懂原理</td><td>直接从 <strong>04 地层图</strong>开始，哪一代看不明白再回头翻 Ⅲ 部分对应的机制</td></tr>
+        <tr><td>要落地一个系统</td><td>跳到 <strong>19 选型</strong>，然后 21–24 是真正决定线上体验的四件工程事；中文项目务必看 <strong>25</strong>，要训模型先看 <strong>28 数据与评测</strong></td></tr>
+        <tr><td>做远场 / 会议 / 车载</td><td><strong>20 前端信号处理</strong>——很多团队从换模型开始，然后困惑为什么换了 SOTA 还是不行</td></tr>
+        <tr><td>做嵌入式 / 实时系统</td><td><strong>27 端侧与延迟预算</strong>——延迟的大头不在计算，先看这节的预算分解</td></tr>
+        <tr><td>要做对齐、发音评测</td><td><strong>18 强制对齐与 GOP</strong>。这是端到端至今做不好、Kaldi 仍不可替代的场景</td></tr>
+        <tr><td>线上出问题了</td><td><strong>30 怎么排查</strong>，按决策树走一遍</td></tr>
+        <tr><td>想知道这行还有什么没解决</td><td><strong>31 当前的真正难点</strong> 和 <strong>32 研究方向</strong></td></tr>
+        <tr><td>只想查个参数</td><td><strong>33 参数速查</strong></td></tr>
+        <tr><td>要推公式 / 想自己实现</td><td><strong>35–38 公式附录</strong>。每个方法给出完整推导，配七个可复算的数值例子（Mel 弯曲、前向算法、决策树增益、CTC 概率、注意力权重、编辑距离、int8 量化）</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="font-size:13.5px;color:var(--text-3)">章节标题旁的 <span class="level a">入门</span> <span class="level">进阶</span> <span class="level b">深入</span> 是难度提示，不是重要性——标"深入"的可以先跳过，不影响后面。</p>
+  </section>
+
+  <!-- ══ PART I ══════════════════════════════════════════════════ -->
+  <div class="partmark">
+    <span class="pn">Part Ⅰ</span>
+    <h2>基础</h2>
+    <p class="pd">声音是什么、难点在哪、怎么打分</p>
+  </div>
+
+  <!-- 01 -->
+  <section id="s1">
+    <h2><span class="num">01</span>声音怎么变成数字<span class="level a">入门</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>麦克风把气压变化记成一串数字；但直接看这串数字什么也看不出来，必须切成小片、转到频率域，才能看到"音素长什么样"。</p>
+    </div>
+
+    <h3>采样：为什么是 16 kHz</h3>
+    <p>声音是空气压强随时间的起伏。麦克风每秒测量若干次，每次记一个数——这就是采样。<strong>奈奎斯特定理</strong>说：采样率必须至少是最高频率的 2 倍，才能无失真还原。</p>
+    <ul>
+      <li>语音的可懂度信息主要落在 <strong>300 Hz – 3.4 kHz</strong>（这就是电话带宽的由来）</li>
+      <li>但 <code>s</code> <code>sh</code> <code>f</code> 这类清擦音的能量能到 8 kHz 以上，砍掉会明显影响辅音区分</li>
+      <li>所以 <strong>16 kHz</strong>（可表示到 8 kHz）是 ASR 的标准权衡。音乐用 44.1/48 kHz，是因为人耳能听到 20 kHz</li>
+    </ul>
+    <p>位深通常 16 bit，动态范围约 96 dB，足够覆盖从耳语到喊叫。所以 1 秒单声道音频 = 16000 个 16 位整数 = 32 KB。</p>
+
+    <h3>分帧：为什么是 25 毫秒</h3>
+    <p>整段波形没法直接分析——因为语音一直在变。但<strong>声道的形状变化很慢</strong>：舌头、嘴唇每秒大约动 10–20 次。在 25 毫秒这个尺度内，可以近似认为声道形状不变，这叫<em>短时平稳</em>。</p>
+    <p>帧移取 10 ms（帧之间有 15 ms 重叠），是因为最短的音素也有 30–50 ms，每 10 ms 采一帧才能捕捉到音素之间的过渡。<strong>于是 1 秒音频 = 100 帧</strong>，这个"每秒 100 帧"是整个传统 ASR 的时间单位。</p>
+
+    <div class="note"><span class="tag">为什么要加窗</span>
+      <p>直接把波形切断，断口处会产生突变，做 FFT 后表现为频谱泄漏（本来没有的频率成分冒出来）。所以每帧要乘一个两端平滑衰减的窗函数（汉明窗、povey 窗），让断口过渡自然。这是信号处理的常规操作，不是 ASR 特有的。</p>
+    </div>
+
+    <h3>频谱：从"多大声"到"什么音"</h3>
+    <p>每一帧做傅里叶变换，得到这 25 ms 内各个频率成分的强度。把连续很多帧的频谱竖着排起来、用颜色表示强度，就是<strong>语谱图</strong>——这是语音识别真正看的东西。</p>
+    <p>语谱图上能直接看出：元音有清晰的横向亮带（<em>共振峰</em>，由声道形状决定，是区分 a/i/u 的关键）；清辅音是一片高频噪声；爆破音前面有一小段空白（闭塞段）。<strong>后面所有的特征提取，都是在把语谱图压缩成更适合模型消化的形式。</strong></p>
+  </section>
+
+  <!-- 02 -->
+  <section id="s2">
+    <h2><span class="num">02</span>为什么难：五个绕不过去的问题<span class="level a">入门</span></h2>
+    <p class="lede">理解了这五个问题，后面每一代技术在解决什么就清楚了。</p>
+
+    <div class="tw">
+    <table>
+      <thead><tr><th>问题</th><th>具体是什么</th><th>谁来解决</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>① 长度不对齐</strong></td>
+          <td>5 秒音频有 500 帧，对应的文字可能只有 10 个字。哪几帧对应哪个字？<strong>没人告诉你</strong>——训练数据只有音频和整句文字</td>
+          <td>HMM / CTC / RNN-T</td>
+        </tr>
+        <tr>
+          <td><strong>② 语速可变</strong></td>
+          <td>同一个"你好"，慢说占 80 帧，快说占 25 帧。模型必须对时间伸缩不敏感</td>
+          <td>HMM 的自环 / CTC 的重复合并</td>
+        </tr>
+        <tr>
+          <td><strong>③ 协同发音</strong></td>
+          <td>"你"里的 i 和"急"里的 i，声学上差别很大——因为前后音素改变了舌头的运动轨迹。<strong>音素没有固定长相</strong></td>
+          <td>三音素 + 决策树 / 大感受野编码器</td>
+        </tr>
+        <tr>
+          <td><strong>④ 同音歧义</strong></td>
+          <td>"shi tang" 是"食堂"还是"试探"？声学上无法区分，只能靠上下文</td>
+          <td>语言模型 / 自注意力 / LLM</td>
+        </tr>
+        <tr>
+          <td><strong>⑤ 噪声与信道</strong></td>
+          <td>同一句话，手机录和会议室录，频谱差别可能比不同人说话还大</td>
+          <td>CMVN / 数据增广 / 大规模预训练</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="ex"><span class="tag">感受一下问题 ①</span>
+      <p>你有一段 5 秒录音，和它的文字"今天天气不错"。你怎么训练一个模型？</p>
+      <p>模型需要知道"第 137 帧应该输出什么"，但你手上只有整句。<strong>逐帧标注 500 帧是不可能的</strong>——1000 小时数据就是 3.6 亿帧。</p>
+      <p>三种解法，正好对应三代技术：<br>
+      <strong>HMM</strong> —— 先用一个粗糙模型猜一个对齐，训练，再用更好的模型重新对齐，反复迭代（第 05 节）。<br>
+      <strong>CTC</strong> —— 不猜了，把<em>所有可能的对齐</em>的概率加起来一起优化（第 08 节）。<br>
+      <strong>Attention</strong> —— 让模型自己学会该看哪几帧（第 09 节）。</p>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section id="s3">
+    <h2><span class="num">03</span>怎么衡量好坏<span class="level a">入门</span></h2>
+
+    <h3>WER / CER：错误率</h3>
+    <p>用<strong>编辑距离</strong>算：把识别结果改成正确答案，最少需要多少次替换(S)、删除(D)、插入(I)。</p>
+<pre><code>错误率 = (S + D + I) / N        N = 参考文本的长度</code></pre>
+    <p>英文按词算叫 <strong>WER</strong>，中文按字算叫 <strong>CER</strong>。</p>
+
+    <div class="ex"><span class="tag">算一遍</span>
+<pre><code>参考：今 天 天 气 不 错          N = 6
+识别：今 天 天 汽 很 不 错
+
+对齐：今 天 天 [气→汽] [→很] 不 错
+      替换 1 次（气→汽）
+      插入 1 次（很）
+
+CER = (1 + 0 + 1) / 6 = 2/6 = 33.3%</code></pre>
+      <p>注意错误率<strong>可以超过 100%</strong>——如果模型疯狂插入内容（幻觉），分子会比分母大。这也是第 24 节那个"字/秒比值"监控的由来。</p>
+    </div>
+
+    <h3>RTF / RTFx：速度</h3>
+<pre><code>RTF  = 处理耗时 / 音频时长      越小越快，RTF = 0.1 表示比实时快 10 倍
+RTFx = 1 / RTF                  越大越快，榜单上常用这个</code></pre>
+    <p>实时流式系统要求 RTF &lt; 1，否则会越积越多。批量转写只看吞吐，RTF 0.02 意味着 1 小时音频 72 秒转完。</p>
+
+    <div class="trap"><span class="tag">看榜单的常识</span>
+      <p>WER 是在<strong>相对干净的朗读/播客数据</strong>上测的。真实场景（远场、口音、噪声、专业术语）的差距和榜单顺序常常不一致。目前开源模型前十名的差距不到 1 个百分点，这个量级在真实场景里基本被淹没——<strong>选型该由许可证、语种、延迟、部署形态主导，不是 WER。</strong></p>
+    </div>
+  </section>
+
+  <!-- ══ PART II ═════════════════════════════════════════════════ -->
+  <div class="partmark">
+    <span class="pn">Part Ⅱ</span>
+    <h2>技术脉络</h2>
+    <p class="pd">六代技术，每一代删掉了什么</p>
+  </div>
+
+  <!-- 04 -->
+  <section id="s4">
+    <h2><span class="num">04</span>六代地层图<span class="level a">入门</span></h2>
+    <p class="lede">这张表是整页的主干。从上往下看，是三十年里一层层被拆掉的脚手架。</p>
+
+    <div class="tw matrix">
+    <table>
+      <thead>
+        <tr>
+          <th>代际</th>
+          <th>发音<br>词典</th>
+          <th>决策树<br>senone</th>
+          <th>HMM<br>对齐</th>
+          <th>独立<br>LM</th>
+          <th>手工<br>特征</th>
+          <th>需要<br>预训练</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>① GMM-HMM</strong><span class="era">1990s–2011</span></td>
+            <td class="m yes">●</td><td class="m yes">●</td><td class="m yes">●</td><td class="m yes">●</td><td class="m yes">●</td><td class="m no">○</td></tr>
+        <tr><td><strong>② DNN-HMM 混合</strong><span class="era">2012–2015</span></td>
+            <td class="m yes">●</td><td class="m yes">●</td><td class="m yes">●</td><td class="m yes">●</td><td class="m yes">●</td><td class="m no">○</td></tr>
+        <tr><td><strong>③ chain / LF-MMI</strong><span class="era">2016–2019</span></td>
+            <td class="m yes">●</td><td class="m yes">●</td><td class="m yes">●</td><td class="m yes">●</td><td class="m yes">●</td><td class="m no">○</td></tr>
+        <tr><td><strong>④ CTC</strong><span class="era">2014–</span></td>
+            <td class="m no">○</td><td class="m no">○</td><td class="m no">○</td><td class="m part-y">◐</td><td class="m part-y">◐</td><td class="m no">○</td></tr>
+        <tr><td><strong>⑤ RNN-T / AED</strong><span class="era">2017–</span></td>
+            <td class="m no">○</td><td class="m no">○</td><td class="m no">○</td><td class="m part-y">◐</td><td class="m part-y">◐</td><td class="m no">○</td></tr>
+        <tr><td><strong>⑥ 预训练 / 弱监督</strong><span class="era">2020–</span></td>
+            <td class="m no">○</td><td class="m no">○</td><td class="m no">○</td><td class="m no">○</td><td class="m part-y">◐</td><td class="m yes">●</td></tr>
+        <tr><td><strong>⑦ LLM-ASR</strong><span class="era">2024–</span></td>
+            <td class="m no">○</td><td class="m no">○</td><td class="m no">○</td><td class="m no">○</td><td class="m part-y">◐</td><td class="m yes">●</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="font-size:12.5px;color:var(--text-3);margin-top:-8px">
+      <span class="yes" style="color:var(--brick)">●</span> 必需 &nbsp;·&nbsp;
+      <span class="part-y" style="color:var(--accent)">◐</span> 可选 / 部分保留 &nbsp;·&nbsp;
+      <span style="color:var(--text-3);opacity:.6">○</span> 不需要
+    </p>
+
+    <div class="note"><span class="tag">怎么读这张表</span>
+      <p>前三代<strong>一行都没变红转白</strong>——它们共享同一套结构，chain 只是换了训练目标和帧率。真正的断裂发生在第 ④ 代：CTC 一次性删掉了发音词典、决策树和显式对齐这三样最需要语言学知识的东西。第 ⑥ 代之后新增了一列"需要预训练"——门槛从<em>知识</em>转移到了<em>算力和数据</em>。</p>
+    </div>
+
+    <h3>一句话概括每一代</h3>
+    <div class="tw">
+    <table>
+      <thead><tr><th>代际</th><th>关键思想</th><th>代表</th></tr></thead>
+      <tbody>
+        <tr><td>① GMM-HMM</td><td>用 HMM 解决对齐，用高斯混合给每个状态打分</td><td class="old">HTK、Kaldi tri3</td></tr>
+        <tr><td>② DNN-HMM</td><td>把 GMM 换成神经网络，其余不动</td><td class="old">Kaldi nnet2/3</td></tr>
+        <tr><td>③ chain</td><td>训练目标从"逐帧分类"改成"整句判别"，帧率降 3 倍</td><td>Kaldi chain (TDNN-F)</td></tr>
+        <tr><td>④ CTC</td><td>发明 blank，对所有可能对齐求和，不再需要对齐标注</td><td>DeepSpeech2、WeNet CTC 分支</td></tr>
+        <tr><td>⑤ RNN-T / AED</td><td>把语言模型也吸进网络里；Conformer 成为标准编码器</td><td>WeNet U2++、zipformer、Parakeet</td></tr>
+        <tr><td>⑥ 预训练 / 弱监督</td><td>用海量无标注（wav2vec2）或弱标注（Whisper）数据</td><td>wav2vec 2.0、Whisper</td></tr>
+        <tr><td>⑦ LLM-ASR</td><td>语音编码器接大语言模型，转写变成条件生成</td><td>Canary-Qwen、Qwen3-ASR</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section id="s5">
+    <h2><span class="num">05</span>第一代：GMM-HMM<span class="level">进阶</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>把每个音素想象成一条流水线上的几个工位，语音一帧帧流过；HMM 负责决定"这一帧停在哪个工位"，GMM 负责判断"这一帧长得像不像这个工位该有的样子"。</p>
+    </div>
+
+    <h3>HMM 解决的是对齐</h3>
+    <p>把每个音素建成一个三状态的左到右模型（起、中、末）。每一帧要么<strong>停在原状态</strong>（自环，对应语速慢），要么<strong>前进一格</strong>。于是"5 秒音频对应 6 个字"这个问题，变成了"在一张状态图上找一条最优路径"。</p>
+<pre><code>P(X|W) = Σ_S  Π_t  a(s_{t−1}→s_t) · b_{s_t}(x_t)
+              ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾   ‾‾‾‾‾‾‾‾
+                 转移概率          这一帧像不像这个状态</code></pre>
+
+    <div class="ex"><span class="tag">算一遍 · Viterbi 对齐</span>
+      <h4>4 帧音频，一个 3 状态音素</h4>
+      <p>假设声学模型已经给出每帧在每个状态上的对数得分（越接近 0 越像）：</p>
+      <div class="tw"><table class="dp">
+        <thead><tr><th>得分 b</th><th>t=1</th><th>t=2</th><th>t=3</th><th>t=4</th></tr></thead>
+        <tbody>
+          <tr><td>s1 起</td><td>−0.2</td><td>−1.5</td><td>−3.0</td><td>−4.0</td></tr>
+          <tr><td>s2 中</td><td>−2.5</td><td>−0.4</td><td>−0.8</td><td>−2.2</td></tr>
+          <tr><td>s3 末</td><td>−3.5</td><td>−2.0</td><td>−0.6</td><td>−0.3</td></tr>
+        </tbody>
+      </table></div>
+      <p>转移一律 <code>log 0.5 ≈ −0.7</code>。必须从 s1 起、在 s4 结束前到 s3。逐列递推，每格只保留最优前驱：</p>
+      <div class="tw"><table class="dp">
+        <thead><tr><th>δ 累积</th><th>t=1</th><th>t=2</th><th>t=3</th><th>t=4</th></tr></thead>
+        <tbody>
+          <tr><td>s1</td><td class="best">−0.2</td><td>−2.4</td><td>−6.1</td><td>−10.8</td></tr>
+          <tr><td>s2</td><td class="void">−∞</td><td class="best">−1.3</td><td>−2.8</td><td>−5.7</td></tr>
+          <tr><td>s3</td><td class="void">−∞</td><td class="void">−∞</td><td class="best">−2.6</td><td class="best">−3.6</td></tr>
+        </tbody>
+      </table></div>
+<pre><code>回溯最优路径： s1 → s2 → s3 → s3     总分 −3.6
+
+得到的对齐： 第1帧属状态1，第2帧属状态2，第3、4帧属状态3
+             ↑ 这就是训练下一轮模型所需要的"每帧标签"</code></pre>
+      <p><strong>这就是全部魔法</strong>：原本要枚举 3⁴ = 81 条路径，动态规划让它变成 3×4 = 12 次比较。真实系统里状态数几千、帧数几百，指数级变成 <code>O(T·N²)</code>——<em>整条链能跑起来全靠这笔交易</em>。</p>
+    </div>
+
+    <h3>GMM 负责打分</h3>
+    <p>每个状态挂一组高斯分布（典型 16–32 个），用来回答"这一帧的 39 维特征向量，有多像这个状态"。用多个高斯而不是一个，是因为同一个状态在不同说话人、不同语境下会有多个"典型长相"。</p>
+
+    <h3>鸡生蛋问题怎么破</h3>
+    <p>要模型才能对齐，要对齐才能训模型。解法是从最粗糙的假设冷启动，逐步精化：</p>
+<pre><code>等分对齐（把音频平均分给音素）   ← 明知是错的，但能启动
+   → 训单音素模型 mono
+   → 用 mono 重新对齐 → 训三音素 tri1
+   → 用 tri1 重新对齐 → 训 tri2 (加 LDA+MLLT 变换)
+   → 用 tri2 重新对齐 → 训 tri3 (加说话人自适应 fMLLR)</code></pre>
+    <p><strong>这条引导链在 Kaldi 里一步都省不掉</strong>，即使最终要训的是纯神经网络的 chain 模型——因为决策树和分子监督都要靠 GMM 的对齐来建。这也是端到端方案最想摆脱的负担。</p>
+
+    <div class="trap"><span class="tag">两个错误但必要的假设</span>
+      <p><strong>一阶马尔可夫</strong>：下一状态只取决于当前状态 → 状态驻留时间被迫服从几何分布，而真实音素时长更接近伽马分布。<br>
+      <strong>观测条件独立</strong>：每帧的得分只取决于当前状态，与其他帧无关 → 相邻帧明明高度相关。<br>
+      两个假设都是错的，但没有它们那个 <code>Σ_S</code> 无法分解成动态规划。<em>后面所有的补丁——delta 特征、拼帧、声学缩放因子——都是在掩盖这两个假设的破绽。</em></p>
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section id="s6">
+    <h2><span class="num">06</span>第二代：DNN-HMM 混合<span class="level">进阶</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>2012 年前后，把 GMM 换成神经网络，错误率直接掉 20–30%。整个 HMM/词典/WFST 结构原封不动——所以叫"混合"系统。</p>
+    </div>
+
+    <p>神经网络的优势在于：它可以一次看几十帧（拼帧或大感受野），而 GMM 只能看一帧；它能自动学特征组合，而 GMM 要求特征各维不相关。但接进去有一个必须处理的换算问题。</p>
+
+    <h3>伪似然：hybrid 系统的核心 trick</h3>
+    <p>神经网络训练成分类器，输出的是<strong>后验概率</strong> <code>P(状态|特征)</code>。但 HMM 的公式里要的是<strong>似然</strong> <code>p(特征|状态)</code>。贝叶斯反演：</p>
+<pre><code>p(x|s) = P(s|x) · p(x) / P(s)
+
+p(x) 与 s 无关，在 argmax 中是常数可以丢掉，于是：
+
+scaled likelihood ∝ P(s|x) / P(s)      ← 必须除以状态先验</code></pre>
+    <p>先验 <code>P(s)</code> 就是训练对齐里各状态出现的频率，直接数出来。</p>
+
+    <div class="trap"><span class="tag">忘了除先验会怎样</span>
+      <p>静音、弱化元音这些高频状态会过度吸引解码路径，<strong>识别结果变成大片空白</strong>。这是新手接 DNN 到 Kaldi 最经典的事故。</p>
+    </div>
+
+    <div class="note"><span class="tag">那个 0.1 是怎么回事</span>
+      <p>解码时要设 <code>--acoustic-scale=0.1</code>，等价于给语言模型放大 10 倍。原因是：条件独立假设让每帧的似然重复计入了相关信息，声学得分的动态范围被严重高估，必须人为压缩才能和语言模型得分平衡。<strong>这个超参数的存在本身就是模型错误设定的证据</strong>——到了第三代 chain，它变成 1.0，因为序列级训练把尺度学对了。</p>
+    </div>
+  </section>
+
+  <!-- 07 -->
+  <section id="s7">
+    <h2><span class="num">07</span>第三代：chain / LF-MMI<span class="level b">深入</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>训练目标从"每帧猜对状态"改成"整句比所有错误答案得分高"，同时把音素最短时长从 3 帧放宽到 1 帧，帧率因此可以降 3 倍。三处改动必须一起做。</p>
+    </div>
+
+    <h3>为什么逐帧交叉熵不够好</h3>
+    <p>第二代的训练目标是"每一帧分类正确"。但两个毛病：<strong>①</strong> 对齐是 GMM 给的，可能是错的，一旦定死网络只能去拟合错误边界；<strong>②</strong> 逐帧正确 ≠ 整句正确，和最终的 WER 目标隔了很远。</p>
+    <p>序列判别训练直接优化"正确句子的后验"：</p>
+<pre><code>              P(X|W_正确)^κ · P(W_正确)
+F_MMI = Σ log ──────────────────────────
+              Σ_W P(X|W)^κ · P(W)         ← 分母：所有可能的句子</code></pre>
+    <p>难点全在分母。传统做法是先训好 CE 模型，解码整个训练集生成 lattice 当分母的近似——三个阶段、几十小时、而且分母一旦生成就冻结了。</p>
+
+    <h3>LF-MMI 的三处协同改动</h3>
+    <div class="pipe">
+      <div class="stage key"><div class="dot">1</div><div class="stage-body">
+        <h4>拓扑：3 状态 → 1 个可发射状态</h4>
+        <p>音素最少只占 1 帧（传统必须 3 帧）。这是降帧率的前提。</p></div></div>
+      <div class="stage key"><div class="dot">2</div><div class="stage-body">
+        <h4>帧率：10 ms → 30 ms</h4>
+        <p>音素典型时长 80–150 ms，30 ms 一帧仍有 3–5 帧，够用。计算量直接降 3 倍。</p></div></div>
+      <div class="stage key"><div class="dot">3</div><div class="stage-body">
+        <h4>分母：换成音素级 4-gram 小图</h4>
+        <p>只有几千状态、几万条弧，<strong>小到可以对每个 minibatch 在 GPU 上完整跑前向后向</strong>，不需要任何 lattice 近似——这就是 "lattice-free" 的字面含义。</p></div></div>
+    </div>
+    <p>三者互为前提：1 状态拓扑让降帧率可行，降帧率让 GPU 上跑完整分母可行，完整分母让 lattice-free 训练可行。<strong>任何一处单独改都不成立。</strong></p>
+
+    <h3>分子也变了：允许时间抖动</h3>
+    <p>分子不再是硬对齐，而是一个 FST：正确的音素序列固定，但每个音素边界<strong>允许在 GMM 给的位置附近浮动</strong>，训练时对容差窗内所有对齐边缘化。</p>
+<pre><code>--left-tolerance=5  --right-tolerance=5     # 单位是输出帧，即 ±150 ms</code></pre>
+    <p>这一条修掉了 CE 训练"被错误对齐锁死"的根本缺陷——网络能自己在窗内找到更合理的边界。</p>
+
+    <div class="tw">
+    <table>
+      <thead><tr><th>环节</th><th>传统 CE → sMBR</th><th>chain</th></tr></thead>
+      <tbody>
+        <tr><td>输出帧率</td><td class="old">10 ms</td><td class="num hi">30 ms</td></tr>
+        <tr><td>训练阶段数</td><td class="old">CE → 解码生成 lattice → sMBR</td><td class="hi">一遍到位</td></tr>
+        <tr><td>说话人自适应</td><td class="old">fMLLR，需两遍解码</td><td>i-vector，单遍</td></tr>
+        <tr><td>先验</td><td class="old">必须除</td><td>不除（目标已归一化）</td></tr>
+        <tr><td>acoustic-scale</td><td class="old num">0.1</td><td class="num hi">1.0</td></tr>
+        <tr><td>self-loop-scale</td><td class="old num">0.1</td><td class="num hi">1.0</td></tr>
+        <tr><td>相对 WER</td><td class="old">基线</td><td class="hi">降 15–20%</td></tr>
+        <tr><td>速度</td><td class="old">基线</td><td class="hi">约 3×</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="trap"><span class="tag">最常见的翻车点</span>
+      <p><code>mkgraph.sh</code> 忘了加 <code>--self-loop-scale 1.0</code>。<strong>不报错，只是 WER 高得离谱。</strong>因为 chain 用 acoustic-scale=1.0，两个尺度必须配套。</p>
+    </div>
+  </section>
+
+  <!-- 08 -->
+  <section id="s8">
+    <h2><span class="num">08</span>第四代：CTC 与 blank 的发明<span class="level">进阶</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>与其猜"哪一帧对应哪个字"，不如把所有猜法的概率<strong>全部加起来</strong>一起优化。为了让这件事可行，需要发明一个特殊符号：blank（空白）。</p>
+    </div>
+
+    <h3>blank 解决两个问题</h3>
+    <p>模型每帧输出一个符号，最后把这串符号"折叠"成文字。折叠规则只有两步：<strong>先合并连续重复，再删掉所有 blank</strong>。</p>
+<pre><code>你你-好好好  →  合并重复: 你-好  →  删blank: 你好  ✓</code></pre>
+    <ul>
+      <li><strong>问题一：模型不确定时怎么办</strong> → 输出 blank，表示"这一帧没有新内容"。静音、音素过渡段都可以输出 blank。</li>
+      <li><strong>问题二：叠字怎么办</strong> → "好好"如果直接输出 <code>好好</code> 会被合并成一个"好"。所以必须写成 <code>好-好</code>，用 blank 把两个字隔开。<em>这才是 blank 存在的真正原因。</em></li>
+    </ul>
+
+    <div class="ex"><span class="tag">算一遍 · CTC 的所有对齐</span>
+      <h4>目标"你好"，4 帧，词表 {你, 好, -}</h4>
+      <p>能折叠成"你好"的 4 帧路径，一共 <strong>15 条</strong>，全部列出：</p>
+      <div class="paths">
+        <span>--你好</span><span>-你-好</span><span>-你你好</span><span>-你好-</span><span>-你好好</span>
+        <span>你--好</span><span>你-好-</span><span>你-好好</span><span>你你-好</span><span class="k">你你你好</span>
+        <span>你你好-</span><span class="k">你你好好</span><span>你好--</span><span>你好好-</span><span class="k">你好好好</span>
+      </div>
+      <p>CTC 的损失函数是<strong>这 15 条路径的概率之和</strong>取负对数。模型不需要知道"你"具体在第几帧——它只需要让这 15 条路径的总概率最大。</p>
+
+      <h4>怎么高效地加起来</h4>
+      <p>穷举 15 条只是因为 T=4 很小；T=500 时路径数是天文数字。用前向算法：把目标序列扩展成 <code>l' = [-, 你, -, 好, -]</code>（每个字前后插 blank），然后逐帧递推"走到位置 s 的路径数"。</p>
+      <div class="tw"><table class="dp">
+        <thead><tr><th>α</th><th>s=0<br>「-」</th><th>s=1<br>「你」</th><th>s=2<br>「-」</th><th>s=3<br>「好」</th><th>s=4<br>「-」</th></tr></thead>
+        <tbody>
+          <tr><td>t=1</td><td>1</td><td>1</td><td class="void">0</td><td class="void">0</td><td class="void">0</td></tr>
+          <tr><td>t=2</td><td>1</td><td>2</td><td>1</td><td>1</td><td class="void">0</td></tr>
+          <tr><td>t=3</td><td>1</td><td>3</td><td>3</td><td>4</td><td>1</td></tr>
+          <tr><td>t=4</td><td>1</td><td>4</td><td>6</td><td class="best">10</td><td class="best">5</td></tr>
+        </tbody>
+      </table></div>
+<pre><code>总数 = α[4][s=3] + α[4][s=4] = 10 + 5 = 15   ✓ 与穷举一致
+
+递推规则：α[t][s] = α[t−1][s]        停在原地
+                  + α[t−1][s−1]      前进一格
+                  + α[t−1][s−2]      跳过中间的 blank
+                                     （仅当 l'[s] 是字且 ≠ l'[s−2]）</code></pre>
+      <p>这里为了看得清用的是"路径计数"，真实训练里把 1 换成每帧的输出概率相乘即可，形式完全一样。<strong>复杂度从指数级降到 O(T × 2L)</strong>——和 HMM 的前向算法是同一个东西。</p>
+    </div>
+
+    <h3>CTC 换来了什么，付出了什么</h3>
+    <div class="tw">
+    <table>
+      <thead><tr><th></th><th>影响</th></tr></thead>
+      <tbody>
+        <tr><td class="hi">得到</td><td>不需要发音词典、不需要决策树、不需要 GMM 引导、不需要强制对齐。<strong>训练数据只要 <code>音频 + 整句文字</code></strong>，新语种上手成本降一个数量级</td></tr>
+        <tr><td class="hi">得到</td><td>天然单调对齐、天然流式，结构上不可能长篇幻觉</td></tr>
+        <tr><td style="color:var(--brick);font-weight:600">代价</td><td><strong>条件独立假设</strong>：每帧输出彼此独立，模型内部没有语言模型能力。"食堂"和"试探"分不清时，CTC 自己救不了自己——所以要外挂 n-gram（第 15 节的 TLG）</td></tr>
+        <tr><td style="color:var(--brick);font-weight:600">代价</td><td><strong>峰值对齐</strong>：CTC 倾向于在音素中间某一帧突然输出、其余全是 blank。所以它给的时间戳是尖锐且偏移的，<em>不能用于精确的音素级强制对齐</em></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <!-- 09 -->
+  <section id="s9">
+    <h2><span class="num">09</span>第五代：RNN-T 与 Attention<span class="level">进阶</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>CTC 的病是"每帧输出互相不知道"。RNN-T 加一个网络专门读已经输出的文字（相当于把语言模型吸进模型里）；AED 则让解码器自己决定该看哪几帧。两条路线在 Conformer 编码器上汇合。</p>
+    </div>
+
+    <h3>RNN-T：在一张网格上走路</h3>
+    <p>三个组件，分工清晰得像一个人在听写：</p>
+    <div class="tw">
+    <table>
+      <thead><tr><th>组件</th><th>干什么</th><th>类比</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Encoder</strong></td><td>把音频帧编码成表征</td><td>耳朵：听到了什么</td></tr>
+        <tr><td><strong>Prediction Network</strong></td><td>只看已经输出的文字，预测下一个字</td><td>脑子里的语言直觉：内置 LM</td></tr>
+        <tr><td><strong>Joint Network</strong></td><td>把两者合并，输出"下一个字是什么，或者 blank"</td><td>拍板</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>解码过程可以想象成在一张 <code>T × U</code> 的网格上走路（T 是帧数，U 是字数）：</p>
+<pre><code>       字 ↑
+        好 │  ·   ·   ·   ●───▶ 完成
+           │          ╱
+        你 │  ·   ●──▶·   ·
+           │    ╱
+        ∅  │  ●──▶·   ·   ·
+           └────────────────────▶ 帧
+             t1  t2  t3  t4
+
+  向右 → 输出 blank，消耗一帧（"还没听够"）
+  向上 ↑ 输出一个字，不消耗帧（"这里可以连出好几个字"）</code></pre>
+    <p>关键差别：<strong>向上不消耗帧</strong>，所以一帧可以吐出多个字；而且每一步都能看到已输出的文字，<em>条件独立假设被打破了</em>。代价是训练时要在整个 T×U 网格上做前向后向，显存占用远高于 CTC。</p>
+    <p>目前端侧首选基本都是 transducer 路线：zipformer-transducer（icefall / sherpa-onnx）、Parakeet TDT。</p>
+
+    <h3>AED：让模型自己决定看哪里</h3>
+    <p>Attention-based Encoder-Decoder 走另一条路：解码器每要输出一个字，就对<strong>整段音频的所有帧算一次权重</strong>，加权求和后再决定输出什么。这个权重就是注意力。</p>
+    <ul>
+      <li><strong>优点</strong>：没有任何对齐约束，精度上限最高，天然能利用全局上下文消歧</li>
+      <li><strong>缺点</strong>：必须看完整句才能开始（不能流式）；<strong>没有单调约束，所以会幻觉</strong>——这正是第 24 节要治的病</li>
+    </ul>
+
+    <h3>WeNet 的 U2++：两条路线合一</h3>
+<pre><code>                  ┌─▶ CTC 线性层 ──▶ 第一遍：prefix beam search → n-best
+fbank ─▶ Conformer 编码器
+                  └─▶ Attention Decoder ─▶ 第二遍：对 n-best 重打分</code></pre>
+    <p>妙处在于<strong>第二遍不是自回归生成，是 rescoring</strong>——候选已由 CTC 给出，decoder 只需一次并行的 teacher-forcing 前向，延迟可控。这样既拿到了 CTC 的流式能力，又拿到了 attention 的精度。</p>
+    <p>配套的 <strong>dynamic chunk training</strong>：训练时每个 batch 随机采样 chunk 大小（含 ∞），注意力掩码随之限制。结果是<em>一套权重学会了所有延迟档位</em>——部署时 chunk=16 就是 640 ms 流式，chunk=∞ 就是全句最高精度，换延迟只改配置不重训。</p>
+    <p>U2++ 再加一个从右到左的 decoder，训练时逼编码器同时编码过去与未来，rescoring 时双向融合，相对提升约 10%。</p>
+  </section>
+
+  <!-- 10 -->
+  <section id="s10">
+    <h2><span class="num">10</span>第六代：预训练与弱监督<span class="level a">入门</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>标注数据永远不够，但无标注音频和网上的字幕多得是。两条路：<strong>自监督</strong>（做完形填空，学会"语音长什么样"）和<strong>弱监督</strong>（把几十万小时质量参差的字幕硬吃下去）。</p>
+    </div>
+
+    <h3>自监督：wav2vec 2.0 的完形填空</h3>
+    <p>没有文字标注也能学。做法是把一段音频的某些片段<strong>遮住</strong>，让模型根据上下文猜被遮住的地方"是什么"。</p>
+<pre><code>原始音频 ──▶ 卷积编码器 ──▶ 一串向量
+                              ↓ 随机遮住一部分
+                          Transformer
+                              ↓
+              猜出被遮住位置的"离散单元"是哪个
+              （单元通过量化自动学出来，不是人定义的音素）</code></pre>
+    <p>这样学出来的表征已经隐含了音素结构。之后只需<strong>几十小时甚至十分钟</strong>的标注数据微调，就能达到过去几百小时才有的效果。对低资源语种是革命性的。</p>
+
+    <h3>弱监督：Whisper 的暴力路线</h3>
+    <p>反方向：不搞自监督，直接从网上收集 <strong>68 万小时</strong>音频-字幕对——质量参差、有错、有机器翻译的，但量足够大。多任务一起训：</p>
+<pre><code>输入音频 + 任务提示 token：
+  &lt;|zh|&gt;&lt;|transcribe|&gt;&lt;|notimestamps|&gt;    中文转写
+  &lt;|zh|&gt;&lt;|translate|&gt;                      中译英
+  &lt;|nospeech|&gt;                             判断有没有人说话</code></pre>
+    <p>结果是极强的鲁棒性和 99 语种覆盖，代价是<strong>学会了字幕数据里的坏习惯</strong>——"听不清就补一句常见的"，也就是幻觉的根源（第 24 节）。</p>
+
+    <div class="trap"><span class="tag">别默认选 Whisper 做中文</span>
+      <p>Whisper 的中文数据占比不高，标点和数字规范化都弱。它的价值在<strong>生态厚度</strong>（MIT 许可、99 语种、faster-whisper / whisper.cpp / WhisperX 全套衍生），不在中文精度。中文项目该看 FireRedASR、Qwen3-ASR、Paraformer（第 19 节）。</p>
+    </div>
+  </section>
+
+  <!-- 11 -->
+  <section id="s11">
+    <h2><span class="num">11</span>第七代：LLM-ASR<span class="level a">入门</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>既然大语言模型已经很懂中文了，就别让 ASR 再从头学语言了——把语音编码器的输出接进 LLM，转写变成"看着这段声音，把它写出来"的一次条件生成。</p>
+    </div>
+
+<pre><code>音频 ─▶ 语音编码器 ─▶ 适配层 ─▶ ┐
+                                ├─▶ 大语言模型 ─▶ 文字
+系统提示 / 上下文 / 热词表 ─────┘</code></pre>
+
+    <p>这个架构带来三件过去做不到的事：</p>
+    <ul>
+      <li><strong>上下文直接进 prompt</strong>。"以下音频涉及：卡尔曼滤波、无刷电机、FOC"——热词偏置从需要改解码器变成了写一句话（对比第 23 节的四层方案）</li>
+      <li><strong>语言知识免费继承</strong>。同音歧义、专业术语、书面语规范，LLM 本来就会</li>
+      <li><strong>顺带做别的</strong>。转写+翻译+摘要+说话人分离可以在一次生成里完成</li>
+    </ul>
+
+    <p>代价是参数量（2–3 B 起步）、延迟，以及<strong>幻觉从"补一句字幕"升级成"编一段通顺的话"</strong>——更难被察觉。目前榜单头部基本都是这一类：ARK-ASR-3B、Granite Speech、Cohere Transcribe、Canary-Qwen、Qwen3-ASR。</p>
+
+    <div class="note"><span class="tag">脉络到这里的总结</span>
+      <p>三十年的主线是<strong>把语音知识从模型结构里搬到数据里</strong>。第一代把音素、词典、上下文规则全写进结构；到第七代，这些全部由数据和参数隐式承担。但注意两件事没有消失：<strong>WFST 作为外挂语言模型的手段还在</strong>（因为纯文本永远比音频多），<strong>Kaldi 式的强制对齐还在</strong>（因为端到端给不出精确的音素边界）。</p>
+    </div>
+  </section>
+
+  <!-- ══ PART III ════════════════════════════════════════════════ -->
+  <div class="partmark">
+    <span class="pn">Part Ⅲ</span>
+    <h2>机制拆解</h2>
+    <p class="pd">七个关键零件，单独拿出来看清楚</p>
+  </div>
+
+  <!-- 12 -->
+  <section id="s12">
+    <h2><span class="num">12</span>特征提取：本质是同态解卷积<span class="level">进阶</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>说话 = 声带的嗡嗡声（激励）经过口腔这个滤波器（声道）。识别只需要滤波器，不需要嗡嗡声。倒谱变换就是把这两者分开的数学手段。</p>
+    </div>
+
+    <p>语音的产生模型是源-滤波器：<code>x(t) = e(t) * h(t)</code>，声门激励<strong>卷积</strong>声道冲激响应。<code>h</code> 决定音素，<code>e</code> 决定基频和说话人。麻烦在于卷积很难拆开——除非换个域：</p>
+<pre><code>x(t) ──FFT──▶  E(ω)·H(ω)        卷积 → 乘法
+     ──log──▶  logE + logH      乘法 → 加法      ← 关键一步
+     ──DCT──▶  倒谱域，二者落在不同"倒频率"区间</code></pre>
+    <p>取前 13 维 = 在倒谱域做低通滤波 = 只保留缓慢变化的谱包络（声道）。被丢掉的高倒谱区那个尖峰，正是基频。</p>
+
+    <h3>Mel 滤波器组：模拟耳蜗</h3>
+    <p>中间那层做的是另一件事：把线性频率轴弯成对数尺度，模拟耳蜗基底膜的临界带宽——低频分得细，高频分得粗，因为人耳就是这样。</p>
+<pre><code>m = 2595 · log₁₀(1 + f / 700)
+
+23 个三角滤波器把 257 维幅度谱压到 23 维，顺带做了谱平滑</code></pre>
+
+    <div class="note"><span class="tag">CMVN 为什么有效</span>
+      <p>信道（麦克风、房间）是一个线性滤波器，卷积在 log 谱域变成<strong>加性常数</strong>。所以在倒谱域减去均值，就<em>精确地</em>消掉了信道——不是经验性的归一化，是有严格推导的。这是倒谱表示白送的好处。</p>
+    </div>
+
+    <h3>DCT 的真实动机，以及它为什么过时了</h3>
+    <p>教科书说 DCT 是为了"去相关"，但去相关是为了谁？<strong>为了 GMM</strong>——GMM 用对角协方差（满协方差参数量爆炸且数据不够），要求特征各维近似不相关。</p>
+    <p>到了 DNN 时代这个约束消失：网络不怕相关特征，还能利用局部谱结构。所以现代配方（chain 的 hires、WeNet 的 fbank）用 40 维不截断，<strong>DCT 退化成一个普通的正交变换，甚至干脆不做</strong>。同理，delta/delta-delta 特征也消失了——它本来是为了给"条件独立"的 HMM 偷偷塞进时间上下文，而 DNN 有几十帧的感受野，不需要这个补丁。</p>
+  </section>
+
+  <!-- 13 -->
+  <section id="s13">
+    <h2><span class="num">13</span>决策树与 senone<span class="level b">深入</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>三音素有 800 万种，训练数据只覆盖极小一部分。决策树把它们聚成几千类。<strong>树是索引，GMM/DNN 是索引指向的打分器</strong>——两者常被混为一谈，其实完全不同。</p>
+    </div>
+
+    <h3>为什么必须绑定</h3>
+<pre><code>词 → 音素（词典 L）→ 三音素（协同发音）→ 绑定状态 senone
+
+中文约 200 音素 → 200³ = 8×10⁶ 个三音素
+                → 绝大多数在训练集里出现 0 次或个位数次</code></pre>
+
+    <h3>树问的是符号，不是特征</h3>
+    <p>这是最容易误解的地方。你熟悉的 CART / 随机森林是<strong>特征空间的分割器</strong>，节点上问 <code>x[3] &gt; 0.5?</code>。而音素决策树的节点上问的是：</p>
+<pre><code>"左邻音素是不是鼻音？"
+"右邻音素是不是前元音？"
+"当前是 HMM 的第几个状态？"
+
+输入：(左音素, 中心音素, 右音素) + 状态位置   ← 一组符号
+输出：一个整数 pdf-id                          ← 索引
+整个过程不看任何一帧特征</code></pre>
+
+    <div class="tw">
+    <table>
+      <thead><tr><th></th><th>决策树</th><th>GMM / DNN</th></tr></thead>
+      <tbody>
+        <tr><td>定义域 → 值域</td><td><code>phones → int</code></td><td><code>R⁴⁰ → R⁺</code></td></tr>
+        <tr><td>作用</td><td>定义"总共要区分多少类"</td><td>给每一类打分</td></tr>
+        <tr><td>参数</td><td>无（确定性映射）</td><td>μ, Σ, 权重 / 网络权重</td></tr>
+        <tr><td>chain 模型里</td><td class="hi">还在</td><td class="old">GMM 已被 DNN 取代</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p><strong>决定性的证据</strong>：chain 模型里一个 GMM 都没有，但决策树照样要建，网络输出层维度就是叶子数。如果"GMM 就是决策树"，树该跟着消失才对。</p>
+
+    <h3>树是怎么长出来的</h3>
+    <p>分裂准则是<strong>单高斯似然增益</strong>，对角协方差下有闭式解：</p>
+<pre><code>L(S) = −0.5 · γ(S) · [ Σⱼ log σ²ⱼ(S) + d(1 + log2π) ]
+ΔL   = L(S_yes) + L(S_no) − L(S)      贪心选 ΔL 最大的问题</code></pre>
+    <p>有意思的是<strong>问题集本身也是数据驱动的</strong>：<code>cluster-phones</code> 先把音素按声学相似度自底向上聚成一棵二叉树，在每个内部节点切一刀得到一个"问题"。它自己发现的分组往往恰好对应鼻音、塞音这些语言学分类——不需要人告诉它。</p>
+
+    <div class="trap"><span class="tag">pdf-id 没有语义</span>
+      <p>叶子编号只是分裂遍历顺序的产物。<strong>同一个 pdf-id 在另一棵树里指向完全不同的东西</strong>，所以换树之后旧对齐必须用 <code>convert-ali</code> 重映射，直接复用会全错。</p>
+    </div>
+  </section>
+
+  <!-- 14 -->
+  <section id="s14">
+    <h2><span class="num">14</span>帧几何：那个 166 × 3000 是怎么来的<span class="level">进阶</span></h2>
+    <p class="lede">两个维度来源完全不同：一个是时间轴的采样几何，一个是决策树的规模。</p>
+
+    <figure>
+      <div class="figbox">
+        <svg viewBox="0 0 700 236" role="img" aria-label="分帧几何示意图：25ms 窗每 10ms 滑动一次，5 秒 16kHz 音频得到 498 帧，降采样 3 倍后为 166 个输出帧">
+          <defs>
+            <linearGradient id="wv" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="var(--cool)" stop-opacity=".35"/>
+              <stop offset="1" stop-color="var(--cool)" stop-opacity=".12"/>
+            </linearGradient>
+          </defs>
+          <rect x="40" y="14" width="620" height="34" fill="url(#wv)" stroke="var(--border-2)" stroke-width="1" rx="2"/>
+          <text x="40" y="10" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--text-3)">80000 采样点 · 16 kHz · 5.00 s</text>
+          <rect x="40" y="66" width="88" height="22" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.2" rx="2"/>
+          <text x="84" y="81" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--accent-2)">400 pt</text>
+          <rect x="75" y="94" width="88" height="22" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.2" rx="2" opacity=".72"/>
+          <rect x="110" y="122" width="88" height="22" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.2" rx="2" opacity=".45"/>
+          <text x="215" y="137" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--text-2)">… 每次前移 160 pt (10 ms)</text>
+          <line x1="40" y1="60" x2="75" y2="60" stroke="var(--text-2)" stroke-width="1"/>
+          <line x1="40" y1="56" x2="40" y2="64" stroke="var(--text-2)" stroke-width="1"/>
+          <line x1="75" y1="56" x2="75" y2="64" stroke="var(--text-2)" stroke-width="1"/>
+          <text x="82" y="59" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--text-2)">hop 160</text>
+          <text x="40" y="176" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--text)">num_frames = 1 + (80000 − 400) / 160  =  498</text>
+          <text x="40" y="194" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--text-3)">snip-edges=true，整数除法；snip-edges=false 时为 500</text>
+          <line x1="40" y1="208" x2="660" y2="208" stroke="var(--border-2)" stroke-width="1" stroke-dasharray="3 3"/>
+          <text x="40" y="228" font-family="IBM Plex Mono, monospace" font-size="12" fill="var(--accent)">498 / 3 = 166 个输出帧</text>
+          <text x="222" y="228" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--text-3)">frame-subsampling-factor = 3</text>
+        </svg>
+      </div>
+      <figcaption>降采样不是把特征抽稀：网络输入仍是全部 498 帧，只在 t = 0, 3, 6 … 处计算输出，nnet3 的计算图编译器自动裁掉其余高层运算。</figcaption>
+    </figure>
+
+    <h3>另一个维度：3000</h3>
+    <p>是<strong>决策树的叶子数</strong>，等于 pdf 数，等于网络输出层维度。不是算出来的，是配方里给的目标值：</p>
+<pre><code>steps/nnet3/chain/build_tree.sh --frame-subsampling-factor 3 \
+    3500 data/train_sp data/lang_chain exp/tri3a_ali exp/chain/tree
+    ↑ 目标叶子数上限</code></pre>
+    <p>取值是偏差-方差权衡，经验是<strong>每个叶子平均几千帧以上</strong>。150 小时中文语料在 30 ms 帧率下约 1.8×10⁷ 个输出帧，分给 3500 叶 ≈ 每叶 5000 帧，合理。数据到几千小时才往 7000–10000 走。</p>
+<pre><code># 查你自己的模型
+tree-info exp/chain/tdnn/tree | grep num-pdfs
+nnet3-am-info exp/chain/tdnn/final.mdl</code></pre>
+  </section>
+
+  <!-- 15 -->
+  <section id="s15">
+    <h2><span class="num">15</span>WFST：五件必须知道的事<span class="level b">深入</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>把词典、语法、发音规则、HMM 拓扑这四种完全不同的知识，<strong>表示成同一种数学对象</strong>，然后用同一套算子拼成一张巨大的静态图。解码就是在图上找最短路径。</p>
+    </div>
+
+<pre><code>G : words → words       语言模型      权重 = −log P(W)
+L : phones → words      发音词典      处理同音词、多音字
+C : triphones → phones  上下文展开
+H : trans-id → triphones  HMM 拓扑    权重 = −log a(转移)
+
+HCLG = min(det(H ∘ det(C ∘ det(L ∘ G))))</code></pre>
+
+    <h4>① 半环：一套算法，两种语义</h4>
+    <p>WFST 的权重定义在代数结构"半环"上。换个半环，同一套 compose/determinize 算法就切换了含义：</p>
+    <div class="tw">
+    <table>
+      <thead><tr><th>半环</th><th>运算</th><th>用途</th></tr></thead>
+      <tbody>
+        <tr><td>Tropical</td><td><code>(min, +)</code></td><td>Viterbi——只关心最优那一条路径</td></tr>
+        <tr><td>Log</td><td><code>(⊕logadd, +)</code></td><td>前向算法——对所有路径求和</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h4>② 消歧符号：为算法而生，无物理意义</h4>
+    <div class="ex"><span class="tag">看个例子</span>
+      <p>词典里有两个词：</p>
+<pre><code>你     →  n  i
+你好   →  n  i  h  ao</code></pre>
+      <p>读完 <code>n i</code> 之后，解码器<strong>无法确定</strong>已经是"你"了，还是"你好"的前半截。同音词更糟：<code>sh i</code> 可能是"是""事""市"。这让 <code>L∘G</code> 不可确定化，搜索效率崩掉。</p>
+<pre><code>解法：在词典里给每个歧义读音末尾加一个辅助符号
+
+你     →  n  i  #1
+你好   →  n  i  h  ao  #2
+
+确定化之后再用 fstrmsymbols 把 #1 #2 移除</code></pre>
+      <p>这些符号<strong>不对应任何声音</strong>，纯粹是为了让算法成立而存在——这是 WFST 工程里最"不自然"但最必要的一环。</p>
+    </div>
+
+    <h4>③ 输入标签用 transition-id，不用 pdf-id</h4>
+    <p>pdf-id 是多对一的，反推不出音素身份、分不清自环与前进。而对齐、判别训练、词边界时间戳全依赖这些信息。所以 HCLG 的输入标签是 <code>(phone, hmm-state, pdf, 第几条出弧)</code> 组成的 transition-id。</p>
+
+    <h4>④ weight pushing：对搜索效率影响最大的一步</h4>
+    <p>把权重尽量往图的起点方向推，使每个状态的出弧权重归一化。<strong>不改变任何完整路径的总权重</strong>，但让 beam 剪枝能更早做出正确判断——否则一条路径可能前半段看起来很差，直到末尾才拿到低权重，早就被剪掉了。</p>
+
+    <h4>⑤ WeNet 的 TLG：瘦了两层的 HCLG</h4>
+<pre><code>Kaldi:  H  ∘  C  ∘  L  ∘  G
+        ↑     ↑
+     HMM拓扑  三音素上下文          ← 端到端时代这两层没了
+
+WeNet:  T  ∘  L  ∘  G
+        ↑
+    CTC 拓扑（blank 自环 + 重复合并规则）</code></pre>
+    <p>为什么端到端时代还要 WFST：<strong>纯文本永远比音频多</strong>。生产环境常有几百 G 的领域语料而音频只有几百小时，n-gram + WFST 是把这些文本用起来的最直接手段。学术上"不够端到端"，线上确实有效。</p>
+  </section>
+
+  <!-- 16 -->
+  <section id="s16">
+    <h2><span class="num">16</span>自注意力与 Conformer<span class="level">进阶</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>自注意力让每一帧都能"看见"整句里的任意一帧，用来消同音歧义；卷积擅长捕捉相邻几帧的局部细节。Conformer 把两者串起来，成了现代 ASR 的标准编码器。</p>
+    </div>
+
+    <h3>自注意力在 ASR 里到底解决什么</h3>
+    <div class="ex"><span class="tag">看个例子</span>
+      <p>音频："他在<strong>食堂</strong>吃饭"。</p>
+      <p>问题：<code>shi tang</code> 这两个音节，声学上和"试探"几乎无法区分。传统方案靠外挂的 n-gram 语言模型在解码时投票。</p>
+      <p>自注意力的做法：编码 <code>shi</code> 这一帧时，<strong>直接去看后面"吃饭"那几帧</strong>，给它们高权重。于是 <code>shi</code> 的表征里已经携带了"这是个吃东西的场景"的信息，输出层自然倾向"食"。</p>
+      <p><em>语言知识被吸进了声学编码器内部</em>——这就是端到端模型不再那么依赖外挂 LM 的原因。</p>
+    </div>
+
+    <p>机制上，每一帧生成三个向量：<strong>Query</strong>（我要找什么）、<strong>Key</strong>（我是什么）、<strong>Value</strong>（我能提供什么）。用当前帧的 Q 和所有帧的 K 做点积得到权重，再对 V 加权求和：</p>
+<pre><code>Attention(Q,K,V) = softmax( Q·Kᵀ / √d ) · V
+
+除以 √d 是为了防止点积随维度增大而爆炸，softmax 饱和梯度消失</code></pre>
+
+    <h3>为什么还需要卷积</h3>
+    <div class="tw">
+    <table>
+      <thead><tr><th></th><th>自注意力</th><th>卷积</th></tr></thead>
+      <tbody>
+        <tr><td>视野</td><td>全局，任意两帧直连</td><td>局部，固定几帧窗口</td></tr>
+        <tr><td>擅长</td><td>长距离依赖、语义消歧</td><td>共振峰过渡、音素内部细节、局部时序模式</td></tr>
+        <tr><td>计算量</td><td>O(T²)，长音频吃不消</td><td>O(T)，线性</td></tr>
+        <tr><td>位置信息</td><td>本身没有，要靠位置编码</td><td>天然携带</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>Conformer 块：马卡龙结构</h3>
+<pre><code>输入
+ ├─▶ ½ 前馈层 (FFN)           ← 半步残差
+ ├─▶ 多头自注意力 (MHSA)      ← 全局上下文
+ ├─▶ 卷积模块 (Conv)          ← 局部细节，流式时用因果卷积
+ ├─▶ ½ 前馈层 (FFN)           ← 半步残差
+ └─▶ LayerNorm
+输出</code></pre>
+    <p>两个半步前馈把注意力和卷积"夹"在中间，形似马卡龙。<strong>流式的关键在卷积模块必须是因果的</strong>（只看过去），配合注意力掩码限制右侧视野，就得到了 WeNet 的 dynamic chunk 能力。</p>
+    <p>后续演进：<strong>zipformer</strong>（icefall）用多尺度下采样结构进一步降算力，是目前端侧 transducer 的主流；<strong>E-Branchformer</strong> 把注意力和卷积改成并行双分支再融合。</p>
+  </section>
+
+  <!-- 17 -->
+  <section id="s17">
+    <h2><span class="num">17</span>beam search 与 lattice<span class="level">进阶</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>最优路径搜不起（组合爆炸），所以每一步只留下最好的 N 条候选往下走。这个"只留 N 条"就是 beam；把留下来的候选连同得分一起保存，就是 lattice。</p>
+    </div>
+
+    <div class="ex"><span class="tag">看个例子 · beam = 3</span>
+<pre><code>t=1  候选：  今(-0.2)  金(-1.8)  斤(-2.4)  京(-3.1)  ✂ 剪掉第4条以后
+t=2  扩展：  今天(-0.5)  今年(-1.2)  金天(-2.6)  ...  ← 每条候选各扩展一批
+     剪枝：  只保留总分最好的 3 条
+t=3  ...</code></pre>
+      <p>两种剪枝同时用：<strong>相对阈值</strong>（<code>beam=15</code>，比当前最优差 15 以上的直接扔）和<strong>绝对数量</strong>（<code>max-active</code>，最多保留多少个活跃节点）。前者保证质量，后者保证最坏情况下的耗时可控。</p>
+    </div>
+
+    <h3>lattice：剪枝的副产品，却是最有价值的中间结果</h3>
+    <p>用一个更宽松的 <code>lattice-beam</code> 保留次优路径，得到一个紧凑的图，里面编码了成百上千条候选句子。每条弧上带着：词、<strong>声学得分</strong>、<strong>图得分（语言模型）</strong>、帧级时间边界。</p>
+    <p>关键价值是<strong>把两种得分解耦保存</strong>，于是后面可以：</p>
+    <ul>
+      <li><strong>LM 重打分</strong>——用大 n-gram 或 RNNLM 替换掉图得分重新排序，不需要重新解码</li>
+      <li><strong>MBR 解码</strong>——不选最优路径，而是选"期望错误率最小"的那条，通常再降一点 WER</li>
+      <li><strong>置信度估计</strong>——某个词在所有候选里出现的后验概率，用来判断"这个词靠不靠谱"</li>
+      <li><strong>关键词检索</strong>——不用重新识别，直接在 lattice 里搜</li>
+    </ul>
+    <p>CTC 的对应物叫 <strong>prefix beam search</strong>：因为多条路径会折叠成同一个文本前缀，剪枝时要把它们的概率合并（而不是当成不同候选），这是 CTC 解码实现里最容易写错的地方。</p>
+  </section>
+
+  <!-- 18 -->
+  <section id="s18">
+    <h2><span class="num">18</span>强制对齐与发音评测<span class="level b">深入</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>已经知道音频<em>和</em>它对应的文字，求每个字、每个音素的精确起止时间。这是端到端时代 Kaldi 依然不可替代的场景。</p>
+    </div>
+
+    <h3>它和识别不是同一件事</h3>
+    <p>识别是在<strong>所有可能的句子</strong>里搜最优；强制对齐是句子已知，只在<strong>唯一一条正确路径</strong>上找最优的时间划分。所以解码图不是 HCLG，而是一条把这句话展开成音素序列的线性图（Kaldi 里叫 training graph）：</p>
+<pre><code>文本 "你好"
+  ↓ 查词典 L
+音素 n  i  h  ao
+  ↓ 展开成 HMM 状态，每个状态带自环
+线性图： [n1]→[n2]→[n3]→[i1]→[i2]→[i3]→[h1]→…
+         ↺     ↺     ↺     ↺                    自环允许任意拉长
+
+  ↓ 在这张图上跑 Viterbi（就是 05 节那个手算的规模化版本）
+输出： n  [0.00–0.08]   i  [0.08–0.21]   h  [0.21–0.27]   ao [0.27–0.45]</code></pre>
+    <p>因为路径唯一，搜索空间极小，速度比识别快得多，而且<strong>不会出现"识别错了"这种事</strong>——只可能是边界划得不准。</p>
+
+    <h3>为什么端到端做不了这件事</h3>
+    <div class="trap"><span class="tag">CTC 的峰值对齐</span>
+      <p>CTC 训练时并不约束"什么时候输出"，模型学到的最省事策略是：<strong>在音素中间某一帧突然输出一个尖峰，其余全是 blank</strong>。所以 CTC 给的所谓时间戳是<em>尖峰的位置</em>，既不是音素起点也不是终点，还系统性地偏移。Attention 的注意力权重更不可靠——它压根不保证单调。</p>
+      <p>这就是为什么做发音评测、口型驱动、TTS 数据标注的团队，至今还在用 Kaldi 或基于 Kaldi 的 MFA。</p>
+    </div>
+
+    <h3>三种工具，按精度需求选</h3>
+    <div class="tw">
+    <table>
+      <thead><tr><th>方法</th><th>精度</th><th>需要什么</th><th>典型工具</th></tr></thead>
+      <tbody>
+        <tr><td><strong>HMM 强制对齐</strong></td><td class="hi">音素级<br>误差 10–30 ms</td><td>发音词典 + 声学模型</td><td><strong>MFA</strong>（Montreal Forced Aligner，打包好的 Kaldi，有现成中英文模型）、Kaldi <code>gmm-align-compiled</code></td></tr>
+        <tr><td>CTC segmentation</td><td>词级 / 粗音素级</td><td>只要 CTC 模型，<strong>不要词典</strong></td><td><code>torchaudio.functional.forced_align</code>、<code>ctc-segmentation</code>（能处理几小时的长音频）</td></tr>
+        <tr><td>ASR + 对齐模型</td><td>词级 ±100 ms</td><td>什么都不用准备</td><td>WhisperX（Whisper 转写 + wav2vec2 音素模型对齐）</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="tw">
+    <table>
+      <thead><tr><th>你要做什么</th><th>用哪个</th></tr></thead>
+      <tbody>
+        <tr><td>给视频加字幕、卡时间轴</td><td>WhisperX 或 CTC segmentation</td></tr>
+        <tr><td>配音对齐、口型驱动动画</td><td class="hi">MFA / Kaldi（要 ±20 ms）</td></tr>
+        <tr><td>口语发音评测</td><td class="hi">Kaldi（需要音素后验算 GOP）</td></tr>
+        <tr><td>TTS 训练数据标注</td><td class="hi">MFA（还要韵律边界）</td></tr>
+        <tr><td>有声书和电子书文本对齐</td><td><code>ctc-segmentation</code>（专为超长音频设计）</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>GOP：发音评测的底层公式</h3>
+    <p>所有口语打分 App 的核心都是这一个式子。思路非常直白：<strong>把学习者发的这段音，和"标准答案音素"以及"所有其他音素"分别比一比</strong>。</p>
+<pre><code>              P(o | p)                    o = 这一段音频
+GOP(p) = log ─────────────           p = 按课文他应该发的音素
+             max_q P(o | q)          q = 遍历所有音素
+
+发音标准 → p 本身就是最像的那个 → 分子分母相等 → GOP ≈ 0
+发音跑偏 → 某个 q 比 p 更像       → 分母更大       → GOP 变成很负的数</code></pre>
+    <p>实现分两步：<strong>先做强制对齐</strong>拿到每个音素的时间段，<strong>再在每段上算 GOP</strong>。用 DNN 的话可以直接用后验形式 <code>log[P(p|o) / max_q P(q|o)]</code>，省掉先验换算。</p>
+    <div class="ex"><span class="tag">看个例子</span>
+      <p>中国学生读英文 <code>think</code>，把 /θ/ 发成了 /s/：</p>
+<pre><code>目标音素 p = /θ/     该段的 P(o|/θ/) 较低
+最像的  q = /s/     该段的 P(o|/s/)  很高
+
+GOP(/θ/) = log(低 / 高) = 一个明显的负数  →  判定该音素发音错误
+                                          →  还能告诉他"你发成了 /s/"</code></pre>
+      <p>这比单纯打个总分有用得多——<em>能指出错在哪个音、错成了什么</em>，这才是评测产品的价值所在。</p>
+    </div>
+
+    <h3>三个必踩的坑</h3>
+    <ul>
+      <li><strong>文本必须和音频严格一致。</strong>多一个字少一个字，Viterbi 会把误差扩散到前后一大片。稳妥做法是先跑一遍 ASR，和给定文本比对，差异大的直接丢弃不对齐</li>
+      <li><strong>OOV 词要先生成发音。</strong>词典里没有的人名、术语、外来词，需要用 G2P 模型（字形转音素）临时补进词典，否则整句对齐失败</li>
+      <li><strong>长音频必须分段。</strong>Viterbi 的 DP 表是 <code>帧数 × 状态数</code>，一小时音频直接内存爆炸。先用文本里的标点粗切成句子，逐句对齐</li>
+    </ul>
+  </section>
+
+  <!-- ══ PART IV ═════════════════════════════════════════════════ -->
+  <div class="partmark">
+    <span class="pn">Part Ⅳ</span>
+    <h2>工程落地</h2>
+    <p class="pd">真正决定线上体验的，往往不是模型</p>
+  </div>
+
+  <!-- 18 -->
+  <section id="s19">
+    <h2><span class="num">19</span>选型速查<span class="level a">入门</span></h2>
+    <p class="lede">Open ASR Leaderboard 前十的差距不到 1 个百分点。到了这个量级，许可证、语种、延迟和部署形态比 WER 更该主导决策。</p>
+
+    <div class="tw">
+    <table>
+      <thead><tr><th>模型</th><th class="num">参数</th><th class="num">WER</th><th class="num">语种</th><th class="num">RTFx</th><th>许可</th></tr></thead>
+      <tbody>
+        <tr><td>ARK-ASR-3B</td><td class="num">3B</td><td class="num hi">~5.04%</td><td class="num">—</td><td class="num">—</td><td>Apache 2.0</td></tr>
+        <tr><td>Granite Speech 4.1</td><td class="num">2B</td><td class="num">5.33%</td><td class="num">6</td><td class="num">231</td><td>Apache 2.0</td></tr>
+        <tr><td>Cohere Transcribe</td><td class="num">2B</td><td class="num">5.42%</td><td class="num">14</td><td class="num">—</td><td>Apache 2.0</td></tr>
+        <tr><td>Canary-Qwen-2.5B</td><td class="num">2.5B</td><td class="num">5.63%</td><td class="num">EN</td><td class="num">418</td><td>CC-BY-4.0</td></tr>
+        <tr><td>Qwen3-ASR-1.7B</td><td class="num">1.7B</td><td class="num">5.76%</td><td class="num">52</td><td class="num">—</td><td>Apache 2.0</td></tr>
+        <tr><td>Parakeet TDT v3</td><td class="num">0.6B</td><td class="num">6.32%</td><td class="num">25</td><td class="num hi">3333</td><td>CC-BY-4.0</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="font-size:13px;color:var(--text-3);margin-top:-6px">Parakeet 那个 RTFx 比其余快一个数量级，0.6B 参数拿 6.32%——在意吞吐或端侧时它是明显的异类。榜单本身是英文本位的。</p>
+
+    <h3>中文另算</h3>
+    <div class="tw">
+    <table>
+      <thead><tr><th>模型</th><th>出品</th><th>特点</th></tr></thead>
+      <tbody>
+        <tr><td><strong>FireRedASR</strong></td><td>小红书</td><td>中文 CER 约 <span class="hi">2.89%</span>，第一梯队；TensorRT-LLM 后 12.7× 加速</td></tr>
+        <tr><td><strong>Qwen3-ASR</strong></td><td>阿里通义</td><td>52 语种 + <strong>22 种中文方言</strong>，方言场景基本没对手</td></tr>
+        <tr><td>Paraformer</td><td>达摩院</td><td>非自回归，RTF 0.025，稳定的生产基线</td></tr>
+        <tr><td>SenseVoice-Small</td><td>阿里</td><td>附带情感 / 事件检测</td></tr>
+        <tr><td>Moonshine Tiny</td><td>Useful Sensors</td><td>27M 参数，MCU 级端侧</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>工具链往往比模型更决定成败</h3>
+    <ul>
+      <li><strong>FunASR</strong>（阿里）——中文首选。统一 <code>AutoModel</code> 接口把 VAD + ASR + 标点 + 时间戳 + 说话人分离串成一条流水线。你要的从来不是一段裸转写</li>
+      <li><strong>sherpa-onnx</strong>（新一代 Kaldi 团队）——端侧首选。12 种语言绑定，覆盖 Android/iOS/树莓派/RK3588，zipformer int8 量化后几十 MB。这是 Kaldi 血统在嵌入式上的现代形态</li>
+      <li><strong>faster-whisper</strong>——Whisper 的 CTranslate2 实现，快 4 倍且内置 VAD</li>
+    </ul>
+
+    <h3>按场景直接选</h3>
+    <div class="tw">
+    <table>
+      <thead><tr><th>场景</th><th>选择</th></tr></thead>
+      <tbody>
+        <tr><td>中文，服务器，要最准</td><td>FireRedASR</td></tr>
+        <tr><td>中文，要方言</td><td>Qwen3-ASR</td></tr>
+        <tr><td>中文，要快速出活（带标点 / 分句 / 说话人）</td><td><strong>FunASR</strong>（Paraformer 或 SenseVoice）</td></tr>
+        <tr><td>多语种、要资料和社区</td><td>Whisper large-v3 + faster-whisper</td></tr>
+        <tr><td>英文高吞吐批量转写</td><td>Parakeet TDT 0.6B v3</td></tr>
+        <tr><td>端侧 / 嵌入式 / 离线</td><td><strong>sherpa-onnx</strong>（zipformer）或 whisper.cpp</td></tr>
+        <tr><td>极限低资源（MCU）</td><td>Moonshine Tiny</td></tr>
+        <tr><td>要流式低延迟且自己训</td><td>WeNet U2++ 或 icefall zipformer-transducer</td></tr>
+        <tr><td><strong>精确音素级强制对齐</strong></td><td class="hi">仍然是 Kaldi（配音对齐、发音评测、口型驱动、TTS 标注）</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <!-- 19 -->
+  <section id="s20">
+    <h2><span class="num">20</span>前端信号处理<span class="level">进阶</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>麦克风到 ASR 之间还有一整条信号链。<strong>远场场景下，这条链的质量比换模型的影响大一个数量级</strong>——但它也最容易被做反。</p>
+    </div>
+
+    <h3>信号链的顺序不能乱</h3>
+<pre><code>麦克风阵列
+  │
+  ├─ AEC 回声消除        ← 必须最先，因为参考信号在这一级才对齐
+  ├─ 去混响 Dereverb
+  ├─ 波束成形 Beamforming ← 需要多麦克风
+  ├─ 降噪 NS
+  ├─ AGC 自动增益
+  ├─ VAD                 ← 见 21 节
+  └─ ASR</code></pre>
+    <p>顺序错了效果会明显打折。比如先降噪再 AEC，回声已经被非线性处理过，自适应滤波器收敛不了。</p>
+
+    <div class="tw">
+    <table>
+      <thead><tr><th>模块</th><th>解决什么</th><th>方法</th><th>难点</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>AEC</strong><br>回声消除</td>
+          <td>设备自己在放音（TTS 回复、音乐），麦克风收进来。不消掉就会自问自答</td>
+          <td>自适应滤波（NLMS / RLS / 分块频域）+ 非线性残差抑制</td>
+          <td>扬声器非线性失真、采集与播放的<strong>时钟漂移</strong>、双讲（双方同时说话）</td>
+        </tr>
+        <tr>
+          <td><strong>去混响</strong></td>
+          <td>房间反射让每个音素拖尾，糊掉相邻音素的边界</td>
+          <td><strong>WPE</strong>（加权预测误差）是事实标准</td>
+          <td>RT60 &gt; 0.5 s 就明显掉点。<strong>比噪声更难对付</strong>，因为它和语音完全相关</td>
+        </tr>
+        <tr>
+          <td><strong>波束成形</strong></td>
+          <td>利用声源方向做空间滤波，压制其他方向来的干扰</td>
+          <td>延迟求和(DAS) → <strong>MVDR</strong> → GEV；配 SRP-PHAT / GCC-PHAT 做方向估计</td>
+          <td>需要麦克风阵列；DOA 估计错了会把目标当噪声压掉</td>
+        </tr>
+        <tr>
+          <td><strong>降噪</strong></td>
+          <td>压制稳态和非稳态噪声</td>
+          <td>谱减 / 维纳滤波 → 神经降噪（RNNoise、DeepFilterNet）</td>
+          <td>见下面那个大坑</td>
+        </tr>
+        <tr>
+          <td><strong>AGC</strong></td>
+          <td>把音量拉到模型习惯的范围</td>
+          <td>慢速自动增益</td>
+          <td>激进的 AGC 会在静音段把底噪放大，直接毒害 VAD</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="trap"><span class="tag">最大的坑：给人听的降噪 ≠ 给机器听的降噪</span>
+      <p>人耳评价降噪看的是"听着干净、不刺耳"，所以算法会激进地压制残余噪声。但这种压制是<strong>非线性的</strong>，它在压掉噪声的同时也扭曲了语音的谱结构——而 ASR 模型是在<em>未处理或轻处理</em>的数据上训练的。</p>
+      <p>结果就是那个经典现象：<strong>降噪之后人听着舒服多了，ASR 反而更差了。</strong></p>
+      <p>两个解法，选一个：① 把前端处理后的数据拿去 fine-tune 声学模型，让训练和推理的前端一致；② 把各种前端处理的效果加进训练数据增广。<em>关键是训练与推理的信号链必须匹配</em>——这是远场系统掉点最常见的隐形原因。</p>
+    </div>
+
+    <h3>唤醒词（KWS）：端侧的常驻哨兵</h3>
+    <p>端侧不可能一直跑完整 ASR（功耗扛不住），所以要一个极小的模型常开监听，听到唤醒词才叫醒主流程。典型两级架构：</p>
+<pre><code>低功耗 DSP 常开  ──▶ 粗检测（宁可错报，不能漏报）
+                       │ 触发
+                  唤醒主处理器 ──▶ 二次确认（严格判定，滤掉误报）
+                                     │ 确认
+                                  启动完整 ASR</code></pre>
+    <p>两个指标：<strong>FAR</strong>（误唤醒次数 / 小时，用户感知最强的指标）和 <strong>FRR</strong>（漏唤醒率）。这两者只能权衡，两级架构的意义就是让第一级偏向低 FRR、第二级偏向低 FAR。功耗预算通常在毫瓦级。</p>
+
+    <div class="note"><span class="tag">远场系统的投入顺序</span>
+      <p>如果做的是远场场景（会议室、车载、智能音箱），性价比排序是：<strong>① 麦克风阵列和声学设计</strong>（改硬件，收益最大）→ <strong>② AEC 和去混响</strong> → <strong>③ 前端与模型的一致性 fine-tune</strong> → <strong>④ 换更好的 ASR 模型</strong>。很多团队从第 ④ 步开始，然后困惑为什么换了 SOTA 模型还是不行。</p>
+    </div>
+  </section>
+
+  <!-- 21 -->
+  <section id="s21">
+    <h2><span class="num">21</span>VAD 与切分<span class="level a">入门</span></h2>
+    <p class="lede">切错句子比认错字更致命。这一节的参数调整，投入产出比高于换模型。</p>
+
+    <div class="note"><span class="tag">核心观念</span>
+      <p><strong>VAD 只回答"哪里有语音"，断句是另一件事。</strong>把两者绑在一起是多数系统出问题的根源。物理边界交给 VAD（保证不切在字中间），逻辑边界交给标点模型（保证句子完整）。</p>
+    </div>
+
+    <div class="tw">
+    <table>
+      <thead><tr><th>方案</th><th>特点</th></tr></thead>
+      <tbody>
+        <tr><td class="old">能量 + 过零率</td><td>信噪比低于 15 dB 基本不可用</td></tr>
+        <tr><td class="old">WebRTC VAD</td><td>GMM，4 档激进度，微秒级；音乐 / 键盘声误判高</td></tr>
+        <tr><td><strong>Silero VAD</strong></td><td>神经网络，约 1–2 MB，TorchScript/ONNX。<strong>默认选它</strong></td></tr>
+        <tr><td><strong>FSMN-VAD</strong>（FunASR）</td><td>中文调优好，直接输出段落边界。中文项目选它</td></tr>
+        <tr><td>Pyannote segmentation</td><td>重，但带说话人变更检测，多人场景用</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>比选哪个 VAD 更重要的六件事</h3>
+
+    <h4>① 双阈值迟滞</h4>
+    <p>进入语音用高阈值（0.6），退出用低阈值（0.35）。单阈值会在边界疯狂抖动，产生大量碎片段。</p>
+
+    <h4>② 边界外扩 padding</h4>
+<pre><code>start = max(0,   vad_start − 0.25)   # 前扩 250 ms
+end   = min(dur, vad_end   + 0.30)   # 后扩 300 ms</code></pre>
+    <p>VAD 边界总是偏紧：爆破音 <code>/p/ /t/ /k/</code> 的闭塞段<strong>本身就是静音</strong>，词尾浊音尾迹能量也很低。不外扩就会系统性吃掉首尾音素。<em>这是最常见、最容易修的错误。</em></p>
+
+    <h4>③ 时长约束</h4>
+<pre><code>min_silence_duration_ms = 300~500    # 短于此不算断句（正常呼吸停顿）
+min_speech_duration_ms  = 100~250    # 短于此丢弃（咂嘴、点击、门响）
+speech_pad_ms           = 200~300
+max_speech_duration_s   = 20~28      # 强制切分上限</code></pre>
+    <p><code>min_silence_duration</code> 最需要按场景调：新闻播报 300 ms 够，自然对话要 500 ms+（否则一句被切成七八段），朗读长文可到 700 ms。</p>
+
+    <h4>④ 强制切分点要挑，不能直接切</h4>
+<pre><code>window = audio[(t−2)*sr : t*sr]       # 撞上限前 2 秒的窗口
+cut    = argmin(frame_energy(window)) # 找局部最静点，再对齐到过零点</code></pre>
+
+    <h4>⑤ 重叠切分 + LCS 去重</h4>
+<pre><code>段A: …今天的会议主要讨论三个议题
+段B:        主要讨论三个议题第一是预算…
+                    ↓ 最长公共子序列对齐去重
+     …今天的会议主要讨论三个议题第一是预算…</code></pre>
+    <p>段间留 1–2 s 重叠。成本是算力多 10–20%，收益是边界错字基本消失。长音频强烈建议加。</p>
+
+    <h4>⑥ 两阶段断句</h4>
+<pre><code>粗切（VAD，只保证不切在字中间，段可以长）
+  → ASR 转写 → 标点模型重新断句 → 按句号/问号重组输出</code></pre>
+    <p>用户看到的句子边界来自标点模型，不来自 VAD。即使 VAD 切得难看，输出仍是完整句子。</p>
+  </section>
+
+  <!-- 20 -->
+  <section id="s22">
+    <h2><span class="num">22</span>标点恢复与 ITN<span class="level a">入门</span></h2>
+
+    <h3>标点：三条路线</h3>
+    <div class="tw">
+    <table>
+      <thead><tr><th>路线</th><th>做法</th><th>取舍</th></tr></thead>
+      <tbody>
+        <tr><td><strong>A 独立后处理</strong><br><span class="old">主流</span></td><td>BERT-like 编码器做 token 分类，逐 token 预测 <code>{O, 逗号, 句号, 问号, 顿号}</code></td><td>可单独训练 / 替换 / 领域微调。中文用 FunASR 的 <strong>CT-Transformer</strong>，它把"等多少右上下文"变成可控参数，避免流式下标点无限延迟</td></tr>
+        <tr><td><strong>B ASR 直出</strong></td><td>Whisper、Paraformer-large 带标点版本</td><td>能用上<strong>声学信息</strong>（停顿时长、句末语调），理论上限更高；但不可控、不能单独调</td></tr>
+        <tr><td><strong>C LLM 后处理</strong></td><td>整段丢给 LLM 加标点分段</td><td>效果最好，但会改写原意——转写场景慎用，用户要的是忠实转写不是润色</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>ITN：口语形式 → 书面形式</h3>
+<pre><code>二零二六年三月五号    →  2026年3月5日
+百分之三十点五        →  30.5%
+一千二百三十四块钱    →  1234元
+下午三点半            →  15:30
+幺三八零零一三八零零  →  13800138000</code></pre>
+
+    <p><strong>主流手段是 WFST 规则</strong>，用 Pynini 编写编译成 OpenFST。实现：NVIDIA <code>nemo_text_processing</code>、WeNet <code>WeTextProcessing</code>。两阶段架构：</p>
+<pre><code>classify   "二零二六年三月五号"
+           → date { year: "2026" month: "3" day: "5" }
+verbalize  → "2026年3月5日"</code></pre>
+
+    <h4>为什么是 FST 而不是正则</h4>
+    <ul>
+      <li>数字有<strong>递归组合结构</strong>（"一千二百三十四"），正则表达不了</li>
+      <li>存在<strong>歧义</strong>（"一二三"是 123 还是 一、二、三？），FST 可加权让解码选最优路径</li>
+      <li>规则多了性能不退化，可组合、可确定化、可审计</li>
+    </ul>
+
+    <div class="trap"><span class="tag">别用 seq2seq 做 ITN</span>
+      <p>ITN 处理的恰恰是数字——医疗剂量、金额、电话号码，<strong>错一位就是事故</strong>。小模型会幻觉。确定性在这里是硬需求，不能用概率模型。要更聪明的上下文判断（"三月五号"是日期还是编号）可以加 LLM 二次判断，但 <em>FST 的输出必须是兜底</em>，同时保留原始转写以便回溯。</p>
+    </div>
+  </section>
+
+  <!-- 21 -->
+  <section id="s23">
+    <h2><span class="num">23</span>热词偏置<span class="level">进阶</span></h2>
+    <p class="lede">按侵入模型的深度分四层，成本与效果同步递增。中文还有一个几乎免费的第五种做法。</p>
+
+    <div class="pipe">
+      <div class="stage key"><div class="dot">1</div><div class="stage-body">
+        <h4>解码时浅融合（shallow fusion）</h4>
+        <p>beam search 打分时给匹配热词的路径加 bonus，用 Aho-Corasick 自动机跟踪多模式前缀匹配状态。WeNet、sherpa-onnx、icefall 都是这个方案。</p>
+        <div class="chips"><span class="chip a">零训练</span><span class="chip a">秒级生效</span><span class="chip a">每用户独立词表</span><span class="chip">&gt;300 条后误触发上升</span></div></div></div>
+      <div class="stage"><div class="dot">2</div><div class="stage-body">
+        <h4>WFST 上下文图</h4>
+        <p>热词编成独立 context FST，与 TLG / HCLG 做 on-the-fly composition。比第 1 层规范（可表达短语、可加权），实现复杂。</p></div></div>
+      <div class="stage"><div class="dot">3</div><div class="stage-body">
+        <h4>模型内置偏置（Deep Biasing）</h4>
+        <p>热词列表编码成 embedding，经 cross-attention 注入解码器；训练时用随机采样的热词表做增广，让模型学会"读偏置列表"。代表：CLAS、SeACo-Paraformer、NeMo contextual adapter。</p>
+        <div class="chips"><span class="chip">显著优于浅融合</span><span class="chip">对全 OOV 人名尤其好</span><span class="chip">要训练</span></div></div></div>
+      <div class="stage"><div class="dot">4</div><div class="stage-body">
+        <h4>LLM prompt</h4>
+        <p>直接在 prompt 里写"以下音频涉及：…"。Canary-Qwen、Qwen3-ASR 天然支持。效果最好，延迟最高。</p></div></div>
+    </div>
+
+    <div class="trap"><span class="tag">浅融合的两个必须做对的细节</span>
+      <p><strong>① 部分匹配也要给分。</strong>热词"卡尔曼滤波"，若只在完整匹配时加分，beam 在识别出"卡"之后就因得分低被剪掉，活不到匹配成功——必须逐 token 递增地给 bonus。<br>
+      <strong>② 匹配失败要全额扣回。</strong>否则"卡"开头的所有词被无差别抬高，误触发爆炸。</p>
+    </div>
+<pre><code>"卡" +1.0 ─▶ "卡尔" +1.0 ─▶ "卡尔曼" +1.0 ─▶ 匹配成功，保留 +3.0
+                         └─▶ "卡尔顿"  fail  ─▶ 退回 −2.0</code></pre>
+
+    <h3>中文特有：拼音层纠错（务必做）</h3>
+    <p>中文 ASR 错误 80% 以上是同音 / 近音字，纯后处理、几十行代码，对专业术语的召回提升往往比调模型还大。</p>
+<pre><code>"张伟提交了报告"  → zhang wei ...
+热词 "章炜"        → zhang wei     → 拼音匹配 → 替换</code></pre>
+    <ul>
+      <li><code>pypinyin</code> 转拼音，<strong>保留声调但匹配时可忽略</strong>（声调错误很常见）</li>
+      <li>模糊音映射覆盖南方口音：<code>zh/z</code> <code>ch/c</code> <code>sh/s</code> <code>n/l</code> <code>en/eng</code> <code>in/ing</code></li>
+      <li>编辑距离阈值 + 最小长度限制（2 字以下不替换，误伤太多）</li>
+      <li><strong>只在原文置信度低的位置替换</strong>，高置信度处不动</li>
+    </ul>
+    <p><strong>推荐组合：</strong>浅融合（词表 &lt; 300）+ 拼音模糊纠错覆盖长尾 +（可选）领域数据 fine-tune。</p>
+  </section>
+
+  <!-- 22 -->
+  <section id="s24">
+    <h2><span class="num">24</span>幻觉与循环重复<span class="level">进阶</span></h2>
+    <p class="lede">Whisper 这类 AED 模型特有的病。根源在第 09 节说过：attention decoder 没有单调对齐约束。</p>
+
+    <ol>
+      <li><strong>结构上允许</strong>——decoder 理论上可以完全无视音频自己生成。CTC / transducer 每输出一个 token 必须前进音频帧，做不到这件事。</li>
+      <li><strong>训练数据教会的</strong>——68 万小时弱标注里大量字幕，学会了"听不清就补一句常见的"：<code>感谢观看</code>、<code>请不吝点赞订阅</code>、<code>字幕由XXX提供</code>、<code>Thanks for watching</code>。</li>
+      <li><strong>级联放大</strong>——30 s 窗口，前一窗口输出作为下一窗口 prompt，错了一路传播。</li>
+    </ol>
+    <p>触发条件高度集中在<strong>静音段、纯噪声段、音乐段、极低信噪比段</strong>。这解释了为什么第 1 条手段效果压倒性。</p>
+
+    <div class="tw">
+    <table>
+      <thead><tr><th class="num">#</th><th>手段</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td class="num">1</td><td><strong>先 VAD 再喂</strong></td><td>单一最有效手段，能消掉 <span class="hi">70%+</span> 的幻觉。不给它静音，主要触发条件就消失。<code>faster-whisper</code> 内置 Silero VAD 正为此</td></tr>
+        <tr><td class="num">2</td><td><code>condition_on_previous_text=False</code></td><td>循环重复靠它传播。损失一点上下文连贯性，换长音频稳定性。<strong>超过 10 分钟建议默认关</strong></td></tr>
+        <tr><td class="num">3</td><td>三个内置判据</td><td><code>compression_ratio_threshold=2.4</code>（重复文本 gzip 后特别小 → 压缩比高 → 判失败）、<code>logprob_threshold=-1.0</code>、<code>no_speech_threshold=0.6</code></td></tr>
+        <tr><td class="num">4</td><td>temperature fallback</td><td><code>(0.0, 0.2, 0.4, 0.6, 0.8, 1.0)</code> 逐级升温重试。会让延迟最坏 6×，实时场景要限次数</td></tr>
+        <tr><td class="num">5</td><td>解码层禁重复</td><td><code>repetition_penalty=1.1~1.2</code>、<code>no_repeat_ngram_size=3~5</code>。别调太大，"好好好"会被误伤</td></tr>
+        <tr><td class="num">6</td><td>词级时间戳一致性</td><td><code>hallucination_silence_threshold</code>：文字时间戳跨越长静音或塌缩在一点 → 判幻觉。真实转写的时间戳随音频均匀推进</td></tr>
+        <tr><td class="num">7</td><td>幻觉黑名单</td><td>土办法但必要。<strong>限定"短段落 + 低置信度"</strong>才丢弃，否则误删真实内容</td></tr>
+        <tr><td class="num">8</td><td><strong>换架构</strong></td><td>根本解法。Paraformer、zipformer transducer、Parakeet TDT 有单调对齐约束，<strong>结构上不可能长篇幻觉</strong></td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="note"><span class="tag">零成本监控信号</span>
+      <p>盯 <strong>输出字数 / 音频时长</strong> 的比值。正常中文约 <strong>3–5 字/秒</strong>。比值异常高 → 循环重复；异常低但音频有能量 → 漏识别。能捕获绝大多数异常段落。</p>
+    </div>
+  </section>
+
+  <!-- 24 -->
+  <section id="s25">
+    <h2><span class="num">25</span>中文特有的坑<span class="level a">入门</span></h2>
+    <p class="lede">大部分 ASR 教程是英文本位的。中文有五个绕不过去的差异，每个都对应工程上的具体动作。</p>
+
+    <h3>① 声调：中文和英文配方最大的特征差异</h3>
+    <p>中文是声调语言，声调直接承载词义：<code>mā 妈 / má 麻 / mǎ 马 / mà 骂</code>。而基频（F0）恰恰是<strong>倒谱变换刻意丢掉的那部分</strong>（见 12 节）——为了去掉说话人差异，把激励信息一起扔了。</p>
+<pre><code>Kaldi 中文配方的对策：额外拼 3 维 pitch 特征
+  steps/make_mfcc_pitch.sh
+
+  维度 1：POV（probability of voicing，浊音概率）
+  维度 2：归一化的 log-pitch
+  维度 3：delta-pitch</code></pre>
+    <p>端到端模型直接吃 fbank，理论上能从谐波结构隐式学到基频轨迹，但<strong>显式拼 pitch 通常仍有收益</strong>，尤其在低资源和方言场景。这是中文项目值得单独试一下的开关。</p>
+
+    <h3>② 多音字：强制对齐的主要误差源</h3>
+    <div class="tw">
+    <table>
+      <thead><tr><th>字</th><th>读音</th><th>例</th></tr></thead>
+      <tbody>
+        <tr><td>行</td><td>xíng / háng</td><td>行走 / 银行</td></tr>
+        <tr><td>长</td><td>cháng / zhǎng</td><td>长度 / 长大</td></tr>
+        <tr><td>了</td><td>le / liǎo</td><td>吃了 / 了解</td></tr>
+        <tr><td>重</td><td>zhòng / chóng</td><td>重量 / 重复</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>在词典里一个词条对应多条发音，<code>L.fst</code> 因此有多条并行路径，需要消歧符号（见 15 节 ②）。<strong>识别时问题不大</strong>（端到端直接输出汉字，根本不经过读音）；<strong>但强制对齐和 TTS 会被它坑惨</strong>——对齐时选错读音，那一段的音素边界全废。</p>
+
+    <h3>③ 中英混读（code-switching）</h3>
+    <p>"打开 PPT"、"发个 email 给我"、"5G 网络"、"做个 review"。日常口语里极其常见，但训练数据里占比极低。</p>
+    <ul>
+      <li><strong>建模单元</strong>：主流做法是<em>中文用字、英文用 BPE</em> 的混合词表。WeNet、Paraformer 都是这样</li>
+      <li><strong>数据是真瓶颈</strong>：公开中文语料里混读样本稀少。缓解手段是用 TTS 合成混读句做增广</li>
+      <li><strong>缩略语更糟</strong>："CPU"、"API"、"FOC" 这类逐字母读的，声学上和普通英文单词完全不同，基本必须靠热词兜底</li>
+    </ul>
+
+    <h3>④ 分词：为什么中文按字算 CER</h3>
+    <p>中文没有天然词边界，"研究生命起源"可以切成"研究/生命/起源"也可以是"研究生/命/起源"。所以：</p>
+    <ul>
+      <li>评测<strong>按字算 CER</strong>，绕开分词的歧义</li>
+      <li>但如果用词级 n-gram 语言模型，训练语料就必须先分词，分词器的错误会传导进 LM</li>
+      <li>现代方案直接<strong>字级建模</strong>，把分词这件事彻底绕开</li>
+    </ul>
+
+    <h3>⑤ 口音与繁简</h3>
+    <p>普通话口音的三大变异，正好解释了第 23 节那张模糊音映射表的由来：</p>
+<pre><code>平翘舌不分   z/zh   c/ch   s/sh      ← 南方普遍
+前后鼻音不分  en/eng  in/ing  an/ang   ← 极普遍
+n / l 不分                             ← 西南官话</code></pre>
+    <p>另外训练数据混杂简繁体会导致输出不一致，后处理统一即可（OpenCC）。方言场景目前 Qwen3-ASR 覆盖 22 种，是唯一实用选项。</p>
+  </section>
+
+  <!-- 25 -->
+  <section id="s26">
+    <h2><span class="num">26</span>说话人分离<span class="level">进阶</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>回答"谁在什么时候说话"。和 ASR 是正交的两件事，但会议纪要、访谈转写、客服质检都必须有。</p>
+    </div>
+
+    <h3>两条路线</h3>
+    <div class="pipe">
+      <div class="stage key"><div class="dot">A</div><div class="stage-body">
+        <h4>级联式（目前主流）</h4>
+        <p>VAD → 切成小段 → 每段提取说话人嵌入 → 聚类 → 分配标签</p>
+<pre><code>VAD ─▶ 切分 ─▶ x-vector / ECAPA-TDNN ─▶ 谱聚类 / AHC ─▶ 标签</code></pre>
+        <div class="chips"><span class="chip a">pyannote.audio</span><span class="chip a">WeSpeaker</span><span class="chip a">3D-Speaker</span></div>
+        <p style="margin-top:8px">优点：模块化、可控、说话人数可以事先未知。<strong>缺点：处理不了重叠语音</strong>——两个人同时说话时，一段音频只能给一个标签。</p></div></div>
+      <div class="stage"><div class="dot">B</div><div class="stage-body">
+        <h4>端到端 EEND</h4>
+        <p>直接输出"每一帧、每个说话人是否在说话"的多标签矩阵，<strong>天然支持重叠</strong>。缺点是说话人数通常要预设上限，长音频难处理。</p></div></div>
+    </div>
+
+    <h3>说话人嵌入是什么</h3>
+    <p>一个把任意长度语音映射成固定维度向量（典型 192 或 256 维）的网络，训练目标是<strong>同一个人的不同录音靠得近，不同人的离得远</strong>。x-vector 是 TDNN 时代的经典，ECAPA-TDNN 是目前的强基线。同一套嵌入既能做分离（聚类），也能做声纹验证（算余弦相似度）。</p>
+
+    <h3>和 ASR 怎么拼</h3>
+    <div class="tw">
+    <table>
+      <thead><tr><th>方案</th><th>做法</th><th>评价</th></tr></thead>
+      <tbody>
+        <tr><td>A 先分离再识别</td><td>每个说话人段落单独送 ASR</td><td class="old">简单，但分离的切分不理想会直接伤害 ASR 精度</td></tr>
+        <tr><td class="hi">B 先识别再对齐</td><td>用 ASR 的<strong>词级时间戳</strong>去查分离结果，给每个词打标签</td><td class="hi">主流做法。FunASR、WhisperX 都是这个方案</td></tr>
+        <tr><td>C 联合建模</td><td>一个模型同时输出内容和说话人</td><td class="old">研究阶段</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p>指标是 <strong>DER</strong>（Diarization Error Rate）= (漏检 + 虚警 + 说话人混淆) / 总语音时长。</p>
+
+    <div class="trap"><span class="tag">三个实战坑</span>
+      <p><strong>① 说话人数未知时聚类阈值极敏感</strong>。能提前告诉它人数就一定要告诉。<br>
+      <strong>② 短发言几乎必错</strong>。"嗯""对""好的"这种 0.3 秒的应答，嵌入提取不到足够信息，通常被归到上一个说话人。<br>
+      <strong>③ 电话/双声道录音别用 diarization</strong>。如果每个人本来就在独立声道上，直接按声道分，准确率 100%，还省一套模型。这个错误比想象中常见。</p>
+    </div>
+  </section>
+
+  <!-- 26 -->
+  <section id="s27">
+    <h2><span class="num">27</span>端侧部署与延迟预算<span class="level">进阶</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>端侧的约束是内存和算力，主要手段是量化；实时系统的约束是延迟，而延迟的大头往往不是计算，是 chunk 累积。</p>
+    </div>
+
+    <h3>量化：拿精度换体积和速度</h3>
+    <div class="tw">
+    <table>
+      <thead><tr><th>格式</th><th class="num">体积</th><th>精度损失</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>FP32</td><td class="num">1×</td><td>基线</td><td>训练格式</td></tr>
+        <tr><td>FP16 / BF16</td><td class="num">0.5×</td><td>几乎无</td><td>GPU 部署首选</td></tr>
+        <tr><td><strong>INT8 动态量化</strong></td><td class="num">0.25×</td><td>CER 相对 +1~3%</td><td>权重定标，激活运行时量化。ONNX Runtime / sherpa-onnx 的默认路径，<strong>不需要校准集</strong></td></tr>
+        <tr><td>INT8 静态量化</td><td class="num">0.25×</td><td>+1~2%</td><td>激活也预先定标，需要几百条校准音频</td></tr>
+        <tr><td><strong>QAT</strong></td><td class="num">0.25×</td><td class="hi">&lt; 1%</td><td>训练时就模拟量化舍入，效果最好但要重训</td></tr>
+        <tr><td>GGML Q5_1</td><td class="num">~0.2×</td><td>几乎无感</td><td>whisper.cpp 的甜点档</td></tr>
+        <tr><td>GGML Q4_0</td><td class="num">~0.15×</td><td>有感，长音频更明显</td><td>内存实在紧张才用</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="note"><span class="tag">量化的隐藏瓶颈</span>
+      <p>模型量化到 int8 之后，<strong>特征提取常常反而成为瓶颈</strong>——FFT、Mel 滤波、log 还是浮点在跑。在没有 FPU 或 FPU 很弱的芯片上，fbank 的耗时可能超过网络前向。做极限优化时这一段也要定点化。</p>
+    </div>
+
+    <h3>延迟预算：拆开看大头在哪</h3>
+    <p>实时系统被投诉"反应慢"时，先做这个分解，别一上来就去优化模型：</p>
+<pre><code>端到端首字延迟 = 音频缓冲 + VAD 判定 + chunk 累积 + 右上下文 + 计算 + 后处理 + 网络往返
+
+典型流式配置（chunk = 16 个输出帧 @ 40 ms）:
+
+  音频采集缓冲          20 ~ 60 ms
+  VAD 起点判定          30 ~ 100 ms
+  chunk 累积           640 ms      ◀── 大头在这里
+  右上下文 lookahead   160 ~ 320 ms
+  网络前向计算          50 ~ 150 ms
+  标点等待              0 ~ 500 ms  ◀── CT-Transformer 可控
+  网络往返（云端）      30 ~ 200 ms
+  ──────────────────────────────
+  合计                 约 0.9 ~ 2.0 s</code></pre>
+    <p>结论很清楚：<strong>计算通常只占 10% 不到</strong>。想降延迟，第一刀砍 chunk（精度换延迟），第二刀限制右上下文，第三刀把标点切到低延迟模式。换个更快的模型往往只省下几十毫秒，白忙。</p>
+
+    <h3>硬件对应关系</h3>
+    <div class="tw">
+    <table>
+      <thead><tr><th>硬件</th><th>可行方案</th></tr></thead>
+      <tbody>
+        <tr><td>MCU（Cortex-M 级）</td><td class="old">连续 ASR 很勉强。现实做法是只做<strong>关键词唤醒</strong>，唤醒后把音频上传</td></tr>
+        <tr><td>树莓派 4/5、RK3568</td><td>sherpa-onnx zipformer int8 流式，RTF 可到 0.3 以内</td></tr>
+        <tr><td>RK3588（NPU）、高通中高端</td><td>zipformer 或 Paraformer，余量比较宽裕，能同时跑 VAD + ASR + 标点</td></tr>
+        <tr><td>手机 CPU</td><td>whisper.cpp small Q5_1，或 sherpa-onnx（更省电）</td></tr>
+        <tr><td>Jetson 等边缘 GPU</td><td>完整 Paraformer / FireRedASR，可上 TensorRT</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>四个必做的工程细节</h3>
+    <ul>
+      <li><strong>模型和解码图预加载</strong>。首次推理的冷启动（内存分配、图编译）可能是稳态的 10 倍，服务起来先跑一次空推理预热</li>
+      <li><strong>音频用环形缓冲</strong>，避免每个 chunk 都做一次内存拷贝</li>
+      <li><strong>限制推理线程数</strong>。ONNX Runtime 默认会开满核心，在大小核架构上被调度到小核反而更慢，且抢占其他任务</li>
+      <li><strong>流式状态要能重置</strong>。一段说完必须清掉 encoder 的 cache 和 decoder 的历史，否则上一句会污染下一句——这是流式实现最常见的 bug</li>
+    </ul>
+
+    <div class="trap"><span class="tag">选型时容易忽略的一条</span>
+      <p>端侧看的不是模型文件大小，是<strong>运行时峰值内存</strong>。它 ≈ 权重 + 激活缓存 + 解码图/词表 + 音频缓冲。带 WFST 解码图的方案，图本身可能比模型还大（几百 MB），这在嵌入式上往往才是真正的门槛——所以端侧一般不挂 WFST，用 transducer 直接出字。</p>
+    </div>
+  </section>
+
+  <!-- 28 -->
+  <section id="s28">
+    <h2><span class="num">28</span>数据与评测<span class="level">进阶</span></h2>
+    <div class="tldr"><span class="tag">一句话版</span>
+      <p>模型选型只决定起点，数据和评测决定你能走多远。<strong>而绝大多数项目死在"线下涨了线上不涨"</strong>——那是评测方法的问题，不是模型的问题。</p>
+    </div>
+
+    <h3>要多少数据</h3>
+    <div class="tw">
+    <table>
+      <thead><tr><th>目标</th><th class="num">数据量</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>只加热词 / 领域 n-gram</td><td class="num hi">0 h</td><td>只要纯文本。<strong>先试这个</strong>，很多"识别不准"到这一步就解决了</td></tr>
+        <tr><td>Fine-tune 通用模型到垂直领域</td><td class="num">10 – 50 h</td><td>性价比最高的一档，几十小时就有明显收益</td></tr>
+        <tr><td>从零训（传统 Kaldi）</td><td class="num">100 – 300 h</td><td>音素+词典+决策树是很强的结构先验，数据少时它值钱</td></tr>
+        <tr><td>从零训（端到端）</td><td class="num">1000 h 起<br>5000 h+ 才稳</td><td>没有先验兜底，全靠数据。这是端到端最大的门槛</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>数据从哪来</h3>
+    <ul>
+      <li><strong>公开集</strong>——中文：AISHELL 系列、WenetSpeech（万小时级）；英文：LibriSpeech、GigaSpeech、Common Voice。先用公开集验证流程跑得通，再谈自采</li>
+      <li><strong>伪标注</strong>——用最强的大模型去转写你手上的无标注音频，只保留高置信度的部分当训练数据。这是目前性价比最高的扩量手段</li>
+      <li><strong>TTS 合成</strong>——专门用来补长尾：中英混读、专业术语、数字读法。合成数据不能当主食，但补特定短板很有效</li>
+      <li><strong>自采</strong>——最贵，但如果你的场景（远场、特定设备、特定口音）和所有公开集都不像，这一步省不掉</li>
+    </ul>
+
+    <h3>清洗：五条丢弃规则</h3>
+<pre><code>① 用一个强 ASR 跑一遍，和标注比 CER，超过阈值的丢
+   （分不清是标注错还是音频烂，但都不该留）
+② 强制对齐失败或对齐得分过低的丢       ← 见 18 节
+③ 时长异常的丢：< 0.5 s 或 > 30 s
+④ 静音占比过高的丢（VAD 算一下语音比例）
+⑤ 字/秒比值异常的丢                     ← 和 24 节同一个指标</code></pre>
+    <p>经验上公开集清洗掉 5–15% 是正常的，清洗后训出来的模型通常比用全量更好。<strong>脏数据的危害大于数据量的收益。</strong></p>
+
+    <h3>增广：SpecAugment 是端到端时代最有效的单一手段</h3>
+    <div class="tw">
+    <table>
+      <thead><tr><th>手段</th><th>做什么</th><th>针对</th></tr></thead>
+      <tbody>
+        <tr><td class="hi">SpecAugment</td><td>在语谱图上随机遮掉几条时间带和频率带</td><td>过拟合，通用提升</td></tr>
+        <tr><td>速度扰动</td><td>0.9 / 1.0 / 1.1 三倍增广</td><td>语速差异</td></tr>
+        <tr><td>加噪</td><td>叠加 MUSAN 等噪声库，控制信噪比</td><td>噪声鲁棒</td></tr>
+        <tr><td>加混响</td><td>和房间冲激响应（RIR）卷积</td><td>远场，配合 20 节</td></tr>
+        <tr><td>音量 / 增益扰动</td><td>随机改变整体幅度</td><td>录音电平差异</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>评测：项目成败的真正分水岭</h3>
+    <div class="trap"><span class="tag">一个总 CER 数字没有任何指导意义</span>
+      <p>它把所有场景平均掉了。真实情况往往是：安静近场 3%、嘈杂远场 25%，平均下来 8% 看着还行，但用户在嘈杂环境里就是用不了。<strong>测试集必须分场景切开看。</strong></p>
+    </div>
+
+    <h4>测试集怎么建</h4>
+    <ul>
+      <li><strong>按维度分桶</strong>：安静/嘈杂、近场/远场、口音、领域、句长。每桶至少几百条，单独报 CER</li>
+      <li><strong>说话人级别隔离</strong>。训练集和测试集不能有同一个说话人——只做句子级去重是不够的，模型会记住音色</li>
+      <li><strong>冻结</strong>。测试集一旦定下就不再改，否则每次调参都在污染它</li>
+      <li><strong>建"困难集"</strong>。把线上出错的 case 持续收集起来，做成回归测试集。<em>这是最有价值的一份数据资产</em>，比任何公开集都值钱</li>
+    </ul>
+
+    <h4>线下涨了线上不涨，通常是这三个原因</h4>
+    <ol>
+      <li><strong>分布不一致</strong>——测试集是朗读的，线上是自然对话；测试集是手机录的，线上是会议室吊麦</li>
+      <li><strong>间接污染</strong>——测试集里的说话人、录音环境、甚至文本出现在训练集里</li>
+      <li><strong>只看平均没看长尾</strong>——平均 CER 降了 1 个点，但最差的那 5% 场景反而变差了，而用户的抱怨全来自那 5%</li>
+    </ol>
+
+    <h4>A/B 要看的不只是 CER</h4>
+    <div class="tw">
+    <table>
+      <thead><tr><th>指标</th><th>为什么重要</th></tr></thead>
+      <tbody>
+        <tr><td>分场景 CER</td><td>基础，但只是起点</td></tr>
+        <tr><td>延迟 P99</td><td>平均延迟没意义，用户记住的是最慢的那几次</td></tr>
+        <tr><td>拒识率 / 空输出率</td><td>识别成空白比识别错更伤体验</td></tr>
+        <tr><td class="hi">用户重说率</td><td><strong>最诚实的指标</strong>。用户重复说一遍，说明上一次没被正确理解——它把 ASR、VAD、下游理解的问题全都捕获了</td></tr>
+        <tr><td>关键实体准确率</td><td>人名、数字、订单号错一个字就是事故，这类词单独算准确率</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="note"><span class="tag">成本的量级感</span>
+      <p><strong>训练</strong>：千小时级数据训一个 Conformer，多卡 GPU 数天量级；fine-tune 通常是单卡数小时到一两天。<br>
+      <strong>推理</strong>：云 API 按时长计费，自建要摊 GPU 成本。盈亏平衡点大致在每天几百小时音频的量级——低于这个量用 API 更划算，高于这个量自建开始有优势。<br>
+      <strong>端侧</strong>：一次性开发成本高（适配、量化、调优），但边际成本为零，且没有隐私和网络问题。<br>
+      这些都是量级参考，实际差异可以很大，务必按自己的场景实测。</p>
+    </div>
+  </section>
+
+  <!-- 29 -->
+  <section id="s29">
+    <h2><span class="num">29</span>生产流水线<span class="level a">入门</span></h2>
+    <p class="lede">VAD 和幻觉治理是耦合的——做好第 2 步顺带解决了大半个第 5 步。这是投入产出比最高的一环。</p>
+
+    <div class="pipe">
+      <div class="stage"><div class="dot">1</div><div class="stage-body"><h4>前处理</h4>
+        <p>重采样 16k、单声道、（可选）降噪与 AGC</p></div></div>
+      <div class="stage key"><div class="dot">2</div><div class="stage-body"><h4>VAD 切分</h4>
+        <p>双阈值迟滞 → 前后 padding → 时长约束 → 强制切分点挑最静点</p>
+        <div class="chips"><span class="chip a">Silero</span><span class="chip a">FSMN-VAD</span><span class="chip">段间重叠 1–2 s</span></div></div></div>
+      <div class="stage"><div class="dot">3</div><div class="stage-body"><h4>ASR 逐段转写</h4>
+        <p>热词浅融合（AC 自动机）；Whisper 系关 <code>condition_on_previous_text</code>、开三个阈值判据</p></div></div>
+      <div class="stage"><div class="dot">4</div><div class="stage-body"><h4>段间 LCS 去重拼接</h4>
+        <p>用最长公共子序列对齐重叠区，消除边界错字</p></div></div>
+      <div class="stage key"><div class="dot">5</div><div class="stage-body"><h4>后处理链</h4>
+        <p>拼音模糊纠错 → 幻觉黑名单过滤 → 标点恢复 → ITN → 按标点重新断句输出</p>
+        <div class="chips"><span class="chip">pypinyin</span><span class="chip">CT-Transformer</span><span class="chip">WeTextProcessing</span></div></div></div>
+      <div class="stage"><div class="dot">6</div><div class="stage-body"><h4>质量监控</h4>
+        <p>字/秒比值、平均 logprob、gzip 压缩比</p></div></div>
+    </div>
+
+    <div class="note"><span class="tag">先做这三件</span>
+      <p>① VAD 的 padding 与时长参数按你的音频类型调一遍；② 建起拼音纠错的热词表；③ 监控加上字/秒比值。<strong>加起来不到一天工作量</strong>，能解决体感上大部分问题。</p>
+    </div>
+  </section>
+
+  <!-- 30 -->
+  <section id="s30">
+    <h2><span class="num">30</span>出了问题怎么排查<span class="level a">入门</span></h2>
+    <p class="lede">"识别不准"是个没有信息量的描述。按这棵树走一遍，能把问题定位到具体某一环。</p>
+
+    <h3>症状 → 病因决策树</h3>
+<pre><code>识别结果差
+│
+├─ 整段空白 / 输出极少
+│   ├─ 采样率是不是 16 kHz？是不是单声道？        ← 最常见，先查这个
+│   ├─ 音频有没有削顶、直流偏置、整体过小
+│   ├─ hybrid 系统：忘了除先验（见 06 节）
+│   └─ VAD 阈值太严，把语音当噪声扔了
+│
+├─ 大段重复 / 编造内容
+│   ├─ 字/秒比值异常高 → 幻觉（见 24 节）
+│   └─ 是不是把长静音喂进去了
+│
+├─ 首尾的字总是丢
+│   └─ VAD padding 不够（见 21 节 ②）——爆破音闭塞段本身就是静音
+│
+├─ 句子边界乱、一句话被切碎
+│   └─ min_silence_duration 太小 + 没做两阶段断句（见 21 节 ⑥）
+│
+├─ 专有名词、人名、术语全错
+│   └─ 热词偏置 + 拼音纠错（见 23 节）
+│
+├─ 数字 / 日期 / 金额格式不对
+│   └─ ITN 规则缺失（见 22 节）
+│
+├─ 中英混读处崩掉
+│   └─ 见 25 节，建模单元和训练数据问题
+│
+├─ 特定说话人特别差
+│   ├─ 口音 → 数据增广、换支持方言的模型
+│   └─ 远场 / 混响 → 前端增强，或换近场麦克风
+│
+└─ 整体略差但均匀
+    ├─ 领域不匹配 → fine-tune 或加领域 n-gram
+    └─ 模型选型不对（见 19 节）</code></pre>
+
+    <h3>五步分层验证</h3>
+    <div class="pipe">
+      <div class="stage"><div class="dot">1</div><div class="stage-body">
+        <h4>拿一段你确定内容的干净音频跑通</h4>
+        <p>排除环境、编码、采样率这些低级问题。这一步失败就不用往下查了。</p></div></div>
+      <div class="stage"><div class="dot">2</div><div class="stage-body">
+        <h4>关掉所有后处理，看裸 ASR 输出</h4>
+        <p>定位是模型问题还是后处理问题。很多"模型不准"其实是标点模型或 ITN 改坏的。</p></div></div>
+      <div class="stage key"><div class="dot">3</div><div class="stage-body">
+        <h4>把 VAD 切出来的段落 dump 成 wav，逐段听</h4>
+        <p><strong>90% 的"模型不准"其实是切分问题。</strong>这一步几乎每次都有收获，但几乎没人做。</p></div></div>
+      <div class="stage"><div class="dot">4</div><div class="stage-body">
+        <h4>看 n-best / lattice</h4>
+        <p>如果正确答案在 n-best 里但排不到第一 → 是语言模型或打分权重问题，<strong>不是声学问题</strong>，别去 fine-tune 声学模型。</p></div></div>
+      <div class="stage key"><div class="dot">5</div><div class="stage-body">
+        <h4>算 oracle WER</h4>
+        <p>n-best 里最好那条的 WER。它是重打分、rescoring、LLM 纠错能达到的<strong>天花板</strong>。如果 oracle WER 已经接近实际 WER，说明正确答案根本没进候选，再怎么重打分都没用——该换声学模型或调 beam 了。</p></div></div>
+    </div>
+
+    <div class="trap"><span class="tag">最容易被忽略的三个低级错误</span>
+      <p><strong>① 采样率不匹配。</strong>用 8 kHz 电话音频喂 16 kHz 模型，或者用 44.1 kHz 直接送进去，都会得到一堆胡言乱语而不报错。<br>
+      <strong>② 声道搞错。</strong>立体声直接当单声道读，左右声道交错解释成时域序列。<br>
+      <strong>③ 特征配置不一致。</strong>训练用 fbank80、推理用 MFCC40，模型不会报错，只会输出垃圾。</p>
+    </div>
+  </section>
+
+  <!-- ══ PART V ══════════════════════════════════════════════════ -->
+  <div class="partmark">
+    <span class="pn">Part Ⅴ</span>
+    <h2>前沿与未解</h2>
+    <p class="pd">榜单已经饱和，但问题远没解决</p>
+  </div>
+
+  <!-- 31 -->
+  <section id="s31">
+    <h2><span class="num">31</span>当前的真正难点<span class="level a">入门</span></h2>
+    <p class="lede">开源模型榜单前十的差距不到 1 个百分点——这不说明 ASR 解决了，只说明<strong>这个测试集测不动了</strong>。真实的缺口在下面这些地方。</p>
+
+    <h3>① 远场与重叠语音：最大的一道坎</h3>
+    <p>这是目前 ASR 距离"可用"最远的场景。CHiME-7/8 DASR 挑战赛的评测给出了很具体的量级：</p>
+    <div class="tw">
+    <table>
+      <thead><tr><th>场景</th><th class="num">最好系统 tcpWER</th><th>特点</th></tr></thead>
+      <tbody>
+        <tr><td>CHiME-6（家庭聚会）</td><td class="num" style="color:var(--brick);font-weight:600">~20%</td><td>远场、自然对话、高重叠</td></tr>
+        <tr><td>Mixer 6（异构设备）</td><td class="num">~11%</td><td>设备种类多</td></tr>
+        <tr><td>NOTSOFAR-1（会议）</td><td class="num">~11%</td><td>会议室多麦阵列</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>对比一下：近场朗读语音的 WER 已经在 2–5%。<strong>同样的技术，换到真实的多人对话场景，错误率翻了 4–10 倍。</strong></p>
+    <p>难点拆开是三层：<strong>重叠语音</strong>（各场景重叠比例在 13.9%–31.7% 之间，两个人同时说话时几乎没有好办法）、<strong>说话人计数</strong>（第一遍分离数错了人数，后面全盘皆错，而真实场景是 2–8 人不定）、<strong>域泛化</strong>（在一个场景调好的系统换个房间就退化）。</p>
+    <div class="note"><span class="tag">一个耐人寻味的事实</span>
+      <p>尽管神经方法层出不穷，CHiME 参赛队伍<strong>至今仍然普遍依赖 GSS（Guided Source Separation）</strong>这种偏传统的引导式分离方法作为主力。当前的最强流水线大致是：通道选择 → GSS 目标说话人提取 → 基于 WavLM 预训练特征的端到端 ASR → 目标说话人分离做后处理精修。<em>这说明纯端到端在这个问题上还没有真正胜出。</em></p>
+    </div>
+
+    <h3>② 幻觉与"不知道自己不知道"</h3>
+    <p>生成式 ASR 越流畅越危险：它产出的错误是<strong>通顺的、可信的、和上下文自洽的</strong>，比传统系统那种明显的乱码难发现得多。更根本的问题是<strong>缺乏可靠的置信度</strong>——模型无法告诉你"这一段我没听清"。在医疗、法律、金融场景，一个自信的错误比一个明显的空白危险得多。</p>
+
+    <h3>③ 流式与精度的根本矛盾</h3>
+    <p>这不是工程问题，是信息论问题：<strong>右上下文里的信息，你不等就是拿不到。</strong>dynamic chunk、两遍解码这些都是在权衡曲线上移动，没有消除权衡本身。目前 640 ms 延迟对应的精度损失仍然是实打实的。</p>
+
+    <h3>④ 长音频的上下文一致性</h3>
+    <p>模型窗口有限（Whisper 是 30 s），跨段落的指代、术语一致性、说话人一致性都维持不住。同一个人名在一小时的会议里被写成三种写法，是当前系统的常态。</p>
+
+    <h3>⑤ 长尾永远训不完</h3>
+    <p>新产品名、新人名、新术语每天都在产生。热词偏置（23 节）是打补丁，不是解决方案——它的容量有上限，且和误触发是此消彼长的。</p>
+
+    <h3>⑥ 低资源与方言</h3>
+    <p>世界上约 7000 种语言，有可用 ASR 的不到 2%。Meta 的 Omnilingual ASR 把覆盖推到 1600+ 种，但绝大多数语种的质量只能算"能用"。中文的方言同理——22 种方言的覆盖已是目前最好，但和普通话的差距仍然巨大。</p>
+
+    <h3>⑦ 精度与成本的剪刀差</h3>
+    <p>榜单头部全是 2–3 B 参数的 LLM-ASR。<strong>精度最高的模型，恰恰是端侧跑不动、大规模批量转写成本最高的模型。</strong>Parakeet 那个 0.6 B / RTFx 3333 的存在说明这条曲线还有很大优化空间，但目前"最准"和"能用"之间是割裂的。</p>
+
+    <h3>⑧ 评测本身已经失效</h3>
+    <p>公开榜单的干净朗读数据已经饱和，它<strong>不再能区分模型的优劣</strong>，也不能预测真实场景表现。这反过来伤害了研究——大家在一个测不动的指标上继续优化。这也是为什么 28 节强调你必须建自己的分场景测试集。</p>
+  </section>
+
+  <!-- 32 -->
+  <section id="s32">
+    <h2><span class="num">32</span>研究方向<span class="level">进阶</span></h2>
+    <p class="lede">这些方向的共同点：它们都在试图跨过"转写"这件事本身。</p>
+
+    <h3>① 离散语音 token：让语音和文本共用一套 Transformer</h3>
+    <p>目前最热的方向。核心问题是：LLM 吃的是离散 token，而语音是连续、无边界的。把语音量化成离散单元，语音就能和文字在同一个模型里共存。</p>
+    <div class="tw">
+    <table>
+      <thead><tr><th>类型</th><th>来源</th><th>保留什么</th><th>代表</th></tr></thead>
+      <tbody>
+        <tr><td><strong>声学 token</strong></td><td>神经编解码器，目标是重建信号</td><td>音色、韵律、细节都在，但冗余</td><td>SoundStream、EnCodec、DAC（用残差量化 RVQ）</td></tr>
+        <tr><td><strong>语义 token</strong></td><td>自监督模型加量化</td><td>音素和语义内容，<strong>丢掉韵律和音色</strong></td><td>wav2vec 2.0、HuBERT、WavLM</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>公开的难点也很明确：<strong>码本坍缩</strong>（VQ 只有一部分码字被用到，或使用极不均衡）、<strong>重建与表示的矛盾</strong>（为重建优化的 token 对下游任务太冗余，为语义优化的又丢了韵律）、<strong>序列长度问题</strong>（token 帧率 25–100 Hz，远长于音素序列，让 decoder-only 模型训练和推理都不稳）、以及<strong>说话人相关任务上明显弱于连续特征</strong>。</p>
+
+    <h3>② 全双工语音对话</h3>
+    <p>从"轮流说话"走向"同步对话"：系统要能边听边说、被打断时立刻停、在你说话的间隙插入"嗯"。这需要模型同时具备<strong>持续的听</strong>和<strong>持续的说</strong>两条流，而不是 ASR → LLM → TTS 的串行流水线。</p>
+    <p>这个方向正在快速形成体系，已经出现了专门的全双工评测基准（如 τ-Voice 这类面向真实域的语音 agent benchmark），以及把语音、语言、动作同步建模的工作。<strong>对做交互产品的人，这是未来两三年最值得盯的方向</strong>——因为它改变的不是精度，是交互形态。</p>
+
+    <h3>③ 目标说话人提取与"分离-识别"联合建模</h3>
+    <p>针对第 31 节的头号难题。思路是用声纹作为条件，从混合语音里直接抽出目标说话人，而不是先分离再识别。CHiME-9 已经出现了专门的多通道对话识别赛道（MCoRec）。<strong>把内容识别和说话人归属放进一个模型里联合优化</strong>，是取代当前"ASR + diarization 拼接"方案的方向。</p>
+
+    <h3>④ 可微 FST：结构先验的回归</h3>
+    <p>有意思的一条线：k2 把 FSA/FST 的组合和前向后向实现成 <strong>GPU 上可微的算子</strong>，于是 WFST 那套结构化解码可以直接嵌进端到端模型的训练里。</p>
+    <p>这背后是一个认识上的回摆——<strong>把结构先验全扔掉未必是对的</strong>，只是过去它被硬编码在流水线里、无法和网络联合优化。现在它可以了。CTC/RNN-T 的训练目标本质上就是"对所有对齐路径求和"，而那正是 log 半环上的前向算法（15 节）。</p>
+
+    <h3>⑤ 大规模多语种自监督</h3>
+    <p>XLS-R、MMS、Omnilingual ASR 这条线，用自监督把表征学在几千种语言的无标注音频上，再用极少量标注做微调。这是低资源语种唯一现实的路径。</p>
+
+    <h3>⑥ 高效架构</h3>
+    <p>针对第 31 节的成本剪刀差。zipformer 的多尺度下采样、线性注意力、状态空间模型（Mamba 系）在语音上的应用，目标都是把 <code>O(T²)</code> 的注意力换掉，让长音频和端侧都跑得动。</p>
+
+    <h3>⑦ 不确定性量化</h3>
+    <p>让模型知道自己不确定——这是幻觉问题的<strong>根本解</strong>而不是补丁。一个能可靠输出"这 3 秒我没听清"的模型，在医疗和法律场景的价值远高于平均 CER 再低 1 个点。目前这块的进展慢于其他方向，但需求最刚性。</p>
+
+    <div class="note"><span class="tag">一个判断</span>
+      <p>把这七个方向连起来看，主线是很清楚的：<strong>ASR 正在从一个独立的"转写模块"，变成语音大模型里的一种能力。</strong>未来的系统大概率不再有"ASR 组件"这个东西——转写、翻译、分离、理解、回应会在同一个模型里发生。但这条路上有两个东西大概率会留下来：<em>需要精确时间的场景仍然要专门的对齐工具</em>（18 节），<em>端侧和实时场景仍然要小而专的模型</em>（27 节）。</p>
+    </div>
+  </section>
+
+  <!-- ══ 附录 ════════════════════════════════════════════════════ -->
+  <div class="partmark">
+    <span class="pn">附录</span>
+    <h2>速查与公式</h2>
+    <p class="pd">参数、术语，以及每个方法背后的推导与算例</p>
+  </div>
+
+  <!-- 33 -->
+  <section id="s33">
+    <h2><span class="num">33</span>参数速查<span class="level a">入门</span></h2>
+    <p class="lede">回头最常来查的就是这一屏。</p>
+
+    <div class="params">
+      <div class="pcard"><h4>音频 / 分帧</h4>
+        <dl>
+          <dt>采样率</dt><dd>16 kHz</dd>
+          <dt>位深</dt><dd>16 bit</dd>
+          <dt>frame-length</dt><dd>25 ms / 400 pt</dd>
+          <dt>frame-shift</dt><dd>10 ms / 160 pt</dd>
+          <dt>每秒帧数</dt><dd>100</dd>
+          <dt>num-mel-bins (标准)</dt><dd>23</dd>
+          <dt>num-mel-bins (hires)</dt><dd>40</dd>
+        </dl></div>
+      <div class="pcard"><h4>chain 训练</h4>
+        <dl>
+          <dt>frame-subsampling</dt><dd>3</dd>
+          <dt>left/right-tolerance</dt><dd>5 / 5</dd>
+          <dt>leaky-hmm-coefficient</dt><dd>0.1</dd>
+          <dt>xent-regularize</dt><dd>0.1</dd>
+          <dt>l2-regularize</dt><dd>5e-5</dd>
+          <dt>speed perturb</dt><dd>0.9 / 1.0 / 1.1</dd>
+          <dt>目标叶子数</dt><dd>3000 – 7000</dd>
+        </dl></div>
+      <div class="pcard"><h4>解码尺度</h4>
+        <dl>
+          <dt>acoustic-scale (GMM)</dt><dd>0.1</dd>
+          <dt>acoustic-scale (chain)</dt><dd>1.0</dd>
+          <dt>self-loop-scale (GMM)</dt><dd>0.1</dd>
+          <dt>self-loop-scale (chain)</dt><dd>1.0</dd>
+          <dt>beam</dt><dd>15.0</dd>
+          <dt>lattice-beam</dt><dd>8.0</dd>
+          <dt>word-ins-penalty</dt><dd>0.0 – 1.0</dd>
+        </dl></div>
+      <div class="pcard"><h4>VAD 切分</h4>
+        <dl>
+          <dt>进入阈值 / 退出</dt><dd>0.60 / 0.35</dd>
+          <dt>前扩 / 后扩</dt><dd>250 / 300 ms</dd>
+          <dt>min_silence</dt><dd>300 – 500 ms</dd>
+          <dt>min_speech</dt><dd>100 – 250 ms</dd>
+          <dt>max_speech</dt><dd>20 – 28 s</dd>
+          <dt>段间重叠</dt><dd>1 – 2 s</dd>
+        </dl></div>
+      <div class="pcard"><h4>Whisper 稳定性</h4>
+        <dl>
+          <dt>condition_on_prev</dt><dd>False</dd>
+          <dt>compression_ratio_th</dt><dd>2.4</dd>
+          <dt>logprob_threshold</dt><dd>−1.0</dd>
+          <dt>no_speech_threshold</dt><dd>0.6</dd>
+          <dt>repetition_penalty</dt><dd>1.1 – 1.2</dd>
+          <dt>no_repeat_ngram_size</dt><dd>3 – 5</dd>
+        </dl></div>
+      <div class="pcard"><h4>健康指标</h4>
+        <dl>
+          <dt>中文字 / 秒</dt><dd>3 – 5</dd>
+          <dt>英文词 / 秒</dt><dd>2 – 3</dd>
+          <dt>热词表规模上限</dt><dd>~300 条</dd>
+          <dt>拼音纠错最小词长</dt><dd>2 字</dd>
+          <dt>Paraformer RTF</dt><dd>0.025</dd>
+          <dt>流式典型延迟</dt><dd>640 ms</dd>
+        </dl></div>
+      <div class="pcard"><h4>量化 / 端侧</h4>
+        <dl>
+          <dt>FP16 体积</dt><dd>0.5×</dd>
+          <dt>INT8 体积</dt><dd>0.25×</dd>
+          <dt>INT8 动态量化损失</dt><dd>CER +1~3%</dd>
+          <dt>QAT 损失</dt><dd>&lt; 1%</dd>
+          <dt>端侧 RTF 目标</dt><dd>&lt; 0.3</dd>
+          <dt>zipformer int8 体积</dt><dd>50 – 100 MB</dd>
+        </dl></div>
+      <div class="pcard"><h4>强制对齐</h4>
+        <dl>
+          <dt>HMM 边界误差</dt><dd>10 – 30 ms</dd>
+          <dt>CTC 峰值偏移</dt><dd>不可用于音素级</dd>
+          <dt>词级对齐容差</dt><dd>±100 ms</dd>
+          <dt>口型驱动要求</dt><dd>±20 ms</dd>
+          <dt>单次对齐音频上限</dt><dd>建议 &lt; 30 min</dd>
+        </dl></div>
+    </div>
+  </section>
+
+  <!-- 25 -->
+  <section id="s34">
+    <h2><span class="num">34</span>术语表<span class="level a">入门</span></h2>
+    <dl class="gloss">
+      <div class="gitem"><dt>帧 frame</dt><dd>25 ms 的一小片音频，每 10 ms 取一片。ASR 的基本时间单位，1 秒 = 100 帧</dd></div>
+      <div class="gitem"><dt>共振峰 formant</dt><dd>语谱图上的横向亮带，由声道形状决定，是区分元音的关键</dd></div>
+      <div class="gitem"><dt>MFCC / fbank</dt><dd>两种主流特征。fbank 是 Mel 滤波器组输出取 log；MFCC 再多做一次 DCT</dd></div>
+      <div class="gitem"><dt>三音素 triphone</dt><dd>带左右上下文的音素。同一个音素在不同邻居旁边声学表现差别很大</dd></div>
+      <div class="gitem"><dt>senone</dt><dd>绑定状态。决策树把 8×10⁶ 个三音素状态聚类后的叶子，几千个</dd></div>
+      <div class="gitem"><dt>pdf-id</dt><dd>probability density function 的索引，<strong>不是文档格式</strong>。决策树叶子编号，等于网络输出维度</dd></div>
+      <div class="gitem"><dt>transition-id</dt><dd><code>(phone, hmm-state, pdf, 第几条出弧)</code>。HCLG 的输入标签用它而非 pdf-id，因为要能还原音素身份和自环</dd></div>
+      <div class="gitem"><dt>HCLG</dt><dd>HMM 拓扑 ∘ 上下文相关 ∘ 发音词典 ∘ 语言模型，编译成一张静态 WFST</dd></div>
+      <div class="gitem"><dt>TLG</dt><dd>WeNet 版本的解码图。CTC 拓扑 ∘ 词典 ∘ LM，比 HCLG 少了 H 和 C 两层</dd></div>
+      <div class="gitem"><dt>blank</dt><dd>CTC 引入的特殊符号，表示"这一帧没有新内容"。也用来隔开叠字</dd></div>
+      <div class="gitem"><dt>LF-MMI</dt><dd>Lattice-Free MMI。分母用音素 4-gram 小图在 GPU 上精确前向后向，不需要预先解码</dd></div>
+      <div class="gitem"><dt>Conformer</dt><dd>卷积 + 自注意力的混合编码器块，现代 ASR 的标准配置</dd></div>
+      <div class="gitem"><dt>RNN-T / transducer</dt><dd>编码器 + 预测网络 + 联合网络。天然流式且内置语言模型，端侧首选</dd></div>
+      <div class="gitem"><dt>AED</dt><dd>Attention-based Encoder-Decoder。精度高但不能流式，且会幻觉</dd></div>
+      <div class="gitem"><dt>fMLLR</dt><dd>说话人相关的特征空间线性变换。要两遍解码，被 chain 的 i-vector 取代</dd></div>
+      <div class="gitem"><dt>CMVN</dt><dd>倒谱均值方差归一化。减均值精确消除信道卷积影响</dd></div>
+      <div class="gitem"><dt>U2 / U2++</dt><dd>WeNet 的统一两遍框架。CTC 出 n-best，attention decoder 重打分</dd></div>
+      <div class="gitem"><dt>ITN</dt><dd>逆文本正则化。"二零二六年" → "2026年"。主流用 WFST 规则（Pynini）</dd></div>
+      <div class="gitem"><dt>WER / CER</dt><dd>词错误率 / 字错误率。<code>(替换+删除+插入)/参考长度</code>，可以超过 100%</dd></div>
+      <div class="gitem"><dt>RTF / RTFx</dt><dd>实时率。RTF = 处理时长/音频时长，越小越快；RTFx 是倒数，越大越快</dd></div>
+      <div class="gitem"><dt>半环 semiring</dt><dd>WFST 权重的代数结构。tropical <code>(min,+)</code> 做 Viterbi，log <code>(logadd,+)</code> 做求和</dd></div>
+      <div class="gitem"><dt>shallow fusion</dt><dd>解码时给匹配热词的 beam 路径加分。零训练、秒级生效</dd></div>
+      <div class="gitem"><dt>VAD</dt><dd>语音活动检测。只负责"哪里有人声"，不负责断句</dd></div>
+      <div class="gitem"><dt>强制对齐</dt><dd>已知音频和对应文字，求每个字/音素的精确起止时间。在只含正确路径的线性图上跑 Viterbi</dd></div>
+      <div class="gitem"><dt>GOP</dt><dd>Goodness of Pronunciation。发音评测的核心指标，正确音素的似然除以最像的那个音素的似然</dd></div>
+      <div class="gitem"><dt>G2P</dt><dd>字形转音素。给词典里没有的词自动生成发音，强制对齐处理 OOV 时必需</dd></div>
+      <div class="gitem"><dt>x-vector / ECAPA</dt><dd>说话人嵌入。把一段语音映射成固定长度向量，用于声纹识别和说话人分离</dd></div>
+      <div class="gitem"><dt>DER</dt><dd>Diarization Error Rate。说话人分离的指标 =（漏检 + 虚警 + 说话人混淆）/ 总语音时长</dd></div>
+      <div class="gitem"><dt>EEND</dt><dd>端到端说话人分离。直接输出每帧每个说话人是否在说话，天然支持重叠语音</dd></div>
+      <div class="gitem"><dt>oracle WER</dt><dd>n-best 候选里最好那条的 WER。它是重打分能达到的天花板，超不过它就别在 LM 上花力气了</dd></div>
+      <div class="gitem"><dt>QAT</dt><dd>量化感知训练。训练时就模拟 int8 的舍入误差，精度损失远小于训练后量化</dd></div>
+      <div class="gitem"><dt>code-switching</dt><dd>中英混读，"打开 PPT"这类。建模单元和训练数据都是难点</dd></div>
+    </dl>
+  </section>
+
+  <!-- 35 -->
+  <section id="s35">
+    <h2><span class="num">35</span>符号约定<span class="level">进阶</span></h2>
+    <p class="lede">下面三节把术语表里的每个方法展开成公式和算例。先统一记号——整份手册的公式都用这一套。</p>
+
+    <dl class="symtab">
+      <div class="symrow"><dt>X</dt><dd>观测序列 <code>x₁…x_T</code>，每帧 <code>x_t ∈ R^d</code>（d 通常 13/40/80）</dd></div>
+      <div class="symrow"><dt>W</dt><dd>词序列（要求解的文字）</dd></div>
+      <div class="symrow"><dt>S</dt><dd>隐状态序列 <code>s₁…s_T</code>，取值范围是 N 个 senone</dd></div>
+      <div class="symrow"><dt>l, l'</dt><dd>CTC 的标签序列，及其插入 blank 后的扩展序列（长 2|l|+1）</dd></div>
+      <div class="symrow"><dt>T, U</dt><dd>帧数、标签数</dd></div>
+      <div class="symrow"><dt>a<sub>ij</sub></dt><dd>状态 i 转移到 j 的概率</dd></div>
+      <div class="symrow"><dt>b<sub>j</sub>(x)</dt><dd>状态 j 的发射概率密度（GMM 或 DNN 伪似然）</dd></div>
+      <div class="symrow"><dt>α, β</dt><dd>前向、后向概率</dd></div>
+      <div class="symrow"><dt>γ<sub>t</sub>(j)</dt><dd>占用后验：第 t 帧处在状态 j 的概率。<strong>整个训练体系的核心量</strong></dd></div>
+      <div class="symrow"><dt>δ, ψ</dt><dd>Viterbi 的累积得分与回溯指针</dd></div>
+      <div class="symrow"><dt>y<sup>t</sup><sub>k</sub></dt><dd>神经网络第 t 帧对符号 k 的 softmax 输出</dd></div>
+      <div class="symrow"><dt>κ, λ, ρ</dt><dd>声学缩放、语言模型权重、词插入惩罚</dd></div>
+      <div class="symrow"><dt>γ(S), μ, σ²</dt><dd>决策树节点 S 的占用计数、均值、方差（充分统计量）</dd></div>
+      <div class="symrow"><dt>⊕, ⊗</dt><dd>半环的两个运算（并行合并、串行累积）</dd></div>
+    </dl>
+
+    <h3>三个母公式</h3>
+    <p>所有内容都是这三式的展开：</p>
+
+    <div class="eq"><span class="lbl">① 噪声信道 —— 问题的定义</span><pre>W* = argmax P(W|X) = argmax  P(X|W) · P(W)
+      W                W</pre></div>
+
+    <div class="eq"><span class="lbl">② 边缘化 —— 对齐问题的解法</span><pre>P(X|W) = Σ  P(X, S | W)
+         S∈对齐集合
+
+HMM：S 是状态序列        CTC：S 是含 blank 的路径
+RNN-T：S 是格子上的路径   都是"对所有对齐求和"</pre></div>
+
+    <div class="eq"><span class="lbl">③ 动态规划 —— 让 ② 可算</span><pre>指数级的 Σ_S  ──▶  O(T·N²) 的逐帧递推
+
+α_t(·) 只依赖 α_{t−1}(·)      ← 一阶马尔可夫假设换来的</pre></div>
+
+    <div class="note"><span class="tag">一句话</span>
+      <p>整个 ASR 的数学，就是<strong>用假设换可计算性</strong>，然后用各种手段补偿假设带来的偏差。下面每个公式都可以放回这个框架里理解。</p>
+    </div>
+  </section>
+
+  <!-- 36 -->
+  <section id="s36">
+    <h2><span class="num">36</span>特征与统计模型：公式与算例<span class="level b">深入</span></h2>
+
+    <h3>A. 特征提取的完整公式链</h3>
+    <div class="eq"><span class="lbl">A1 分帧</span><pre>T = 1 + ⌊(N_s − N_w) / N_h⌋      snip-edges = true
+
+N_s 采样点总数   N_w 窗长(400)   N_h 帧移(160)</pre></div>
+
+    <div class="eq"><span class="lbl">A2 加窗（Kaldi 默认 povey 窗）</span><pre>w[n] = [ 0.5 − 0.5·cos(2πn / (N−1)) ]^0.85     n = 0…N−1
+
+汉明窗：w[n] = 0.54 − 0.46·cos(2πn / (N−1))</pre></div>
+    <p class="why">直接截断会造成频谱泄漏——断口的突变在频域表现为本不存在的成分。加窗让两端平滑衰减到零。</p>
+
+    <div class="eq"><span class="lbl">A3 功率谱</span><pre>            |  N−1                        |²
+P[k] = (1/N)·| Σ  x[n]·w[n]·e^(−j2πkn/N)  |     k = 0…N/2
+            | n=0                         |
+
+512 点 FFT → 257 个频点</pre></div>
+
+    <div class="eq"><span class="lbl">A4 Mel 尺度与三角滤波器组</span><pre>m(f) = 2595·log₁₀(1 + f/700)        f(m) = 700·(10^(m/2595) − 1)
+
+         ⎧ 0                              k < f_{m−1}
+         ⎪ (k − f_{m−1})/(f_m − f_{m−1})   f_{m−1} ≤ k ≤ f_m
+H_m[k] = ⎨ (f_{m+1} − k)/(f_{m+1} − f_m)   f_m ≤ k ≤ f_{m+1}
+         ⎩ 0                              k > f_{m+1}</pre></div>
+
+    <div class="ex"><span class="tag">算例 1 · Mel 弯曲有多弯</span>
+      <p>16 kHz 采样，0–8000 Hz 分 23 个滤波器：</p>
+<pre>mel(8000) = 2595·log₁₀(1 + 8000/700) = 2840.0 mel
+每个滤波器间隔 = 2840.0 / 24 = 118.33 mel   ← 在 mel 轴上等间距
+
+  第 1 个滤波器中心：  118.3 mel  →    77 Hz
+  第 5 个            591.7 mel  →   483 Hz
+  第 12 个          1420.0 mel  →  1768 Hz
+  第 23 个          2721.7 mel  →  7133 Hz
+
+低频相邻中心间隔：  77 → 164 Hz   仅  86 Hz
+高频相邻中心间隔：6352 → 7133 Hz  竟 781 Hz     ← 差 9 倍</pre>
+      <p><strong>这就是"低频分得细、高频分得粗"的具体含义</strong>——和耳蜗基底膜的临界带宽一致。区分 /i/ 和 /u/ 靠的是几百赫兹处的共振峰位置，那里必须有分辨率；而 6 kHz 以上只需要知道"有没有摩擦噪声"。</p>
+    </div>
+
+    <div class="eq"><span class="lbl">A5 log + DCT-II = MFCC</span><pre>E_m = log( Σ_k P[k]·H_m[k] )                    ← 这一步就是 fbank
+
+c_i = √(2/M) · Σ_{m=1}^{M} E_m·cos( πi(m − 0.5) / M )    i = 0…12</pre></div>
+    <p class="why"><strong>log 是关键的一步</strong>：源-滤波器模型里 <code>X = E·H</code>（乘），取对数变成 <code>logE + logH</code>（加），于是两者可以在倒谱域被线性地分开。DCT 只是顺带做了去相关（为对角协方差 GMM 服务）和降维。</p>
+
+    <div class="eq"><span class="lbl">A6 delta 与 CMVN</span><pre>          Σ_{n=1}^{Θ} n·(c_{t+n} − c_{t−n})
+Δ_t = ────────────────────────────────        典型 Θ = 2
+              2·Σ_{n=1}^{Θ} n²
+
+CMVN:  x̂_t = (x_t − μ) / σ        μ,σ 按说话人或按句子统计</pre></div>
+    <p class="why">CMVN 减均值之所以能<em>精确</em>消除信道：信道是线性滤波器 <code>c(t)</code>，卷积在 log 谱域是加性常数，减掉均值就减掉了它。这不是经验归一化，是有严格推导的。</p>
+
+    <h3>B. HMM 的四个算法</h3>
+
+    <div class="eq"><span class="lbl">B1 联合概率</span><pre>P(X, S | W) = π_{s₁}·b_{s₁}(x₁) · Π_{t=2}^{T} a_{s_{t−1}s_t}·b_{s_t}(x_t)</pre></div>
+
+    <div class="eq"><span class="lbl">B2 前向（求和） / Viterbi（取最大）</span><pre>前向：   α₁(j) = π_j·b_j(x₁)
+        α_t(j) = [ Σ_i α_{t−1}(i)·a_ij ] · b_j(x_t)
+        P(X)   = Σ_j α_T(j)
+
+Viterbi：δ_t(j) = [ max_i δ_{t−1}(i)·a_ij ] · b_j(x_t)
+        ψ_t(j) = argmax_i δ_{t−1}(i)·a_ij        ← 回溯指针
+
+两者结构完全相同，只差 Σ ↔ max —— 这正是 log 半环与 tropical 半环之别（37 节 J）</pre></div>
+
+    <div class="eq"><span class="lbl">B3 后向与占用后验</span><pre>β_T(i) = 1
+β_t(i) = Σ_j a_ij·b_j(x_{t+1})·β_{t+1}(j)
+
+γ_t(j) = α_t(j)·β_t(j) / P(X)        ← 第 t 帧落在状态 j 的后验
+ξ_t(i,j) = α_t(i)·a_ij·b_j(x_{t+1})·β_{t+1}(j) / P(X)</pre></div>
+
+    <div class="eq"><span class="lbl">B4 Baum-Welch 重估</span><pre>â_ij = Σ_t ξ_t(i,j) / Σ_t γ_t(i)
+
+μ̂_j = Σ_t γ_t(j)·x_t / Σ_t γ_t(j)
+
+σ̂²_j = Σ_t γ_t(j)·(x_t − μ̂_j)² / Σ_t γ_t(j)</pre></div>
+    <p class="why"><strong>γ 是整个训练体系的枢纽</strong>：它是 E 步的输出、M 步的权重，后面的决策树统计量、判别训练的梯度、CTC 的梯度，全部是 γ 的不同形态。</p>
+
+    <div class="ex"><span class="tag">算例 2 · 前向算法，以及"求和"与"取最大"差多少</span>
+      <p>两个状态 A、B，三帧。<code>π_A=1</code>；转移 <code>a_AA=0.7, a_AB=0.3, a_BB=0.8</code>（B 不回 A）；发射概率：</p>
+      <div class="tw"><table class="dp">
+        <thead><tr><th>b</th><th>t=1</th><th>t=2</th><th>t=3</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td>0.5</td><td>0.2</td><td>0.1</td></tr>
+          <tr><td>B</td><td>0.1</td><td>0.4</td><td>0.6</td></tr>
+        </tbody>
+      </table></div>
+      <p>逐帧递推：</p>
+<pre>α₁(A) = 1.0 × 0.5              = 0.50000
+α₁(B) = 0.0 × 0.1              = 0.00000
+
+α₂(A) = (0.5×0.7) × 0.2        = 0.07000
+α₂(B) = (0.5×0.3 + 0×0.8)×0.4  = 0.06000
+
+α₃(A) = (0.07×0.7) × 0.1       = 0.00490
+α₃(B) = (0.07×0.3 + 0.06×0.8)×0.6 = 0.04140
+
+P(X) = 0.00490 + 0.04140 = 0.04630</pre>
+      <p>同一组数据跑 Viterbi，最优单路径 <code>A→B→B</code> 的概率是 <strong>0.02880</strong>。</p>
+      <div class="tw"><table>
+        <thead><tr><th></th><th class="num">概率</th><th>含义</th></tr></thead>
+        <tbody>
+          <tr><td>前向（所有路径求和）</td><td class="num hi">0.04630</td><td>这段音频由这个模型产生的<strong>总</strong>概率</td></tr>
+          <tr><td>Viterbi（最优单路径）</td><td class="num">0.02880</td><td>只占总概率的 <strong>62%</strong></td></tr>
+        </tbody>
+      </table></div>
+      <p><strong>剩下 38% 的概率分散在其他对齐路径上。</strong>训练时必须用前向（要把所有对齐都考虑进去，否则梯度有偏），解码时可以用 Viterbi（只要最优答案）。这就是为什么 Baum-Welch 用 α/β 而解码器用 δ/ψ。</p>
+    </div>
+
+    <h3>C. GMM 的对数似然</h3>
+    <div class="eq"><span class="lbl">C1 混合密度</span><pre>b_j(x) = Σ_{m=1}^{M} c_jm · N(x; μ_jm, Σ_jm)        Σ_m c_jm = 1
+
+N(x; μ, Σ) = (2π)^(−d/2)·|Σ|^(−1/2)·exp( −½(x−μ)ᵀΣ⁻¹(x−μ) )</pre></div>
+
+    <div class="eq"><span class="lbl">C2 对角协方差下的实际计算形式</span><pre>                 1  ⎡           d              d  (x_i − μ_i)² ⎤
+log N(x;μ,σ²) = −─  ⎢ d·log2π + Σ log σ_i²  +  Σ  ─────────── ⎥
+                 2  ⎣          i=1            i=1     σ_i²     ⎦
+
+|Σ| 从 O(d³) 的行列式退化成 d 次乘法 —— 这就是为什么必须用对角协方差，
+也是为什么特征必须先用 DCT 去相关</pre></div>
+
+    <h3>D. 决策树：似然增益的推导</h3>
+    <p>为什么节点似然是那个式子？把最大似然解 <code>μ̂ = m/γ</code>、<code>σ̂² = v/γ − μ̂²</code> 代回去：</p>
+
+    <div class="eq"><span class="lbl">D1 推导</span><pre>L(S) = Σ_t γ_t·log N(x_t; μ̂, σ̂²)
+
+     = −½ Σ_t γ_t [ d·log2π + Σ_i log σ̂_i² + Σ_i (x_ti − μ̂_i)²/σ̂_i² ]
+                                              └────── 关键项 ──────┘
+
+关键项：Σ_t γ_t Σ_i (x_ti−μ̂_i)²/σ̂_i² = Σ_i (1/σ̂_i²)·(γ·σ̂_i²) = γ·d
+        ↑ 因为 σ̂² 就是加权方差，代回去分子分母抵消，与数据无关！
+
+∴  L(S) = −½·γ(S)·[ d·log2π + Σ_i log σ̂_i²(S) + d ]</pre></div>
+    <p class="why"><strong>这个抵消是整件事能跑起来的原因</strong>：似然只取决于<em>占用计数</em>和<em>方差</em>，不需要重新遍历数据。于是建树时只要维护三个充分统计量 <code>γ, m=Σγx, v=Σγx²</code>，就能对任意子集瞬间算出似然——几百万个候选分裂才评估得起。</p>
+
+    <div class="eq"><span class="lbl">D2 分裂增益</span><pre>ΔL = L(S_yes) + L(S_no) − L(S)        贪心选 ΔL 最大的问题
+
+停止条件： ΔL < 阈值   或   γ(叶子) < 最小占用</pre></div>
+
+    <div class="ex"><span class="tag">算例 3 · 一次分裂值不值</span>
+      <p>某节点下有 8 帧一维数据（γ 均为 1）：</p>
+<pre>全体： 1.0  1.2  0.9  1.1 │ 3.0  3.2  2.9  3.1
+                          └ 某个问题把它切成两半
+
+节点        γ    μ       σ²        L
+────────────────────────────────────────
+父集合      8   2.050   1.0125   −11.401
+yes 子集    4   1.050   0.0125    +3.088
+no  子集    4   3.050   0.0125    +3.088
+
+ΔL = 3.088 + 3.088 − (−11.401) = +17.578</pre>
+      <p>增益极大——因为原本一个高斯要同时覆盖 1.0 和 3.0 两团数据，方差被迫是 1.0125；分开后各自方差只有 0.0125，<strong>方差降了 81 倍</strong>，对数似然自然暴涨。</p>
+      <p>反过来，如果这个问题把数据切成 <code>{1.0, 3.0, 1.2, 3.2}</code> 和 <code>{0.9, 2.9, 1.1, 3.1}</code>，两个子集的方差和父集合几乎一样，<code>ΔL ≈ 0</code>——这个问题没有区分能力，不会被选中。<em>决策树就是在几百个候选问题里反复做这个比较。</em></p>
+    </div>
+  </section>
+
+  <!-- 37 -->
+  <section id="s37">
+    <h2><span class="num">37</span>判别训练与端到端：公式与算例<span class="level b">深入</span></h2>
+
+    <h3>E. 从交叉熵到 LF-MMI</h3>
+
+    <div class="eq"><span class="lbl">E1 帧级交叉熵</span><pre>F_CE = Σ_t log P(s_t^ref | x_t)        s_t^ref 来自 Viterbi 硬对齐</pre></div>
+
+    <div class="eq"><span class="lbl">E2 MMI：直接优化正确答案的后验</span><pre>          R        p(X_r | S_{W_r})^κ · P(W_r)
+F_MMI = Σ   log ─────────────────────────────
+         r=1     Σ_W p(X_r | S_W)^κ · P(W)
+                 └──── 所有可能的句子 ────┘</pre></div>
+
+    <div class="eq"><span class="lbl">E3 统一的梯度形式 —— 最值得记住的一个式子</span><pre>  ∂F                    ⎡  num          den   ⎤
+────────────── = κ · ⎢ γ_t (j)  −  γ_t (j) ⎥
+∂ log p(x_t|j)         ⎣                     ⎦
+
+     正确路径上的占用  −  所有路径上的占用</pre></div>
+    <p class="why">含义非常直观：<strong>如果状态 j 在正确答案里该出现、但模型没给足概率，梯度为正，推高它；如果模型把概率给了不该出现的状态，梯度为负，压下去。</strong>MMI、bMMI、MPE、sMBR、LF-MMI 全都是这个形式，区别只在分母怎么构造。CTC 的梯度（下面 G4）也是同一个模子。</p>
+
+    <div class="tw">
+    <table>
+      <thead><tr><th>方法</th><th>分母是什么</th><th>代价</th></tr></thead>
+      <tbody>
+        <tr><td class="old">lattice-based MMI</td><td>预先解码整个训练集得到的 word lattice</td><td>要先训 CE 模型、要解码、lattice 冻结后与模型不匹配</td></tr>
+        <tr><td class="hi">LF-MMI (chain)</td><td>音素级 4-gram 编成的 <code>den.fst</code>，几千状态</td><td>无——小到可以每个 minibatch 在 GPU 上跑完整前向后向</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <div class="eq"><span class="lbl">E4 leaky HMM（数值稳定）</span><pre>ã_ij = (1 − λ)·a_ij + λ·π_j            λ = 0.1
+
+允许以小概率跳到任意状态，防止分母图的前向后向下溢到 0</pre></div>
+
+    <h3>F. 混合系统的两个换算</h3>
+
+    <div class="eq"><span class="lbl">F1 后验 → 伪似然</span><pre>            P(s|x)·p(x)
+p(x|s) = ──────────────  ∝  P(s|x) / P(s)
+               P(s)
+                              ↑ p(x) 与 s 无关，argmax 中是常数
+
+chain 模型不做这一步 —— 序列级目标已经归一化</pre></div>
+
+    <div class="eq"><span class="lbl">F2 解码的总得分</span><pre>score(W) = κ·Σ_t log p(x_t|s_t) + Σ_t log a_{s_{t−1}s_t} + λ·log P(W) + ρ·|W|
+           └── 声学 ──┘          └─ 转移 ─┘    └─ LM ─┘   └ 词插入惩罚 ┘
+
+GMM/CE 系统： κ = 0.1  (等价于 λ = 10)
+chain 系统：  κ = 1.0，self-loop-scale 也必须同步改成 1.0</pre></div>
+    <p class="why">κ 为什么不是 1？因为条件独立假设让每帧似然重复计入了相关信息，声学得分的动态范围被高估了约 10 倍，必须人为压缩才能和 LM 平衡。<strong>这个超参数的存在本身，就是模型错误设定的量化证据。</strong></p>
+
+    <h3>G. CTC 的完整数学</h3>
+
+    <div class="eq"><span class="lbl">G1 折叠映射与路径概率</span><pre>B: 先合并连续重复，再删去所有 blank
+
+  B(你你-好好) = 你好      B(你好好好) = 你好
+
+                    T
+P(π|X) = Π  y^t_{π_t}          π 是一条长度 T 的帧级路径
+                   t=1
+
+P(l|X) = Σ  P(π|X)             对所有能折叠成 l 的路径求和
+        π∈B⁻¹(l)</pre></div>
+
+    <div class="eq"><span class="lbl">G2 扩展序列与前向递推</span><pre>l = 你好  ──▶  l' = [ - , 你 , - , 好 , - ]      长度 2|l|+1 = 5
+
+α₁(0) = y¹_-        α₁(1) = y¹_{l'₁}       其余为 0
+
+α_t(s) = ( α_{t−1}(s) + α_{t−1}(s−1) + [skip]·α_{t−1}(s−2) ) · y^t_{l'_s}
+           └ 停在原地 ┘  └ 前进一格 ┘      └ 跳过中间 blank ┘
+
+[skip] 仅当  l'_s ≠ blank  且  l'_s ≠ l'_{s−2}
+       ↑ 这个条件就是"叠字必须用 blank 隔开"的数学表达
+
+P(l|X) = α_T(|l'|−1) + α_T(|l'|)</pre></div>
+
+    <div class="eq"><span class="lbl">G3 后向与占用</span><pre>β_T(|l'|) = y^T_-      β_T(|l'|−1) = y^T_{l_{|l|}}
+
+β_t(s) = ( β_{t+1}(s) + β_{t+1}(s+1) + [skip]·β_{t+1}(s+2) ) · y^t_{l'_s}</pre></div>
+
+    <div class="eq"><span class="lbl">G4 梯度 —— 和 E3 是同一个模子</span><pre>∂(−ln P(l|X))        t        1
+─────────────  =   y_k  −  ────  ·   Σ    α_t(s)·β_t(s)
+     ∂z^t_k                P(l|X)  s: l'_s = k
+
+     softmax 输出  −  归一化的占用后验
+              （和判别训练的 γ_num − γ_den 完全同构）</pre></div>
+
+    <div class="ex"><span class="tag">算例 4 · 用真实概率跑一遍 CTC</span>
+      <p>还是"你好"、4 帧。假设网络输出的 softmax 是：</p>
+      <div class="tw"><table class="dp">
+        <thead><tr><th>y</th><th>t=1</th><th>t=2</th><th>t=3</th><th>t=4</th></tr></thead>
+        <tbody>
+          <tr><td>-（blank）</td><td>0.6</td><td>0.2</td><td>0.2</td><td>0.4</td></tr>
+          <tr><td>你</td><td>0.3</td><td>0.7</td><td>0.1</td><td>0.1</td></tr>
+          <tr><td>好</td><td>0.1</td><td>0.1</td><td>0.7</td><td>0.5</td></tr>
+        </tbody>
+      </table></div>
+      <p>按 G2 递推（<code>l' = [-, 你, -, 好, -]</code>）：</p>
+      <div class="tw"><table class="dp">
+        <thead><tr><th>α</th><th>s=0 「-」</th><th>s=1 「你」</th><th>s=2 「-」</th><th>s=3 「好」</th><th>s=4 「-」</th></tr></thead>
+        <tbody>
+          <tr><td>t=1</td><td>0.60000</td><td>0.30000</td><td class="void">0</td><td class="void">0</td><td class="void">0</td></tr>
+          <tr><td>t=2</td><td>0.12000</td><td>0.63000</td><td>0.06000</td><td>0.03000</td><td class="void">0</td></tr>
+          <tr><td>t=3</td><td>0.02400</td><td>0.07500</td><td>0.13800</td><td>0.50400</td><td>0.00600</td></tr>
+          <tr><td>t=4</td><td>0.00960</td><td>0.00990</td><td>0.08520</td><td class="best">0.35850</td><td class="best">0.20400</td></tr>
+        </tbody>
+      </table></div>
+<pre>P(你好|X) = α₄(3) + α₄(4) = 0.35850 + 0.20400 = 0.56250
+
+损失 = −ln 0.56250 = 0.5754
+
+穷举那 15 条路径逐条算概率再相加 = 0.56250   ✓ 完全一致</pre>
+      <p>注意 <code>α₄(3) = 0.35850</code> 远大于 <code>α₄(4) = 0.20400</code>——说明模型更倾向于"最后一帧还在输出'好'"而不是"已经结束进入 blank"。这和 t=4 时 <code>y_好 = 0.5 &gt; y_- = 0.4</code> 一致。</p>
+      <p><strong>这张表就是 CTC 训练的全部</strong>：前向得到 P，反向传播用 G4 的式子，不需要任何对齐标注。</p>
+    </div>
+
+    <h3>H. RNN-T：在 T×U 格子上求和</h3>
+    <div class="eq"><span class="lbl">H1 三个网络</span><pre>h^enc_t    = Encoder(x_{1..t})           听
+h^pred_u   = Prediction(y_{1..u−1})      读已输出的字（内置 LM）
+z_{t,u}    = W·tanh( h^enc_t + h^pred_u )   联合
+P(k|t,u)   = softmax(z_{t,u})            k ∈ 词表 ∪ {∅}</pre></div>
+
+    <div class="eq"><span class="lbl">H2 格子前向</span><pre>α(t,u) = α(t−1,u)·P(∅ | t−1,u)  +  α(t,u−1)·P(y_u | t,u−1)
+         └ 向右：消耗一帧 ┘        └ 向上：输出一个字，不消耗帧 ┘
+
+P(y|X) = α(T,U)·P(∅ | T,U)</pre></div>
+    <p class="why">和 CTC 的关键差别：<code>P(k|t,u)</code> 的条件里有 <code>u</code>——<strong>每一步都能看到已经输出的文字，条件独立假设被打破了</strong>。代价是要在整个 T×U 网格上做前向后向，显存占用远高于 CTC 的 T×2L。</p>
+
+    <h3>I. 注意力</h3>
+    <div class="eq"><span class="lbl">I1 缩放点积注意力</span><pre>                        ⎛ Q·Kᵀ ⎞
+Attention(Q,K,V) = softmax⎜ ──── ⎟ · V
+                        ⎝  √d_k ⎠
+
+MultiHead(Q,K,V) = Concat(head₁ … head_h)·W^O
+head_i = Attention(QW_i^Q, KW_i^K, VW_i^V)</pre></div>
+
+    <div class="eq"><span class="lbl">I2 为什么除 √d_k</span><pre>设 q, k 各分量独立、零均值、单位方差，则
+
+  q·k = Σ_{i=1}^{d_k} q_i·k_i      Var(q·k) = d_k
+
+d_k = 512 时点积标准差约 22.6 → softmax 严重饱和 → 梯度趋近 0
+
+除以 √d_k 后方差归 1，softmax 工作在敏感区间</pre></div>
+
+    <div class="ex"><span class="tag">算例 5 · 注意力权重是怎么分配的</span>
+      <p>当前帧的 Query <code>q = [1, 0, 1, 0]</code>，三个候选帧的 Key：</p>
+<pre>k₁ = [1.0, 0, 1.0, 0]     与 q 完全同向
+k₂ = [0, 1.0, 0, 1.0]     与 q 正交
+k₃ = [0.9, 0.1, 0.8, 0.2] 与 q 相近
+
+点积 / √4 ：  1.0000    0.0000    0.8500
+softmax   ：  0.4487    0.1651    0.3862      和 = 1.0000</pre>
+      <p>正交的 k₂ 拿到 16.5% 的权重——<strong>softmax 不会把权重压到 0</strong>，这是它和硬选择的区别，也是注意力可微、能训练的原因。同向的 k₁ 和相近的 k₃ 平分了 83.5%。</p>
+      <p>放回 ASR 语境：编码"shi"这一帧时，如果后面"吃饭"两帧的 Key 与它的 Query 相近，就会拿到高权重，于是"shi"的表征里带上了"吃东西的场景"——<em>同音消歧就是这样在编码器内部完成的</em>。</p>
+    </div>
+
+    <div class="eq"><span class="lbl">I3 Conformer 块（马卡龙结构）</span><pre>x̃  = x  + ½·FFN(x)
+x'  = x̃ + MHSA(x̃)          ← 全局上下文
+x'' = x' + Conv(x')         ← 局部细节，流式时用因果卷积
+y   = LayerNorm( x'' + ½·FFN(x'') )
+
+复杂度：MHSA 是 O(T²·d)，Conv 是 O(T·d·k)</pre></div>
+  </section>
+
+  <!-- 38 -->
+  <section id="s38">
+    <h2><span class="num">38</span>解码、评测与量化：公式与算例<span class="level b">深入</span></h2>
+
+    <h3>J. 半环与 WFST</h3>
+    <div class="eq"><span class="lbl">J1 半环定义</span><pre>(K, ⊕, ⊗, 0̄, 1̄)      ⊕ 合并并行路径     ⊗ 累积串行路径
+
+Tropical： (R∪{∞},  min,  +,  ∞, 0)        → Viterbi
+Log：      (R∪{∞},  ⊕_log, +,  ∞, 0)       → 前向求和
+
+  a ⊕_log b = −log( e^(−a) + e^(−b) )</pre></div>
+    <p class="why"><strong>同一套 compose / determinize / minimize 算法，换个半环就在"求最优"和"求总和"之间切换。</strong>这就是 36 节 B2 里"前向与 Viterbi 结构完全相同"的代数解释。</p>
+
+    <div class="eq"><span class="lbl">J2 组合运算</span><pre>(T₁ ∘ T₂)(x, z) =  ⊕  [ T₁(x,y) ⊗ T₂(y,z) ]
+                    y
+
+HCLG = min( det( H ∘ det( C ∘ det( L ∘ G ) ) ) )</pre></div>
+
+    <div class="eq"><span class="lbl">J3 weight pushing</span><pre>势函数： V(q) =  ⊕  w[π]           从 q 到终态的所有路径
+                π: q→F
+
+新权重： w'[e] = V(p[e])⁻¹ ⊗ w[e] ⊗ V(n[e])
+
+完整路径的总权重不变，但权重被尽量前推 → beam 剪枝能更早判断</pre></div>
+
+    <h3>K. 语言模型与浅融合</h3>
+    <div class="eq"><span class="lbl">K1 n-gram 与困惑度</span><pre>P(W) = Π_{i} P(w_i | w_{i−n+1} … w_{i−1})
+
+PPL = P(W)^(−1/N) = exp( −(1/N)·Σ_i log P(w_i | 历史) )
+
+PPL 的直觉：平均每一步有多少个"等概率的候选" —— 越小越好</pre></div>
+
+    <div class="eq"><span class="lbl">K2 浅融合 + 热词偏置</span><pre>score(路径) = log P_asr + λ·log P_lm + Σ_t bonus(AC状态_t)
+
+bonus 规则：  部分匹配也累加        ← 否则 beam 活不到匹配成功
+             fail 时全额退回       ← 否则误触发爆炸</pre></div>
+
+    <div class="eq"><span class="lbl">K3 beam 剪枝的两个判据</span><pre>相对：  丢弃  score(h) < max_h' score(h') − beam        beam = 15
+绝对：  只保留 max-active 个最优活跃状态
+
+CTC prefix beam search 额外要求：折叠成同一前缀的多条路径，概率必须合并
+  p(前缀) = p_blank(前缀) + p_nonblank(前缀)      ← 最容易写错的地方</pre></div>
+
+    <h3>L. 评测指标</h3>
+    <div class="eq"><span class="lbl">L1 编辑距离</span><pre>              ⎧ D(i−1, j) + 1                  删除
+D(i,j) = min  ⎨ D(i, j−1) + 1                  插入
+              ⎩ D(i−1, j−1) + [r_i ≠ h_j]      替换 / 匹配
+
+WER / CER = (S + D + I) / N        N = 参考长度</pre></div>
+
+    <div class="ex"><span class="tag">算例 6 · CER 的 DP 表</span>
+      <p>参考"今天天气不错"(6 字)，识别"今天天汽很不错"(7 字)：</p>
+      <div class="tw"><table class="dp">
+        <thead><tr><th></th><th>ε</th><th>今</th><th>天</th><th>天</th><th>汽</th><th>很</th><th>不</th><th>错</th></tr></thead>
+        <tbody>
+          <tr><td>ε</td><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr>
+          <tr><td>今</td><td>1</td><td class="best">0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+          <tr><td>天</td><td>2</td><td>1</td><td class="best">0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+          <tr><td>天</td><td>3</td><td>2</td><td>1</td><td class="best">0</td><td>1</td><td>2</td><td>3</td><td>4</td></tr>
+          <tr><td>气</td><td>4</td><td>3</td><td>2</td><td>1</td><td class="best">1</td><td>2</td><td>3</td><td>4</td></tr>
+          <tr><td>不</td><td>5</td><td>4</td><td>3</td><td>2</td><td>2</td><td>2</td><td class="best">2</td><td>3</td></tr>
+          <tr><td>错</td><td>6</td><td>5</td><td>4</td><td>3</td><td>3</td><td>3</td><td>3</td><td class="best">2</td></tr>
+        </tbody>
+      </table></div>
+<pre>D = 2   （气→汽 替换 1 次，插入"很" 1 次）
+
+CER = 2 / 6 = 33.3%</pre>
+      <p>对角线上标出的就是最优路径。注意 <strong>CER 可以超过 100%</strong>——分母是参考长度，模型疯狂插入内容时分子会比分母大。这正是 24 节"字/秒比值"监控的理论依据。</p>
+    </div>
+
+    <div class="eq"><span class="lbl">L2 说话人分离与 oracle</span><pre>       FA + MISS + CONFUSION
+DER = ─────────────────────        FA 虚警  MISS 漏检  CONF 说话人混淆
+          总语音时长
+
+oracle WER = min  WER(h)           n-best 里最好那条的 WER
+             h ∈ n-best
+             ↑ 重打分、rescoring、LLM 纠错能达到的天花板</pre></div>
+    <p class="why">如果 <code>oracle WER ≈ 实际 WER</code>，说明正确答案<strong>根本没进候选</strong>——再怎么优化语言模型和重打分都没用，该去调 beam 或换声学模型了。这一条能省掉大量白费的调优。</p>
+
+    <h3>M. GOP 发音评测</h3>
+    <div class="eq"><span class="lbl">M1 两种等价形式</span><pre>              ⎡    P(o | p)    ⎤              o = 强制对齐切出的那一段音频
+GOP(p) = log ⎢ ────────────── ⎥              p = 课文要求的音素
+              ⎣ max_q P(o | q) ⎦              q = 遍历全部音素
+
+DNN 后验形式（省掉先验换算）：
+
+              ⎡    P(p | o)    ⎤
+GOP(p) = log ⎢ ────────────── ⎥
+              ⎣ max_q P(q | o) ⎦
+
+发音标准 → p 就是 argmax → GOP ≈ 0
+发音跑偏 → 某个 q 更像   → GOP ≪ 0，且 q 告诉你"发成了什么"</pre></div>
+
+    <h3>N. 量化</h3>
+    <div class="eq"><span class="lbl">N1 int8 对称量化</span><pre>s = max|x| / 127                          定标因子
+
+q = clip( round(x / s), −127, 127 )        量化
+
+x̂ = q · s                                 反量化
+
+非对称（含零点）： s = (max−min)/255,  q = round(x/s) + z</pre></div>
+
+    <div class="eq"><span class="lbl">N2 量化噪声</span><pre>误差上界：  |x − x̂| ≤ s/2
+
+噪声功率：  E[(x−x̂)²] = s²/12          均匀量化噪声的标准结果
+
+信噪比每增加 1 bit 提升约 6.02 dB</pre></div>
+
+    <div class="ex"><span class="tag">算例 7 · 一组权重量化到 int8</span>
+<pre>原始权重： −0.83   0.12   0.47   −0.05   0.91
+
+s = max|x| / 127 = 0.91 / 127 = 0.007165
+
+q  =  −116     17     66      −7     127     ← 存成 int8，体积降到 1/4
+x̂  = −0.83118  0.12181  0.47291  −0.05016  0.91000
+
+最大误差 = 0.002913     理论上界 s/2 = 0.003583  ✓
+噪声功率 s²/12 = 4.28×10⁻⁶</pre>
+      <p>注意最大的那个权重 0.91 被<strong>无损</strong>还原（它定义了 scale），误差集中在小权重上。这解释了两件事：<strong>①</strong> 为什么离群值（outlier）对量化伤害极大——一个异常大的权重会把 scale 拉大，所有其他权重的误差同步放大；<strong>②</strong> 为什么 per-channel 量化比 per-tensor 好——每个通道独立定标，避免被全局离群值绑架。</p>
+    </div>
+
+    <h3>O. 速度与延迟</h3>
+    <div class="eq"><span class="lbl">O1 实时率</span><pre>RTF = 处理耗时 / 音频时长          RTFx = 1 / RTF
+
+流式系统要求 RTF < 1，否则积压会无限增长</pre></div>
+
+    <div class="eq"><span class="lbl">O2 流式首字延迟</span><pre>L_total = L_buf + L_vad + L_chunk + L_look + L_compute + L_punct + L_net
+
+其中主导项：
+  L_chunk = chunk帧数 × 帧移 × subsample        16 × 10ms × 3 ≈ 480~640 ms
+  L_look  = 右上下文帧数 × 帧移 × subsample      ≈ 160~320 ms
+
+L_compute 通常只占总延迟的 10% 以内
+ → 优化顺序：砍 chunk ▶ 限右上下文 ▶ 标点低延迟模式 ▶ 最后才是换模型</pre></div>
+
+    <div class="note"><span class="tag">把这三节串起来</span>
+      <p>回头看会发现整份手册的数学其实只有两个动作在反复出现：<strong>①「对所有对齐求和」</strong>——HMM 前向、CTC 前向、RNN-T 格子、LF-MMI 的分子分母，全是它；<strong>②「正确的占用 减去 全部的占用」</strong>——Baum-Welch 的重估、MMI 的梯度、CTC 的梯度，全是它。换过的只是"对齐"的定义和"全部"的范围。</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>数据来源：Open ASR Leaderboard 榜单快照（2026 年 7 月）、WeNet 与 WeNet 2.0 论文（arXiv 2102.01547 / 2203.15455）、CHiME-7/8 DASR 挑战赛综述（MERL TR2026-008）、离散语音 token 综述（arXiv 2502.06490）、Kaldi 与 icefall 官方配方。榜单排名和研究前沿波动快，第 19、31、32 节的内容请以当期资料复核。</p>
+    <p>第 05、08、03 节的手算实例（Viterbi DP 表、CTC 前向表与 15 条路径、CER 编辑距离）与第 14 节的帧数推导均已用脚本穷举验证。Whisper 参数默认值以 openai-whisper 与 faster-whisper 的公开默认为准；Kaldi 各配方的叶子数、beam 等取值因数据集而异，表中为常见区间。</p>
+  </footer>
+
+  </main>
+</div>
+</div>
+
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+  if(!links.length) return;
+  var map = {}, targets = [];
+  links.forEach(function(a){
+    var id = a.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if(el){ map[id] = a; targets.push(el); }
+  });
+  function setActive(id){
+    links.forEach(function(a){ a.classList.remove('on'); });
+    var a = map[id];
+    if(a){ a.classList.add('on'); }
+  }
+  if('IntersectionObserver' in window){
+    var visible = {};
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ visible[e.target.id] = e.isIntersecting; });
+      for(var i=0;i<targets.length;i++){
+        if(visible[targets[i].id]){ setActive(targets[i].id); return; }
+      }
+    }, {rootMargin:'-6% 0px -72% 0px', threshold:0});
+    targets.forEach(function(t){ io.observe(t); });
+  }
+  setActive(targets[0].id);
+})();
+</script>

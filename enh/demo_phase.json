@@ -1,0 +1,409 @@
+{
+ "swap": [
+  {
+   "snr": -5.0,
+   "noisy": -5.8,
+   "cm_np": 5.29,
+   "nm_cp": -3.4,
+   "cm_np_stoi": 0.97,
+   "nm_cp_stoi": 0.676,
+   "noisy_stoi": 0.372
+  },
+  {
+   "snr": 0.0,
+   "noisy": -1.36,
+   "cm_np": 8.34,
+   "nm_cp": 1.9,
+   "cm_np_stoi": 0.977,
+   "nm_cp_stoi": 0.773,
+   "noisy_stoi": 0.559
+  },
+  {
+   "snr": 5.0,
+   "noisy": 3.64,
+   "cm_np": 11.58,
+   "nm_cp": 7.28,
+   "cm_np_stoi": 0.985,
+   "nm_cp_stoi": 0.868,
+   "noisy_stoi": 0.741
+  },
+  {
+   "snr": 10.0,
+   "noisy": 8.64,
+   "cm_np": 15.46,
+   "nm_cp": 12.51,
+   "cm_np_stoi": 0.992,
+   "nm_cp_stoi": 0.936,
+   "noisy_stoi": 0.873
+  },
+  {
+   "snr": 15.0,
+   "noisy": 13.64,
+   "cm_np": 19.62,
+   "nm_cp": 17.66,
+   "cm_np_stoi": 0.996,
+   "nm_cp_stoi": 0.973,
+   "noisy_stoi": 0.943
+  }
+ ],
+ "overlap": [
+  {
+   "ov": 2,
+   "hop": 256,
+   "hop_ms": 16.0,
+   "cm_np": 11.58,
+   "stoi": 0.985
+  },
+  {
+   "ov": 4,
+   "hop": 128,
+   "hop_ms": 8.0,
+   "cm_np": 11.96,
+   "stoi": 0.981
+  },
+  {
+   "ov": 8,
+   "hop": 64,
+   "hop_ms": 4.0,
+   "cm_np": 12.05,
+   "stoi": 0.981
+  },
+  {
+   "ov": 16,
+   "hop": 32,
+   "hop_ms": 2.0,
+   "cm_np": 12.04,
+   "stoi": 0.981
+  }
+ ],
+ "overlap_gain": 0.46,
+ "swap_win": [
+  {
+   "nfft": 64,
+   "ms": 4.0,
+   "cm_np": 11.63,
+   "nm_cp": 7.81
+  },
+  {
+   "nfft": 128,
+   "ms": 8.0,
+   "cm_np": 11.08,
+   "nm_cp": 7.41
+  },
+  {
+   "nfft": 256,
+   "ms": 16.0,
+   "cm_np": 11.08,
+   "nm_cp": 7.1
+  },
+  {
+   "nfft": 512,
+   "ms": 32.0,
+   "cm_np": 11.58,
+   "nm_cp": 7.28
+  },
+  {
+   "nfft": 1024,
+   "ms": 64.0,
+   "cm_np": 12.22,
+   "nm_cp": 7.35
+  },
+  {
+   "nfft": 2048,
+   "ms": 128.0,
+   "cm_np": 12.49,
+   "nm_cp": 6.89
+  }
+ ],
+ "mask": [
+  {
+   "snr": 0.0,
+   "irm": 7.91,
+   "irm_cp": 14.51,
+   "iam": 8.34,
+   "irm_stoi": 0.956,
+   "irm_cp_stoi": 0.975,
+   "iam_stoi": 0.977,
+   "phase_worth": 6.6
+  },
+  {
+   "snr": 5.0,
+   "irm": 10.8,
+   "irm_cp": 16.63,
+   "iam": 11.58,
+   "irm_stoi": 0.967,
+   "irm_cp_stoi": 0.98,
+   "iam_stoi": 0.985,
+   "phase_worth": 5.83
+  },
+  {
+   "snr": 10.0,
+   "irm": 14.02,
+   "irm_cp": 19.19,
+   "iam": 15.46,
+   "irm_stoi": 0.98,
+   "irm_cp_stoi": 0.987,
+   "iam_stoi": 0.992,
+   "phase_worth": 5.17
+  }
+ ],
+ "latency": [
+  {
+   "nfft": 32,
+   "win_ms": 2.0,
+   "hop_ms": 1.0,
+   "lat_ms": 3.0,
+   "df_hz": 500.0,
+   "irm_segsnr": 9.88,
+   "irm_lsd": 4.4,
+   "irm_stoi": 0.94
+  },
+  {
+   "nfft": 64,
+   "win_ms": 4.0,
+   "hop_ms": 2.0,
+   "lat_ms": 6.0,
+   "df_hz": 250.0,
+   "irm_segsnr": 10.2,
+   "irm_lsd": 3.97,
+   "irm_stoi": 0.956
+  },
+  {
+   "nfft": 128,
+   "win_ms": 8.0,
+   "hop_ms": 4.0,
+   "lat_ms": 12.0,
+   "df_hz": 125.0,
+   "irm_segsnr": 10.04,
+   "irm_lsd": 3.83,
+   "irm_stoi": 0.961
+  },
+  {
+   "nfft": 256,
+   "win_ms": 16.0,
+   "hop_ms": 8.0,
+   "lat_ms": 24.0,
+   "df_hz": 62.5,
+   "irm_segsnr": 10.09,
+   "irm_lsd": 3.71,
+   "irm_stoi": 0.961
+  },
+  {
+   "nfft": 512,
+   "win_ms": 32.0,
+   "hop_ms": 16.0,
+   "lat_ms": 48.0,
+   "df_hz": 31.2,
+   "irm_segsnr": 10.8,
+   "irm_lsd": 3.14,
+   "irm_stoi": 0.967
+  },
+  {
+   "nfft": 1024,
+   "win_ms": 64.0,
+   "hop_ms": 32.0,
+   "lat_ms": 96.0,
+   "df_hz": 15.6,
+   "irm_segsnr": 11.45,
+   "irm_lsd": 3.42,
+   "irm_stoi": 0.963
+  }
+ ],
+ "latency_babble": [
+  {
+   "nfft": 32,
+   "win_ms": 2.0,
+   "lat_ms": 3.0,
+   "irm_segsnr": 11.61,
+   "irm_stoi": 0.967
+  },
+  {
+   "nfft": 64,
+   "win_ms": 4.0,
+   "lat_ms": 6.0,
+   "irm_segsnr": 11.74,
+   "irm_stoi": 0.972
+  },
+  {
+   "nfft": 128,
+   "win_ms": 8.0,
+   "lat_ms": 12.0,
+   "irm_segsnr": 11.53,
+   "irm_stoi": 0.972
+  },
+  {
+   "nfft": 256,
+   "win_ms": 16.0,
+   "lat_ms": 24.0,
+   "irm_segsnr": 11.54,
+   "irm_stoi": 0.972
+  },
+  {
+   "nfft": 512,
+   "win_ms": 32.0,
+   "lat_ms": 48.0,
+   "irm_segsnr": 12.44,
+   "irm_stoi": 0.978
+  },
+  {
+   "nfft": 1024,
+   "win_ms": 64.0,
+   "lat_ms": 96.0,
+   "irm_segsnr": 13.12,
+   "irm_stoi": 0.98
+  }
+ ],
+ "res_gain": {
+  "pink": 1.57,
+  "babble": 1.51
+ },
+ "latency_real": [
+  {
+   "kind": "pink",
+   "rows": [
+    {
+     "nfft": 32,
+     "win_ms": 2.0,
+     "lat_ms": 3.0,
+     "segsnr": 2.89,
+     "stoi": 0.655,
+     "lsd": 9.23
+    },
+    {
+     "nfft": 64,
+     "win_ms": 4.0,
+     "lat_ms": 6.0,
+     "segsnr": 4.91,
+     "stoi": 0.712,
+     "lsd": 8.79
+    },
+    {
+     "nfft": 128,
+     "win_ms": 8.0,
+     "lat_ms": 12.0,
+     "segsnr": 6.13,
+     "stoi": 0.722,
+     "lsd": 8.8
+    },
+    {
+     "nfft": 256,
+     "win_ms": 16.0,
+     "lat_ms": 24.0,
+     "segsnr": 6.44,
+     "stoi": 0.728,
+     "lsd": 8.83
+    },
+    {
+     "nfft": 512,
+     "win_ms": 32.0,
+     "lat_ms": 48.0,
+     "segsnr": 6.95,
+     "stoi": 0.747,
+     "lsd": 8.35
+    },
+    {
+     "nfft": 1024,
+     "win_ms": 64.0,
+     "lat_ms": 96.0,
+     "segsnr": 6.88,
+     "stoi": 0.736,
+     "lsd": 8.11
+    }
+   ]
+  },
+  {
+   "kind": "babble",
+   "rows": [
+    {
+     "nfft": 32,
+     "win_ms": 2.0,
+     "lat_ms": 3.0,
+     "segsnr": 3.9,
+     "stoi": 0.694,
+     "lsd": 7.77
+    },
+    {
+     "nfft": 64,
+     "win_ms": 4.0,
+     "lat_ms": 6.0,
+     "segsnr": 6.09,
+     "stoi": 0.804,
+     "lsd": 5.87
+    },
+    {
+     "nfft": 128,
+     "win_ms": 8.0,
+     "lat_ms": 12.0,
+     "segsnr": 6.6,
+     "stoi": 0.83,
+     "lsd": 5.09
+    },
+    {
+     "nfft": 256,
+     "win_ms": 16.0,
+     "lat_ms": 24.0,
+     "segsnr": 6.23,
+     "stoi": 0.839,
+     "lsd": 4.75
+    },
+    {
+     "nfft": 512,
+     "win_ms": 32.0,
+     "lat_ms": 48.0,
+     "segsnr": 5.58,
+     "stoi": 0.849,
+     "lsd": 4.48
+    },
+    {
+     "nfft": 1024,
+     "win_ms": 64.0,
+     "lat_ms": 96.0,
+     "segsnr": 5.1,
+     "stoi": 0.828,
+     "lsd": 4.71
+    }
+   ]
+  }
+ ],
+ "best_win": {
+  "pink": 32.0,
+  "babble": 8.0,
+  "pink_span": 4.06,
+  "babble_span": 2.7
+ },
+ "resolve": {
+  "f0": 130.0,
+  "need_pts": 493,
+  "need_ms": 30.8
+ },
+ "tiers": [
+  {
+   "tag": "耳机 / 助听 / 实时监听",
+   "budget_ms": 10.0,
+   "best_win_ms": 4.0,
+   "best_lat_ms": 6.0,
+   "ceiling": 10.2,
+   "df_hz": 250.0,
+   "resolves_f0": false
+  },
+  {
+   "tag": "通话与会议",
+   "budget_ms": 40.0,
+   "best_win_ms": 16.0,
+   "best_lat_ms": 24.0,
+   "ceiling": 10.09,
+   "df_hz": 62.5,
+   "resolves_f0": false
+  },
+  {
+   "tag": "识别 / 唤醒前端",
+   "budget_ms": 200.0,
+   "best_win_ms": 64.0,
+   "best_lat_ms": 96.0,
+   "ceiling": 11.45,
+   "df_hz": 15.6,
+   "resolves_f0": true
+  }
+ ],
+ "tier_gap": 1.25
+}

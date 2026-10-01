@@ -1,0 +1,239 @@
+{
+ "setup": {
+  "nword": 24,
+  "nhomo": 6,
+  "nphone": 28,
+  "nsenone": 200
+ },
+ "stages": [
+  {
+   "tag": "G 二元文法",
+   "states": 25,
+   "arcs": 600,
+   "in_eps": 0,
+   "out_eps": 0
+  },
+  {
+   "tag": "L 发音词典",
+   "states": 76,
+   "arcs": 99,
+   "in_eps": 24,
+   "out_eps": 75
+  },
+  {
+   "tag": "L∘G",
+   "states": 100,
+   "arcs": 675,
+   "in_eps": 24,
+   "out_eps": 75
+  },
+  {
+   "tag": "det(L∘G)",
+   "states": 258,
+   "arcs": 717,
+   "in_eps": 24,
+   "out_eps": 313
+  },
+  {
+   "tag": "min·det(L∘G)",
+   "states": 258,
+   "arcs": 717,
+   "in_eps": 24,
+   "out_eps": 313
+  },
+  {
+   "tag": "C 三音子",
+   "states": 813,
+   "arcs": 22764,
+   "in_eps": 0,
+   "out_eps": 28
+  },
+  {
+   "tag": "C∘L∘G",
+   "states": 838,
+   "arcs": 1978,
+   "in_eps": 364,
+   "out_eps": 722
+  },
+  {
+   "tag": "det(C∘L∘G)",
+   "states": 838,
+   "arcs": 1978,
+   "in_eps": 364,
+   "out_eps": 722
+  },
+  {
+   "tag": "min·det(C∘L∘G)",
+   "states": 356,
+   "arcs": 1275,
+   "in_eps": 143,
+   "out_eps": 501
+  },
+  {
+   "tag": "H HMM",
+   "states": 1396,
+   "arcs": 3255,
+   "in_eps": 465,
+   "out_eps": 2790
+  },
+  {
+   "tag": "H∘C∘L∘G",
+   "states": 2432,
+   "arcs": 5427,
+   "in_eps": 662,
+   "out_eps": 4653
+  },
+  {
+   "tag": "det(HCLG)",
+   "states": 1913,
+   "arcs": 3351,
+   "in_eps": 662,
+   "out_eps": 2577
+  },
+  {
+   "tag": "min·det(HCLG)",
+   "states": 1913,
+   "arcs": 3351,
+   "in_eps": 662,
+   "out_eps": 2577
+  }
+ ],
+ "ntri_used": 465,
+ "ntri_all": 24389,
+ "opt": [
+  {
+   "tag": "L∘G",
+   "raw": {
+    "states": 100,
+    "arcs": 675
+   },
+   "det": {
+    "states": 258,
+    "arcs": 717
+   },
+   "min": {
+    "states": 258,
+    "arcs": 717
+   },
+   "det_pct": 106.2,
+   "min_pct": 106.2
+  },
+  {
+   "tag": "C∘L∘G",
+   "raw": {
+    "states": 838,
+    "arcs": 1978
+   },
+   "det": {
+    "states": 838,
+    "arcs": 1978
+   },
+   "min": {
+    "states": 356,
+    "arcs": 1275
+   },
+   "det_pct": 100.0,
+   "min_pct": 64.5
+  },
+  {
+   "tag": "H∘C∘L∘G",
+   "raw": {
+    "states": 2432,
+    "arcs": 5427
+   },
+   "det": {
+    "states": 1913,
+    "arcs": 3351
+   },
+   "min": {
+    "states": 1913,
+    "arcs": 3351
+   },
+   "det_pct": 61.7,
+   "min_pct": 61.7
+  }
+ ],
+ "nodisambig": {
+  "ok": false,
+  "why": "确定化超过 60000 个状态",
+  "cap": 60000
+ },
+ "disambig": {
+  "states": 258,
+  "arcs": 717,
+  "ndis": 3
+ },
+ "scale": [
+  {
+   "nword": 8,
+   "g_arcs": 72,
+   "lg_arcs": 119,
+   "clg_arcs": 208,
+   "hclg_states": 519,
+   "hclg_arcs": 832,
+   "ntri": 156
+  },
+  {
+   "nword": 12,
+   "g_arcs": 156,
+   "lg_arcs": 227,
+   "clg_arcs": 566,
+   "hclg_states": 1085,
+   "hclg_arcs": 1786,
+   "ntri": 302
+  },
+  {
+   "nword": 16,
+   "g_arcs": 272,
+   "lg_arcs": 351,
+   "clg_arcs": 1472,
+   "hclg_states": 1771,
+   "hclg_arcs": 3400,
+   "ntri": 436
+  },
+  {
+   "nword": 24,
+   "g_arcs": 600,
+   "lg_arcs": 717,
+   "clg_arcs": 1275,
+   "hclg_states": 1913,
+   "hclg_arcs": 3351,
+   "ntri": 465
+  },
+  {
+   "nword": 32,
+   "g_arcs": 1056,
+   "lg_arcs": 1122,
+   "clg_arcs": 1546,
+   "hclg_states": 2332,
+   "hclg_arcs": 4062,
+   "ntri": 567
+  },
+  {
+   "nword": 48,
+   "g_arcs": 2352,
+   "lg_arcs": 1960,
+   "clg_arcs": 3875,
+   "hclg_states": 5445,
+   "hclg_arcs": 9663,
+   "ntri": 974
+  }
+ ],
+ "scale_slope": 1.37,
+ "expand": [
+  6.99,
+  7.87,
+  9.69,
+  4.67,
+  3.62,
+  4.93
+ ],
+ "expand_mean": 6.3,
+ "peak": {
+  "raw_arcs": 5427,
+  "final_arcs": 3351,
+  "ratio": 1.62,
+  "c_arcs": 22764,
+  "bytes_per_arc": 16
+ }
+}

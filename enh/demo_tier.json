@@ -1,0 +1,255 @@
+{
+ "tiers": [
+  {
+   "key": "ear",
+   "name": "耳机 / 助听",
+   "budget_ms": 8.0,
+   "nfft": 64,
+   "hop": 32,
+   "look": 0,
+   "why": "戴着它听自己的声音，骨导和气导要对齐",
+   "nbin": 33,
+   "alg_ms": 6.0,
+   "look_ms": 0.0,
+   "total_ms": 6.0,
+   "fits": true,
+   "win_ms": 4.0,
+   "df_hz": 250.0,
+   "mac": 64608,
+   "mmac_s": 32.3,
+   "fft_mmac_s": 0.19,
+   "mw50": 1.615,
+   "params": 64865,
+   "noisy": {
+    "segsnr": 4.45,
+    "stoi": 0.802,
+    "lsd": 9.41
+   },
+   "classic": {
+    "segsnr": 8.32,
+    "stoi": 0.795,
+    "lsd": 5.93
+   },
+   "nn": {
+    "segsnr": 9.76,
+    "stoi": 0.908,
+    "lsd": 3.88
+   },
+   "nn_unseen": {
+    "segsnr": 7.69,
+    "stoi": 0.853,
+    "lsd": 3.32
+   },
+   "classic_unseen": {
+    "segsnr": 5.77,
+    "stoi": 0.843,
+    "lsd": 4.04
+   },
+   "gain_classic": 3.87,
+   "gain_nn": 5.31,
+   "resolves_f0": false,
+   "need_win_ms": 18.2
+  },
+  {
+   "key": "call",
+   "name": "通话 / 车载",
+   "budget_ms": 40.0,
+   "nfft": 256,
+   "hop": 128,
+   "look": 0,
+   "why": "双向对话，单向超过 40 ms 就开始互相打断",
+   "nbin": 129,
+   "alg_ms": 24.0,
+   "look_ms": 0.0,
+   "total_ms": 24.0,
+   "fits": true,
+   "win_ms": 16.0,
+   "df_hz": 62.5,
+   "mac": 73824,
+   "mmac_s": 9.23,
+   "fft_mmac_s": 0.26,
+   "mw50": 0.461,
+   "params": 74177,
+   "noisy": {
+    "segsnr": 4.45,
+    "stoi": 0.802,
+    "lsd": 9.41
+   },
+   "classic": {
+    "segsnr": 10.26,
+    "stoi": 0.791,
+    "lsd": 6.14
+   },
+   "nn": {
+    "segsnr": 10.85,
+    "stoi": 0.95,
+    "lsd": 3.35
+   },
+   "nn_unseen": {
+    "segsnr": 7.63,
+    "stoi": 0.853,
+    "lsd": 3.32
+   },
+   "classic_unseen": {
+    "segsnr": 6.04,
+    "stoi": 0.822,
+    "lsd": 4.37
+   },
+   "gain_classic": 5.81,
+   "gain_nn": 6.4,
+   "resolves_f0": false,
+   "need_win_ms": 18.2
+  },
+  {
+   "key": "meet",
+   "name": "会议录制 / 后处理",
+   "budget_ms": 200.0,
+   "nfft": 1024,
+   "hop": 256,
+   "look": 2,
+   "why": "单向收听或离线出稿，可以攒一点未来帧",
+   "nbin": 513,
+   "alg_ms": 80.0,
+   "look_ms": 32.0,
+   "total_ms": 112.0,
+   "fits": true,
+   "win_ms": 64.0,
+   "df_hz": 15.6,
+   "mac": 127072,
+   "mmac_s": 7.94,
+   "fft_mmac_s": 0.64,
+   "mw50": 0.397,
+   "params": 127809,
+   "noisy": {
+    "segsnr": 4.45,
+    "stoi": 0.802,
+    "lsd": 9.41
+   },
+   "classic": {
+    "segsnr": 11.5,
+    "stoi": 0.821,
+    "lsd": 5.59
+   },
+   "nn": {
+    "segsnr": 11.47,
+    "stoi": 0.947,
+    "lsd": 3.26
+   },
+   "nn_unseen": {
+    "segsnr": 6.8,
+    "stoi": 0.841,
+    "lsd": 3.46
+   },
+   "classic_unseen": {
+    "segsnr": 6.42,
+    "stoi": 0.84,
+    "lsd": 4.06
+   },
+   "gain_classic": 7.05,
+   "gain_nn": 7.02,
+   "resolves_f0": true,
+   "need_win_ms": 18.2
+  }
+ ],
+ "cross": [
+  {
+   "cfg": "耳机 / 助听",
+   "total_ms": 6.0,
+   "mmac_s": 32.3,
+   "gain_nn": 5.31,
+   "fit": [
+    {
+     "budget": "耳机 / 助听",
+     "budget_ms": 8.0,
+     "ok": true
+    },
+    {
+     "budget": "通话 / 车载",
+     "budget_ms": 40.0,
+     "ok": true
+    },
+    {
+     "budget": "会议录制 / 后处理",
+     "budget_ms": 200.0,
+     "ok": true
+    }
+   ]
+  },
+  {
+   "cfg": "通话 / 车载",
+   "total_ms": 24.0,
+   "mmac_s": 9.23,
+   "gain_nn": 6.4,
+   "fit": [
+    {
+     "budget": "耳机 / 助听",
+     "budget_ms": 8.0,
+     "ok": false
+    },
+    {
+     "budget": "通话 / 车载",
+     "budget_ms": 40.0,
+     "ok": true
+    },
+    {
+     "budget": "会议录制 / 后处理",
+     "budget_ms": 200.0,
+     "ok": true
+    }
+   ]
+  },
+  {
+   "cfg": "会议录制 / 后处理",
+   "total_ms": 112.0,
+   "mmac_s": 7.94,
+   "gain_nn": 7.02,
+   "fit": [
+    {
+     "budget": "耳机 / 助听",
+     "budget_ms": 8.0,
+     "ok": false
+    },
+    {
+     "budget": "通话 / 车载",
+     "budget_ms": 40.0,
+     "ok": false
+    },
+    {
+     "budget": "会议录制 / 后处理",
+     "budget_ms": 200.0,
+     "ok": true
+    }
+   ]
+  }
+ ],
+ "bind": [
+  {
+   "tier": "耳机 / 助听",
+   "binding": "延迟 → 频率分辨率",
+   "detail": "Δf 250 Hz，分不开谐波，经典法只拿到 +3.87 dB",
+   "headroom": "算力只用 32.30 MMAC/s，远不是瓶颈"
+  },
+  {
+   "tier": "通话 / 车载",
+   "binding": "泛化 → 数据",
+   "detail": "见过的噪声上网络比经典法好 +0.59 dB，没见过的只好 +1.59 dB",
+   "headroom": "延迟 24.0 ms / 预算 40 ms，还有余量"
+  },
+  {
+   "tier": "会议录制 / 后处理",
+   "binding": "指标 → 要什么",
+   "detail": "网络 SegSNR +7.02 dB、LSD 3.26；经典法 SegSNR +7.05 dB、LSD 5.59",
+   "headroom": "延迟与算力都有大把余量（112.0 ms / 7.94 MMAC/s）"
+  }
+ ],
+ "summary": {
+  "ear_df": 250.0,
+  "ear_gain": 3.87,
+  "call_gain": 6.4,
+  "meet_gain": 7.02,
+  "ear_vs_meet": 1.71,
+  "mmac_spread": 4.1,
+  "f0_lo": 110.0
+ },
+ "runtime_s": 36.4
+}

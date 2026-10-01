@@ -1,0 +1,149 @@
+{
+ "sweep": [
+  {
+   "beta": 0.0,
+   "segsnr": 7.75,
+   "lsd": 6.21,
+   "stoi": 0.764,
+   "mus": 6.48,
+   "ltas": 5.6,
+   "miss": 31.7,
+   "hall": 0.31
+  },
+  {
+   "beta": 0.1,
+   "segsnr": 7.54,
+   "lsd": 5.98,
+   "stoi": 0.779,
+   "mus": 7.18,
+   "ltas": 4.8,
+   "miss": 25.4,
+   "hall": 0.32
+  },
+  {
+   "beta": 0.2,
+   "segsnr": 7.35,
+   "lsd": 5.85,
+   "stoi": 0.783,
+   "mus": 7.4,
+   "ltas": 4.35,
+   "miss": 21.4,
+   "hall": 0.32
+  },
+  {
+   "beta": 0.35,
+   "segsnr": 7.07,
+   "lsd": 5.75,
+   "stoi": 0.786,
+   "mus": 7.34,
+   "ltas": 3.88,
+   "miss": 17.2,
+   "hall": 0.34
+  },
+  {
+   "beta": 0.5,
+   "segsnr": 6.83,
+   "lsd": 5.68,
+   "stoi": 0.787,
+   "mus": 7.16,
+   "ltas": 3.56,
+   "miss": 14.4,
+   "hall": 0.35
+  },
+  {
+   "beta": 0.7,
+   "segsnr": 6.53,
+   "lsd": 5.63,
+   "stoi": 0.788,
+   "mus": 6.94,
+   "ltas": 3.25,
+   "miss": 11.8,
+   "hall": 0.38
+  },
+  {
+   "beta": 1.0,
+   "segsnr": 6.14,
+   "lsd": 5.59,
+   "stoi": 0.788,
+   "mus": 6.72,
+   "ltas": 2.95,
+   "miss": 9.2,
+   "hall": 0.45
+  }
+ ],
+ "best_beta": {
+  "segsnr": 0.0,
+  "lsd": 1.0,
+  "stoi": 0.7,
+  "mus": 0.0,
+  "ltas": 1.0,
+  "miss": 1.0,
+  "hall": 0.0
+ },
+ "n_distinct_beta": 3,
+ "elbow": null,
+ "summary": {
+  "seg_cost": 1.61,
+  "ltas_gain": 2.65,
+  "ltas_best": 1.0,
+  "mus_floor": 5.57,
+  "miss_b0": 31.7,
+  "miss_b1": 9.2,
+  "hall_b0": 0.31,
+  "hall_b1": 0.45,
+  "hall_ratio": 1.5,
+  "miss_gain": 22.5,
+  "n_distinct_beta": 3,
+  "elbow": null
+ },
+ "modes": [
+  {
+   "tag": "预测式·保守（α 小）",
+   "segsnr": 8.35,
+   "lsd": 5.79,
+   "stoi": 0.79,
+   "mus": 8.5,
+   "miss": 13.7,
+   "hall": 0.57
+  },
+  {
+   "tag": "预测式·削过头",
+   "segsnr": 6.46,
+   "lsd": 6.9,
+   "stoi": 0.741,
+   "mus": 4.44,
+   "miss": 46.8,
+   "hall": 0.26
+  },
+  {
+   "tag": "生成式·填到底",
+   "segsnr": 6.14,
+   "lsd": 5.59,
+   "stoi": 0.788,
+   "mus": 6.72,
+   "miss": 9.2,
+   "hall": 0.45
+  }
+ ],
+ "const": {
+  "snr": 5.0,
+  "noises": [
+   "white",
+   "pink",
+   "babble"
+  ],
+  "betas": [
+   0.0,
+   0.1,
+   0.2,
+   0.35,
+   0.5,
+   0.7,
+   1.0
+  ],
+  "nb": 24,
+  "nfft": 512,
+  "hop": 256
+ },
+ "runtime_s": 16.0
+}

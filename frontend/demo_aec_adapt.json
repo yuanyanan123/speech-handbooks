@@ -1,0 +1,333 @@
+{
+ "mu": [
+  {
+   "mu": 0.05,
+   "t20": 5.888,
+   "misalign": -46.73,
+   "erle": 30.79,
+   "product": 0.125
+  },
+  {
+   "mu": 0.1,
+   "t20": 2.944,
+   "misalign": -43.63,
+   "erle": 30.69,
+   "product": 0.128
+  },
+  {
+   "mu": 0.25,
+   "t20": 1.152,
+   "misalign": -39.28,
+   "erle": 30.33,
+   "product": 0.136
+  },
+  {
+   "mu": 0.5,
+   "t20": 0.576,
+   "misalign": -35.63,
+   "erle": 29.66,
+   "product": 0.158
+  },
+  {
+   "mu": 1.0,
+   "t20": 0.384,
+   "misalign": -30.88,
+   "erle": 27.91,
+   "product": 0.314
+  }
+ ],
+ "mu_tradeoff": {
+  "fast_mu": 1.0,
+  "slow_mu": 0.1,
+  "t_ratio": 7.7,
+  "mis_gain": 12.75,
+  "prod_spread": 2.5
+ },
+ "spec": [
+  {
+   "kind": "白噪",
+   "spread": 1.1,
+   "rows": [
+    {
+     "mu": 0.8,
+     "misalign": -33.42,
+     "stable": true
+    },
+    {
+     "mu": 0.5,
+     "misalign": -36.39,
+     "stable": true
+    },
+    {
+     "mu": 0.25,
+     "misalign": -40.03,
+     "stable": true
+    },
+    {
+     "mu": 0.1,
+     "misalign": -43.82,
+     "stable": true
+    },
+    {
+     "mu": 0.05,
+     "misalign": -26.54,
+     "stable": true
+    }
+   ],
+   "mu_max": 0.8,
+   "best_mis": -33.42
+  },
+  {
+   "kind": "粉噪",
+   "spread": 101.3,
+   "rows": [
+    {
+     "mu": 0.8,
+     "misalign": -35.16,
+     "stable": true
+    },
+    {
+     "mu": 0.5,
+     "misalign": -37.77,
+     "stable": true
+    },
+    {
+     "mu": 0.25,
+     "misalign": -41.19,
+     "stable": true
+    },
+    {
+     "mu": 0.1,
+     "misalign": -27.14,
+     "stable": true
+    },
+    {
+     "mu": 0.05,
+     "misalign": -14.72,
+     "stable": true
+    }
+   ],
+   "mu_max": 0.8,
+   "best_mis": -35.16
+  },
+  {
+   "kind": "语音",
+   "spread": 199.0,
+   "rows": [
+    {
+     "mu": 0.8,
+     "misalign": 486.08,
+     "stable": false
+    },
+    {
+     "mu": 0.5,
+     "misalign": 5.17,
+     "stable": false
+    },
+    {
+     "mu": 0.25,
+     "misalign": -18.14,
+     "stable": true
+    },
+    {
+     "mu": 0.1,
+     "misalign": -8.24,
+     "stable": true
+    },
+    {
+     "mu": 0.05,
+     "misalign": -4.53,
+     "stable": true
+    }
+   ],
+   "mu_max": 0.25,
+   "best_mis": -18.14
+  }
+ ],
+ "spec_note": {
+  "spread_ratio": 181.0,
+  "mu_ratio": 3.2,
+  "mis_gap": 15.28
+ },
+ "white": [
+  {
+   "kind": "白噪",
+   "on": -36.39,
+   "on_t20": 0.45,
+   "off": -38.93,
+   "off_t20": 0.92,
+   "gain": -2.54
+  },
+  {
+   "kind": "粉噪",
+   "on": -37.77,
+   "on_t20": 1.15,
+   "off": -2.8,
+   "off_t20": null,
+   "gain": 34.97
+  },
+  {
+   "kind": "语音",
+   "on": -18.14,
+   "on_t20": 1.54,
+   "off": -0.64,
+   "off_t20": 7.87,
+   "gain": 17.5
+  }
+ ],
+ "white_note": {
+  "白噪": -2.54,
+  "粉噪": 34.97,
+  "语音": 17.5
+ },
+ "length": [
+  {
+   "l_ms": 32,
+   "taps": 512,
+   "tail": 14.41,
+   "ceiling": 8.41,
+   "cap_tail": 8.41,
+   "cap_noise": 40.0,
+   "cap": 8.41,
+   "bind": "尾巴",
+   "erle": 7.28,
+   "misalign": -13.37
+  },
+  {
+   "l_ms": 64,
+   "taps": 1024,
+   "tail": 2.53,
+   "ceiling": 15.97,
+   "cap_tail": 15.97,
+   "cap_noise": 40.0,
+   "cap": 15.97,
+   "bind": "尾巴",
+   "erle": 14.87,
+   "misalign": -21.48
+  },
+  {
+   "l_ms": 128,
+   "taps": 2048,
+   "tail": 0.07,
+   "ceiling": 31.47,
+   "cap_tail": 31.47,
+   "cap_noise": 40.0,
+   "cap": 31.47,
+   "bind": "尾巴",
+   "erle": 29.84,
+   "misalign": -36.39
+  },
+  {
+   "l_ms": 256,
+   "taps": 4096,
+   "tail": 0.0,
+   "ceiling": 62.43,
+   "cap_tail": 62.43,
+   "cap_noise": 40.0,
+   "cap": 40.0,
+   "bind": "近端底噪",
+   "erle": 38.87,
+   "misalign": -45.17
+  },
+  {
+   "l_ms": 512,
+   "taps": 8192,
+   "tail": 0.0,
+   "ceiling": 90.0,
+   "cap_tail": 90.0,
+   "cap_noise": 40.0,
+   "cap": 40.0,
+   "bind": "近端底噪",
+   "erle": 38.81,
+   "misalign": -45.18
+  }
+ ],
+ "length_note": {
+  "d64_128": 14.97,
+  "d256_512": -0.06,
+  "t60": 0.25,
+  "rt_ms": 250.0
+ },
+ "part": [
+  {
+   "b": 64,
+   "b_ms": 4.0,
+   "nparts": 32,
+   "delay_ms": 4.0,
+   "misalign": -39.38,
+   "erle": 30.13,
+   "ffts_per_s": 16750.0,
+   "mmac_s": 17.09
+  },
+  {
+   "b": 128,
+   "b_ms": 8.0,
+   "nparts": 16,
+   "delay_ms": 8.0,
+   "misalign": -38.62,
+   "erle": 30.01,
+   "ffts_per_s": 4375.0,
+   "mmac_s": 9.99
+  },
+  {
+   "b": 256,
+   "b_ms": 16.0,
+   "nparts": 8,
+   "delay_ms": 16.0,
+   "misalign": -37.77,
+   "erle": 29.89,
+   "ffts_per_s": 1188.0,
+   "mmac_s": 5.99
+  },
+  {
+   "b": 512,
+   "b_ms": 32.0,
+   "nparts": 4,
+   "delay_ms": 32.0,
+   "misalign": -37.0,
+   "erle": 29.82,
+   "ffts_per_s": 344.0,
+   "mmac_s": 3.78
+  },
+  {
+   "b": 1024,
+   "b_ms": 64.0,
+   "nparts": 2,
+   "delay_ms": 64.0,
+   "misalign": -36.8,
+   "erle": 29.74,
+   "ffts_per_s": 109.0,
+   "mmac_s": 2.59
+  },
+  {
+   "b": 2048,
+   "b_ms": 128.0,
+   "nparts": 1,
+   "delay_ms": 128.0,
+   "misalign": -36.15,
+   "erle": 29.62,
+   "ffts_per_s": 39.0,
+   "mmac_s": 1.98
+  }
+ ],
+ "part_note": {
+  "delay_ratio": 32.0,
+  "mis_gain": 3.23,
+  "mac_ratio": 8.6
+ },
+ "const": {
+  "t60": 0.25,
+  "l_ms": 128,
+  "taps": 2048,
+  "b": 256,
+  "nparts": 8,
+  "near_snr": 40.0,
+  "sr": 16000,
+  "seeds": [
+   0,
+   1,
+   2
+  ]
+ },
+ "runtime_s": 79.6
+}

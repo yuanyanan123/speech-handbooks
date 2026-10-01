@@ -1,0 +1,209 @@
+{
+ "rank": [
+  {
+   "tag": "不处理",
+   "segsnr": 3.636,
+   "lsd": 10.862,
+   "sisdr": 3.32,
+   "stoi": 0.741,
+   "mus": 5.553
+  },
+  {
+   "tag": "欠抑制（谱减 α=0.5）",
+   "segsnr": 5.375,
+   "lsd": 9.104,
+   "sisdr": 4.527,
+   "stoi": 0.755,
+   "mus": 17.496
+  },
+  {
+   "tag": "谱减 α=2 + 谱底",
+   "segsnr": 7.92,
+   "lsd": 6.657,
+   "sisdr": 7.712,
+   "stoi": 0.769,
+   "mus": 8.375
+  },
+  {
+   "tag": "音乐噪声（无判决引导）",
+   "segsnr": 7.415,
+   "lsd": 7.19,
+   "sisdr": 6.79,
+   "stoi": 0.771,
+   "mus": 13.655
+  },
+  {
+   "tag": "维纳",
+   "segsnr": 6.74,
+   "lsd": 10.244,
+   "sisdr": 7.197,
+   "stoi": 0.74,
+   "mus": 9.817
+  },
+  {
+   "tag": "log-MMSE（α=0.90）",
+   "segsnr": 8.438,
+   "lsd": 6.416,
+   "sisdr": 8.619,
+   "stoi": 0.792,
+   "mus": 7.759
+  },
+  {
+   "tag": "log-MMSE（α=0.98）",
+   "segsnr": 6.954,
+   "lsd": 8.352,
+   "sisdr": 7.349,
+   "stoi": 0.747,
+   "mus": 4.851
+  },
+  {
+   "tag": "log-MMSE（α=0.995）",
+   "segsnr": 5.176,
+   "lsd": 10.673,
+   "sisdr": 5.015,
+   "stoi": 0.689,
+   "mus": 2.974
+  },
+  {
+   "tag": "过抑制（谱减 α=6）",
+   "segsnr": 6.923,
+   "lsd": 10.512,
+   "sisdr": 7.487,
+   "stoi": 0.735,
+   "mus": 2.512
+  }
+ ],
+ "orders": {
+  "SegSNR": [
+   9,
+   7,
+   2,
+   3,
+   6,
+   1,
+   4,
+   8,
+   5
+  ],
+  "SI-SDR": [
+   9,
+   8,
+   2,
+   6,
+   5,
+   1,
+   4,
+   7,
+   3
+  ],
+  "LSD": [
+   9,
+   5,
+   2,
+   3,
+   6,
+   1,
+   4,
+   8,
+   7
+  ],
+  "STOI*": [
+   6,
+   4,
+   3,
+   2,
+   7,
+   1,
+   5,
+   9,
+   8
+  ],
+  "起伏dB": [
+   4,
+   9,
+   6,
+   8,
+   7,
+   5,
+   3,
+   2,
+   1
+  ]
+ },
+ "winners": {
+  "SegSNR": "log-MMSE（α=0.90）",
+  "SI-SDR": "log-MMSE（α=0.90）",
+  "LSD": "log-MMSE（α=0.90）",
+  "STOI*": "log-MMSE（α=0.90）",
+  "起伏dB": "过抑制（谱减 α=6）"
+ },
+ "n_distinct_winner": 2,
+ "max_spread": {
+  "n": 7,
+  "tag": "过抑制（谱减 α=6）"
+ },
+ "asv": [
+  {
+   "tag": "不处理",
+   "eer_mismatch": 40.0,
+   "eer_matched": 10.22
+  },
+  {
+   "tag": "欠抑制（谱减 α=0.5）",
+   "eer_mismatch": 45.0,
+   "eer_matched": 12.08
+  },
+  {
+   "tag": "谱减 α=2 + 谱底",
+   "eer_mismatch": 45.0,
+   "eer_matched": 19.97
+  },
+  {
+   "tag": "音乐噪声（无判决引导）",
+   "eer_mismatch": 45.0,
+   "eer_matched": 17.5
+  },
+  {
+   "tag": "维纳",
+   "eer_mismatch": 50.0,
+   "eer_matched": 30.0
+  },
+  {
+   "tag": "log-MMSE（α=0.90）",
+   "eer_mismatch": 45.0,
+   "eer_matched": 17.5
+  },
+  {
+   "tag": "log-MMSE（α=0.98）",
+   "eer_mismatch": 45.0,
+   "eer_matched": 20.29
+  },
+  {
+   "tag": "log-MMSE（α=0.995）",
+   "eer_mismatch": 42.44,
+   "eer_matched": 15.51
+  },
+  {
+   "tag": "过抑制（谱减 α=6）",
+   "eer_mismatch": 45.0,
+   "eer_matched": 40.0
+  }
+ ],
+ "asv_clean": 4.78,
+ "asv_summary": {
+  "noisy_mismatch": 40.0,
+  "noisy_matched": 10.22,
+  "best_mismatch": "log-MMSE（α=0.995）",
+  "best_matched": "欠抑制（谱减 α=0.5）"
+ },
+ "corr": {
+  "SegSNR": -0.415,
+  "SI-SDR": -0.574,
+  "LSD": 0.205,
+  "STOI*": 0.108,
+  "起伏dB": -0.367
+ },
+ "corr_best": "LSD",
+ "corr_worst": "SI-SDR",
+ "n_systems": 9
+}

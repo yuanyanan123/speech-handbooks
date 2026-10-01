@@ -1,0 +1,152 @@
+{
+ "alias": {
+  "sr": 22050,
+  "f0": 3000.0,
+  "nyq": 11025.0,
+  "cases": [
+   {
+    "act": "leaky ReLU",
+    "naive": -25.11,
+    "up2": -42.67,
+    "up4": -55.99
+   },
+   {
+    "act": "snake",
+    "naive": -31.48,
+    "up2": -108.77,
+    "up4": -102.92
+   }
+  ]
+ },
+ "checker": [
+  {
+   "stride": 2,
+   "k": 4,
+   "divisible": true,
+   "counts": [
+    2,
+    2
+   ],
+   "mod_db": 0.0
+  },
+  {
+   "stride": 2,
+   "k": 3,
+   "divisible": false,
+   "counts": [
+    2,
+    1
+   ],
+   "mod_db": 3.01
+  },
+  {
+   "stride": 2,
+   "k": 5,
+   "divisible": false,
+   "counts": [
+    3,
+    2
+   ],
+   "mod_db": 1.76
+  },
+  {
+   "stride": 4,
+   "k": 8,
+   "divisible": true,
+   "counts": [
+    2,
+    2,
+    2,
+    2
+   ],
+   "mod_db": 0.0
+  },
+  {
+   "stride": 4,
+   "k": 6,
+   "divisible": false,
+   "counts": [
+    2,
+    2,
+    1,
+    1
+   ],
+   "mod_db": 3.01
+  },
+  {
+   "stride": 8,
+   "k": 16,
+   "divisible": true,
+   "counts": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "mod_db": 0.0
+  },
+  {
+   "stride": 8,
+   "k": 12,
+   "divisible": false,
+   "counts": [
+    2,
+    2,
+    2,
+    2,
+    1,
+    1,
+    1,
+    1
+   ],
+   "mod_db": 3.01
+  },
+  {
+   "stride": 8,
+   "k": 11,
+   "divisible": false,
+   "counts": [
+    2,
+    2,
+    2,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "mod_db": 3.01
+  }
+ ],
+ "phase": [
+  {
+   "deg": 0,
+   "wave_db": -116.99,
+   "spec_db": 0.0
+  },
+  {
+   "deg": 22,
+   "wave_db": -8.17,
+   "spec_db": 0.0
+  },
+  {
+   "deg": 45,
+   "wave_db": -2.32,
+   "spec_db": 0.0
+  },
+  {
+   "deg": 90,
+   "wave_db": 3.01,
+   "spec_db": 0.0
+  },
+  {
+   "deg": 180,
+   "wave_db": 6.02,
+   "spec_db": 0.0
+  }
+ ]
+}

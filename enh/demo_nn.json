@@ -1,0 +1,221 @@
+{
+ "data": {
+  "frames": 6696,
+  "din": 384,
+  "nb": 32,
+  "ctx": 6,
+  "train_noise": [
+   "white",
+   "pink",
+   "car"
+  ],
+  "unseen": "babble",
+  "snrs": [
+   -5.0,
+   0.0,
+   5.0,
+   10.0,
+   15.0
+  ]
+ },
+ "form": [
+  {
+   "tag": "频带掩码（32 带）",
+   "params": 64768,
+   "seen": {
+    "segsnr": 10.74,
+    "lsd": 4.15,
+    "stoi": 0.949,
+    "mus": 5.66
+   },
+   "unseen": {
+    "segsnr": 6.73,
+    "lsd": 4.22,
+    "stoi": 0.848,
+    "mus": 9.71
+   }
+  },
+  {
+   "tag": "频点掩码（257 点）",
+   "params": 86593,
+   "seen": {
+    "segsnr": 11.26,
+    "lsd": 3.4,
+    "stoi": 0.945,
+    "mus": 5.27
+   },
+   "unseen": {
+    "segsnr": 7.2,
+    "lsd": 3.39,
+    "stoi": 0.845,
+    "mus": 9.5
+   }
+  },
+  {
+   "tag": "直接映射到 dB 增益",
+   "params": 86593,
+   "seen": {
+    "segsnr": 10.58,
+    "lsd": 3.37,
+    "stoi": 0.939,
+    "mus": 4.42
+   },
+   "unseen": {
+    "segsnr": 7.21,
+    "lsd": 3.47,
+    "stoi": 0.853,
+    "mus": 10.08
+   }
+  }
+ ],
+ "loss": [
+  {
+   "tag": "掩码 MSE",
+   "seen": {
+    "segsnr": 11.26,
+    "lsd": 3.4,
+    "stoi": 0.945,
+    "mus": 5.27
+   },
+   "unseen": {
+    "segsnr": 7.2,
+    "lsd": 3.39,
+    "stoi": 0.845,
+    "mus": 9.5
+   }
+  },
+  {
+   "tag": "谱域 SI-SDR",
+   "seen": {
+    "segsnr": 10.75,
+    "lsd": 5.59,
+    "stoi": 0.841,
+    "mus": 0.28
+   },
+   "unseen": {
+    "segsnr": 6.97,
+    "lsd": 4.16,
+    "stoi": 0.853,
+    "mus": 9.88
+   }
+  }
+ ],
+ "vs": [
+  {
+   "tag": "带噪（不处理）",
+   "seen": {
+    "segsnr": 4.45,
+    "lsd": 9.41,
+    "stoi": 0.802,
+    "mus": 4.13
+   },
+   "unseen": {
+    "segsnr": 5.39,
+    "lsd": 3.84,
+    "stoi": 0.846,
+    "mus": 9.28
+   }
+  },
+  {
+   "tag": "log-MMSE + IMCRA",
+   "seen": {
+    "segsnr": 11.1,
+    "lsd": 5.69,
+    "stoi": 0.809,
+    "mus": 4.03
+   },
+   "unseen": {
+    "segsnr": 5.44,
+    "lsd": 3.91,
+    "stoi": 0.845,
+    "mus": 9.05
+   }
+  },
+  {
+   "tag": "神经网络（频点掩码（257 点））",
+   "seen": {
+    "segsnr": 11.26,
+    "lsd": 3.4,
+    "stoi": 0.945,
+    "mus": 5.27
+   },
+   "unseen": {
+    "segsnr": 7.2,
+    "lsd": 3.39,
+    "stoi": 0.845,
+    "mus": 9.5
+   }
+  }
+ ],
+ "gap_seen": 0.16,
+ "gap_unseen": 1.76,
+ "diversity": [
+  {
+   "n": 1,
+   "kinds": [
+    "white"
+   ],
+   "seen": {
+    "segsnr": 11.36,
+    "lsd": 4.18,
+    "stoi": 0.941,
+    "mus": 7.97
+   },
+   "unseen": {
+    "segsnr": 5.61,
+    "lsd": 3.67,
+    "stoi": 0.842,
+    "mus": 8.22
+   }
+  },
+  {
+   "n": 2,
+   "kinds": [
+    "white",
+    "pink"
+   ],
+   "seen": {
+    "segsnr": 9.82,
+    "lsd": 4.21,
+    "stoi": 0.931,
+    "mus": 6.39
+   },
+   "unseen": {
+    "segsnr": 6.48,
+    "lsd": 3.51,
+    "stoi": 0.847,
+    "mus": 8.84
+   }
+  },
+  {
+   "n": 3,
+   "kinds": [
+    "white",
+    "pink",
+    "car"
+   ],
+   "seen": {
+    "segsnr": 11.26,
+    "lsd": 3.4,
+    "stoi": 0.945,
+    "mus": 5.27
+   },
+   "unseen": {
+    "segsnr": 7.2,
+    "lsd": 3.39,
+    "stoi": 0.845,
+    "mus": 9.5
+   }
+  }
+ ],
+ "cost": {
+  "mac_per_frame": 86112,
+  "fps": 62.5,
+  "mmac_s": 5.38,
+  "fft_mac": 4608,
+  "fft_mmac_s": 0.29,
+  "mw50": 0.269,
+  "lat_ms": 48.0
+ },
+ "runtime_s": 93.2
+}

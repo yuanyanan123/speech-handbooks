@@ -1,0 +1,151 @@
+{
+ "easy": {
+  "segsnr": 7.61,
+  "stoi": 0.863,
+  "lsd": 5.29,
+  "noisy": 3.94,
+  "noisy_stoi": 0.697,
+  "gain": 3.67
+ },
+ "setup": {
+  "nset": 32,
+  "noise": [
+   "white",
+   "pink",
+   "car",
+   "step"
+  ],
+  "test_noise": "babble",
+  "snr": [
+   -5.0,
+   0.0,
+   5.0,
+   10.0,
+   15.0
+  ],
+  "nspk": 10,
+  "t60": [
+   0.0,
+   0.2,
+   0.4
+  ],
+  "lvl": [
+   -24.0,
+   -16.0,
+   -8.0,
+   0.0
+  ],
+  "easy": {
+   "noise": "pink",
+   "snr": 5.0,
+   "spk": 0,
+   "t60": 0.0,
+   "lvl": 0.0,
+   "codec": false
+  }
+ },
+ "ablate": [
+  {
+   "axis": "噪声类型",
+   "how": "只用一种平稳噪声",
+   "stress": "noise=babble",
+   "noisy": 4.81,
+   "full": 1.24,
+   "narrow": 0.54,
+   "drop": 0.7,
+   "stress_cost": 2.43,
+   "stoi_drop": -0.002
+  },
+  {
+   "axis": "编解码",
+   "how": "训练时不过编解码",
+   "stress": "codec=True",
+   "noisy": 5.3,
+   "full": 1.98,
+   "narrow": 1.55,
+   "drop": 0.43,
+   "stress_cost": 1.69,
+   "stoi_drop": 0.233
+  },
+  {
+   "axis": "电平",
+   "how": "训练数据全部归一化到满量程",
+   "stress": "lvl=-18.0",
+   "noisy": 3.94,
+   "full": 3.67,
+   "narrow": 3.53,
+   "drop": 0.14,
+   "stress_cost": 0.0,
+   "stoi_drop": 0.001
+  },
+  {
+   "axis": "说话人",
+   "how": "只用一个说话人",
+   "stress": "spk=50",
+   "noisy": 3.92,
+   "full": 3.65,
+   "narrow": 3.61,
+   "drop": 0.04,
+   "stress_cost": 0.02,
+   "stoi_drop": -0.013
+  },
+  {
+   "axis": "信噪比范围",
+   "how": "只训 0–10 dB",
+   "stress": "snr=-5.0",
+   "noisy": -5.57,
+   "full": 5.99,
+   "narrow": 6.19,
+   "drop": -0.2,
+   "stress_cost": -2.32,
+   "stoi_drop": 0.008
+  },
+  {
+   "axis": "混响",
+   "how": "全用无混响的干净录音",
+   "stress": "t60=0.35",
+   "noisy": 3.83,
+   "full": 3.28,
+   "narrow": 3.5,
+   "drop": -0.22,
+   "stress_cost": 0.39,
+   "stoi_drop": 0.012
+  }
+ ],
+ "spread": 0.92,
+ "level": [
+  {
+   "front": "有逐句归一化",
+   "full": 3.67,
+   "narrow": 3.53,
+   "drop": 0.14
+  },
+  {
+   "front": "无逐句归一化",
+   "full": 2.43,
+   "narrow": 2.57,
+   "drop": -0.14
+  }
+ ],
+ "level_ratio": -0.28,
+ "amount": [
+  {
+   "nset": 8,
+   "one": 0.18,
+   "four": 1.34,
+   "gain": 1.16
+  },
+  {
+   "nset": 32,
+   "one": 0.54,
+   "four": 1.24,
+   "gain": 0.7
+  }
+ ],
+ "amount_note": {
+  "one_gain_4x": 0.36,
+  "div_gain": 1.16,
+  "ratio": 4
+ },
+ "runtime_s": 197.8
+}
