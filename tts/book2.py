@@ -1034,9 +1034,9 @@ def build():
     o.append('</section>')
 
     # ══════════════════════════════════════════════════════════
-    o.append(part('Part Ⅵ', '难点与趋势', '哪些还没解决，正在往哪儿走'))
+    o.append(part('Part Ⅶ', '难点与趋势', '哪些还没解决，正在往哪儿走'))
 
-    o.append(sec('s29', '29', '当前的真正难点', '入门'))
+    o.append(sec('s29', '34', '当前的真正难点', '入门'))
     o.append(table(['难点', '现状'], [
         ['<strong>长文本的韵律一致性</strong>',
          '一段三分钟的有声书，模型没有"前面读到哪了"的记忆；'
@@ -1063,7 +1063,7 @@ def build():
     ]))
     o.append('</section>')
 
-    o.append(sec('s30', '30', '技术趋势', '入门'))
+    o.append(sec('s30', '35', '技术趋势', '入门'))
     o.append('<ul>'
              '<li><strong>少步生成</strong>——流匹配 + 蒸馏，把 NFE 压到 1–4。'
              '14 节说过：这是蒸馏的功劳，不是流匹配自带的</li>'
@@ -1099,7 +1099,7 @@ def build():
 
 
 def appendix():
-    o = [sec('s31', '31', '公式、算例与自测', '深入')]
+    o = [sec('s31', '36', '公式、算例与自测', '深入')]
     o.append('<h3>全书统一的配置</h3>')
     o.append(table(['量', '#值', '出现在'], [
         ['采样率', '#%d Hz' % ME['cfg']['sr'], '16、18、19、23 节'],
@@ -1332,7 +1332,7 @@ def glossary():
         ('TN', 'text normalization。“2025 年”→“二零二五年”。'
                '和多音字并列，是仅有的两类<strong>内容错误</strong>'),
     ]
-    o = [sec('s32', '32', '术语表', '')]
+    o = [sec('s32', '37', '术语表', '')]
     o.append('<dl class="gloss">')
     for t, d in G_:
         o.append('<div class="gitem"><dt>%s</dt><dd>%s</dd></div>' % (t, d))
