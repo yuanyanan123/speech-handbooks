@@ -25,15 +25,14 @@ three: String.raw`y_m(t)=\underbrace{\sum_i a_{m,i}\!*\!s_i(t)}
   _{\textstyle \substack{x\ \text{是自己播的}\\ \text{已知}\ \Rightarrow\ \textbf{参考}}}`,
 
 // ② 三种信息各自的上限由什么定
-limits: String.raw`\underbrace{\text{空间}:\ \mathrm{DI}\le 10\log_{10}M}
-  _{\textstyle \substack{\text{麦克风数}}}
- \quad
- \underbrace{\text{统计}:\ \text{假设成立的程度}}
-  _{\textstyle \substack{\text{噪声比语音平稳}\\ \text{语音在时频上稀疏}}}
- \quad
- \underbrace{\text{参考}:\ \mathrm{ERLE}\le-10\log_{10}\!\big(\epsilon_{\text{截断}}
-   +\epsilon_{\text{非线性}}+\epsilon_{\text{底噪}}\big)}
-  _{\textstyle \substack{\text{三条天花板取最低的那条}}}`,
+limits: String.raw`\begin{aligned}
+ \text{空间：}&\ \mathrm{DI}\le 10\log_{10}M
+   &&\textstyle\text{上限由麦克风数与孔径定}\\[4pt]
+ \text{统计：}&\ \text{假设成立的程度}
+   &&\textstyle\text{噪声比语音平稳、语音在时频上稀疏}\\[4pt]
+ \text{参考：}&\ \mathrm{ERLE}\le-10\log_{10}\!\big(\epsilon_{\text{尾}}+\epsilon_{\text{nl}}+\epsilon_{\text{底噪}}\big)
+   &&\textstyle\text{三条天花板取最低的那条}
+ \end{aligned}`,
 
 // ══ 回声：模型与上界 ═══════════════════════════════════════════
 // ① 回声的观测模型
@@ -168,9 +167,23 @@ const I = {
   gknee: String.raw`\gamma=${knee.knee_gamma}`,
 };
 
+// \substack 的两行在 underbrace 下面挤在一起（字距太紧，会叠字），给每个行间加 4pt。
+function loosen(t) {
+  const key = String.raw`\substack{`;
+  let o = '', i = 0;
+  for (;;) {
+    const j = t.indexOf(key, i);
+    if (j < 0) { o += t.slice(i); break; }
+    let d = 1, k = j + key.length;
+    while (d > 0) { const c = t[k++]; if (c === '{') d++; else if (c === '}') d--; }
+    o += t.slice(i, j) + t.slice(j, k).replace(/\\\\(?!\[)/g, String.raw`\\[4pt]`);
+    i = k;
+  }
+  return o;
+}
 const out = {}, oi = {};
 for (const [k, v] of Object.entries(D))
-  out[k] = katex.renderToString(v, { displayMode: true, throwOnError: true, strict: 'ignore', output: 'html' });
+  out[k] = katex.renderToString(loosen(v), { displayMode: true, throwOnError: true, strict: 'ignore', output: 'html' });
 for (const [k, v] of Object.entries(I))
   oi[k] = katex.renderToString(v, { displayMode: false, throwOnError: true, strict: 'ignore', output: 'html' });
 fs.writeFileSync('fe_k.json', JSON.stringify(out));

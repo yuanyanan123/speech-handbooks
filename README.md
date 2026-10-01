@@ -15,7 +15,7 @@
 | `asr/` | ASR 链路手册 | 解码与 WFST、CTC/RNN-T 对齐、剪枝与束搜索、融合、流式与说话人日志 |
 | `tts/` | TTS 合成手册 | 采样与校准、韵律与时长、声码器感受野、流式分块、音色克隆协议 |
 | `sv/` | 声纹与唤醒手册 | 同一套假设检验的两个极端：EER/minDCF、打分后端、误唤醒的泊松统计、自定义唤醒词 |
-| `frontend/` | 前端信号处理手册（进行中） | 把 `array` + `enh` + 新写的**回声消除与全双工**合成一本 |
+| `frontend/` | 前端信号处理手册 | 把 `array` + `enh` 原样并入，加上新写的**回声消除与全双工**：空间、统计、参考三种信息各自的上限 |
 
 ## 怎么重跑
 
@@ -36,6 +36,11 @@ python chk_over.py          # 1280px 明暗双主题的横向溢出检查
 
 依赖：`numpy`、`scipy`（部分）、`pyroomacoustics`（只有阵列那本用）、
 `katex`（npm）、`playwright` + chromium（只用于排版自检与截图）。
+
+> `frontend/` 是合订本：A、B 两部分从 `array/array-handbook.html`、`enh/enh-handbook.html` 原样搬来
+> （只改 id 前缀与节号前缀），C 部分（回声消除与全双工）是新写的。所以要先把那两本 build 好，
+> 再 `cd frontend && python demo_aec_*.py && python figs_fe.py && node fe.js && python build.py && python audit.py`。
+> `chk_over.py` 在没有 Playwright 自带浏览器时可用环境变量 `CHROMIUM_PATH` 指定 chromium。
 
 > `array/` 是最早写的一本，当时是靠一串一次性补丁脚本对 HTML 逐步打磨出来的，
 > 没有一个干净的 `build.py`。那本的 HTML 本身就是源。

@@ -216,6 +216,8 @@ def fig_dtd():
     o.append(f'<text x="{AX+6}" y="{AY+14}" class="ctick" fill="{C3}">误检</text>')
     o.append(f'<text x="{AX+6}" y="{AY+AH-6}" class="ctick" fill="{HOT}">漏检</text>')
     for r_ in sw:
+        if r_['kappa'] not in (1.2, 2.0, 5.0, 10.0, 30.0):   # 低端挤在一起，只标五个
+            continue
         o.append(f'<text x="{fx(r_["kappa"]):.1f}" y="{AY+AH+16}" class="ctick" '
                  f'text-anchor="middle">{r_["kappa"]:g}</text>')
     o.append(f'<text x="{AX+AW/2:.0f}" y="{AY+AH+32}" class="cax" '
@@ -285,7 +287,7 @@ def fig_dtd():
 
 # ══════════════════════════════════════════════════════════════
 def fig_drift():
-    W, H = 700, 462
+    W, H = 700, 494
     o = ['<text x="10" y="18" class="ct">追不上的那一部分：'
          '<tspan font-weight="700">滤波器越长，越扛不住时钟漂移</tspan>'
          '<tspan class="cu"> · 而延迟估偏是悬崖，不是斜坡</tspan></text>']
@@ -374,9 +376,9 @@ def fig_drift():
         ('道理是尾部抽头的相关时间最短——漂移先把它们解相关，'
          '而长滤波器正好多的就是尾部。<b>有漂移时，长滤波器是净损失。</b>', HOT),
         ('%d ppm 就是掉 6 dB 的拐点，而消费级晶振是 ±20–50 ppm。'
-         '延迟那一栏更干脆：延迟等于滤波器长度时 ERLE %.2f dB，比不处理还差。'
-         % (DR['ppm_note']['ppm_6db'], dl[-2]['erle']), C2),
-    ], y0=394)
+         '延迟那一栏更干脆：延迟等于滤波器长度时 ERLE %s dB，比不处理还差。'
+         % (DR['ppm_note']['ppm_6db'], neg('%.2f' % dl[-2]['erle'])), C2),
+    ], y0=426)
     return svg(W, H, o, '时钟漂移、滤波器长度、整块延迟与路径突变对回声消除的影响')
 
 
