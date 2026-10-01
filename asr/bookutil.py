@@ -11,6 +11,12 @@ WF = json.load(open('demo_wfst.json'))
 AL = json.load(open('demo_align.json'))
 DE = json.load(open('demo_decode.json'))
 ST = json.load(open('demo_stream.json'))
+F.update(json.load(open('figs_c.json')))
+AG = json.load(open('demo_aug.json'))
+AP = json.load(open('demo_adapt.json'))
+CF = json.load(open('demo_conf.json'))
+KD = json.load(open('demo_kd.json'))
+VD = json.load(open('demo_vad.json'))
 
 
 def ki(key):

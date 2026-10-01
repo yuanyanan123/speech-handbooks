@@ -6,6 +6,11 @@ const WF = JSON.parse(fs.readFileSync('demo_wfst.json', 'utf8'));
 const AL = JSON.parse(fs.readFileSync('demo_align.json', 'utf8'));
 const DE = JSON.parse(fs.readFileSync('demo_decode.json', 'utf8'));
 const ST = JSON.parse(fs.readFileSync('demo_stream.json', 'utf8'));
+const AG = JSON.parse(fs.readFileSync('demo_aug.json', 'utf8'));
+const AP = JSON.parse(fs.readFileSync('demo_adapt.json', 'utf8'));
+const CF = JSON.parse(fs.readFileSync('demo_conf.json', 'utf8'));
+const KDJ = JSON.parse(fs.readFileSync('demo_kd.json', 'utf8'));
+const VD = JSON.parse(fs.readFileSync('demo_vad.json', 'utf8'));
 const r = (x, n) => Number(x).toFixed(n);
 const cm = (x) => Number(x).toLocaleString('en');
 const cnt = AL.count[AL.count.length - 1];
@@ -231,6 +236,43 @@ bias: String.raw`s'(y)=s(y)+\underbrace{\mu\sum_{u}\bigl[y_{<u}\ \text{是某个
  \qquad
  \underbrace{\text{必须配"走错了要扣回去"}}
  _{\textstyle \text{否则解码器会被诱导着往热词走}}`,
+
+// ══ 新增：数据增强 / 自适应 / 校准 / 蒸馏 / 切分 ═══════════════════════
+// 逐条 CMVN：对数梅尔域里，信道是加性偏置、增益是加性常数
+cmvn: String.raw`\underbrace{\log\lvert Y_{t,k}\rvert^{2}=\log\lvert S_{t,k}\rvert^{2}+\underbrace{\log\lvert H_k\rvert^{2}}_{\textstyle \text{信道：每个频带一个常数}}}
+ _{\textstyle \text{卷积信道在对数谱里变成加性偏置}}
+ \qquad
+ \hat x_{t,k}=\frac{x_{t,k}-\mu_k}{\sigma_k}
+ \ \Rightarrow\ \underbrace{\text{偏置被减掉}}_{\textstyle \substack{\text{电话带宽}\ ${r(AG.note.clean_tel, 0)}\%\to ${r(AG.note.cmvn_tel, 0)}\%}}`,
+
+// 声道长度失配：共振峰整体缩放 = 对数频率轴上的平移
+vtl: String.raw`F_i\ \to\ e^{v}F_i
+ \quad\Longleftrightarrow\quad
+ \underbrace{\log F_i\ \to\ \log F_i+v}_{\textstyle \text{对数频率轴上整体平移}}
+ \qquad
+ \underbrace{\text{源模型 }\lvert v\rvert<0.1:\ ${r(AP.note.src_acc, 0)}\%\ \to\ ${r(AP.note.far_acc, 0)}\%}
+  _{\textstyle \text{平移到 }v\approx\pm0.35\text{ 时}}`,
+
+// 校准：ECE 与温度
+ece: String.raw`\mathrm{ECE}=\sum_{b=1}^{B}\frac{\lvert\mathcal{B}_b\rvert}{N}\,
+ \Big\lvert\ \underbrace{\mathrm{acc}(\mathcal{B}_b)}_{\textstyle \text{桶内准确率}}
+ -\underbrace{\mathrm{conf}(\mathcal{B}_b)}_{\textstyle \text{桶内平均置信度}}\Big\rvert
+ \qquad
+ p_i=\frac{e^{z_i/T}}{\sum_j e^{z_j/T}},\ \ T^{*}=\arg\min_{T}\ \mathrm{NLL}_{\text{验证集}}`,
+
+// 蒸馏
+kd: String.raw`\mathcal{L}=\alpha\,T^{2}\,\mathrm{KL}\!\Big(
+ \underbrace{\mathrm{softmax}(z_t/T)}_{\textstyle \text{教师（温度 }T\text{）}}\ \Big\Vert\
+ \underbrace{\mathrm{softmax}(z_s/T)}_{\textstyle \text{学生}}\Big)
+ +(1-\alpha)\,\mathrm{CE}(y,\ \mathrm{softmax}(z_s))
+ \qquad
+ \underbrace{T\in[1,8],\ \alpha\in[0,1]}_{\textstyle \text{整个扫描里差别}\ \le 1\ \text{个点}}`,
+
+// 量化
+quant: String.raw`w_q=s\cdot\mathrm{clip}\!\Big(\mathrm{round}\big(\tfrac{w}{s}\big),\,-(2^{b-1}-1),\,2^{b-1}-1\Big)
+ \qquad
+ \underbrace{s=\frac{\max\lvert w\rvert}{2^{b-1}-1}}
+  _{\textstyle \substack{\text{按张量：整个矩阵一个 }s\\ \text{按通道：每个输出通道一个 }s}}`,
 };
 
 const I = {

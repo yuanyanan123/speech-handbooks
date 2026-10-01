@@ -122,7 +122,7 @@ drift: String.raw`\Delta n(t)=\varepsilon\,f_s\,t
   _{\textstyle \substack{\text{和}\ \ell\ \text{无关，但尾部抽头的}\\
    \text{相关时间最短，先解相关}}}
  \qquad
- \underbrace{\varepsilon\gtrsim ${ppm6}\ \text{ppm}}
+ \underbrace{\varepsilon\ge ${ppm6}\ \text{ppm}}
   _{\textstyle \substack{\text{实测掉}\ 6\ \text{dB 的拐点}}}`,
 
 // ② 延迟预算：滤波器要装下什么
@@ -196,7 +196,7 @@ stereo: String.raw`y=h_1\!*\!x_1+h_2\!*\!x_2,\ \ x_2=c\!*\!x_1
 barge: String.raw`s(t)=10\log_{10}\frac{P_e(t)}{P_{\hat y}(t)}
  \ \xrightarrow{\ \text{只有回声}\ }\ -\mathrm{ERLE}
  \qquad
- \underbrace{\text{可检出}:\ \mathrm{NER}\gtrsim\theta}
+ \underbrace{\text{可检出}:\ \mathrm{NER}\ge\theta}
   _{\textstyle \substack{\theta=\text{校准段里最高的一次}\\ \text{比回声底高}\ ${r(DX.kinds[2].theta - DX.kinds[2].floor, 0)}\ \text{dB（卡尔曼）}}}`,
 };
 
