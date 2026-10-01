@@ -4,8 +4,8 @@
 
 所有数字都从 demo_aec_*.json 里取，不手抄。节号用 C1…C8，与阵列(A)、单通道(B)两部分各自独立。
 """
-from bookfe_util import (K, KI, F, AD, DT, DR, RS, fml, fig, sec, part, table,
-                         ex, note, trap, step, why, q, ki)
+from bookfe_util import (K, KI, F, AD, DT, DR, RS, D2, DL, MU2, DX, CH, fml, fig, sec, part,
+                         table, ex, note, trap, step, why, q, ki)
 
 r0 = lambda x: '%.0f' % x
 r1 = lambda x: '%.1f' % x
@@ -30,12 +30,18 @@ CHG = DR['change']
 NL = RS['nl']
 RES = RS['res']
 SPL = RS['split']
+S2 = {r['key']: r for r in D2['static']}
+C2R = {r['key']: r for r in D2['change']}
+DXK = {r['kind']: r for r in DX['kinds']}
+CHR = {r['key']: r for r in CH['rows']}
 
 
 TOC_C = [('f1', 'C1', '回声是辨识问题'), ('f2', 'C2', 'NLMS：快与准的积'),
          ('f3', 'C3', '分区块：延迟与长度解耦'), ('f4', 'C4', '双讲检测'),
-         ('f5', 'C5', '追不上的那一部分'), ('f6', 'C6', '非线性与残余抑制'),
-         ('f7', 'C7', '三段合起来：预算与翻车点'), ('f8', 'C8', '复现与术语')]
+         ('f5', 'C5', '不靠检测器：双路径与卡尔曼'), ('f6', 'C6', '追不上的那一部分'),
+         ('f7', 'C7', '非线性与残余抑制'), ('f8', 'C8', '多参考通道'),
+         ('f9', 'C9', '全双工与打断'), ('f10', 'C10', '三段合起来：预算与翻车点'),
+         ('f11', 'C11', '复现与术语')]
 
 
 # ══════════════════════════════════════════════════════════════
@@ -57,11 +63,13 @@ def build_intro():
          '空间自由度为零，只剩统计假设'],
         ['降噪之后识别或声纹反而变差', 'B 部分的 18–19', '指标排序和下游任务的排序不是一回事'],
         ['带喇叭的设备，对方听到自己的回声', '<strong>C 部分</strong>（参考）的 C1–C3', '这是辨识问题，理论上能消干净'],
-        ['阵列设备上 AEC 该放哪', '<strong>A 部分</strong>的 A14，再读 C7', '波束权重一动，AEC 的上限就掉'],
+        ['立体声 / 多喇叭设备，ERLE 好看却一换人就崩', 'C 部分的 C8', '参考通道相关时，解不唯一'],
+        ['做语音助手：播放时怎么听见用户打断', 'C 部分的 C9，再读 D 部分', '打断的灵敏度由回声底和瞬态一起定'],
+        ['阵列设备上 AEC 该放哪', '<strong>A 部分</strong>的 A14，再读 C10', '波束权重一动，AEC 的上限就掉'],
         ['做唤醒词或声纹验证', '<strong>D 部分</strong>（唤醒与声纹）的 D01–D04', 'EER、DCF 与校准是两者共用的骨架'],
         ['前端增强之后唤醒或声纹反而变差', 'D17，再读 B18–B19', '增强对不同下游的影响方向相反'],
-        ['回声消除"看起来不错"但一说话就坏', 'C 部分的 C4、C6', '双讲检测与残余抑制都在伤近端'],
-        ['换了设备或接了蓝牙就消不掉', 'C 部分的 C5', '延迟是悬崖，不是斜坡'],
+        ['回声消除"看起来不错"但一说话就坏', 'C 部分的 C4、C5、C7', '双讲检测与残余抑制都在伤近端'],
+        ['换了设备或接了蓝牙就消不掉', 'C 部分的 C6', '延迟是悬崖，不是斜坡，高估比低估致命'],
     ], minw=560))
     o.append(note('编号约定',
                   '各部分的节号各自从头数：<b>A01</b> 是阵列手册的第 1 节，<b>B01</b> 是单通道手册的第 1 节，'
@@ -203,10 +211,13 @@ def build_echo():
     o.append(trap('我原以为：把两种错误率调到相等最公平',
                   '检测里的惯例是找"等错误率点"（EER）。在这里它是错的。'
                   '最优阈值在 κ = %g：漏检 %s%%、误检 %s%%，<strong>差 %s 倍</strong>——'
-                  '因为漏检的代价是悬崖，误检的代价是斜坡，宁可多冻。'
+                  '因为漏检的代价是悬崖，误检的代价是斜坡。'
                   '按 EER 去定（κ = %g），单讲段 ERLE 要低 <strong>%s dB</strong>。'
+                  '<strong>但这个"最优"要打折：</strong>它的误检高达 %s%%，单讲段里大部分块也被冻住，'
+                  '滤波器几乎不再学习。C5 加了一条"收敛后不再学"的对照，在另一组种子上它反而比能量比 DTD 高 %s dB。'
+                  '所以这里能下的结论只是"两种错误的代价形状不同"，<strong>不是"该冻多少"</strong>。'
                   % (best['kappa'], r1(best['miss']), r1(best['fa']), r0(best['fa'] / best['miss']),
-                     eer['kappa'], r2(DT['eer_cost']))))
+                     eer['kappa'], r2(DT['eer_cost']), r1(best['fa']), r2(D2['note']['frozen_vs_energy']))))
     hn = DT['hang_note']
     o.append(note('拖尾（hangover）值多少',
                   '检测到近端后再多冻几块。阈值定得紧时它有用：κ = %g、拖尾 %d 块，漏检从 %s%% 降到 %s%%，'
@@ -214,11 +225,91 @@ def build_echo():
                   % (hn['loose_kappa'], hn['best_hang'], r1(hn['miss0']), r1(hn['missb']), r2(hn['gain']))))
     o.append('</section>')
 
+    # ── C5（新）──────────────────────────────────────────────
+    N2 = D2['note']
+    o.append(sec('f5', 'C5', '不靠检测器：双路径与频域卡尔曼', '进阶',
+                 tldr='C4 的"最优阈值"其实只是"几乎不再学"。真要在双讲时保住滤波器，'
+                      '有两类办法不依赖一个会出错的检测器：<strong>双路径</strong>（后台乱学、前台只在后台明显更好时才换）'
+                      '和<strong>频域卡尔曼</strong>（每个频点的步长自己算）。'
+                      '在这套实验里卡尔曼比不冻结高 %s dB、比能量比 DTD 高 %s dB，但离全知仍差 %s dB。'
+                      % (r1(N2['fdkf_vs_none']), r1(N2['fdkf_vs_energy']), r1(N2['fdkf_gap_to_oracle']))))
+    o.append('<p>C4 的结论里有一处我后来觉得不对劲：最优阈值对应的<strong>误检高达 %s%%</strong>——'
+             '单讲段里大多数块也被冻住了。一个检测器被迫把大多数时间都判成"别学"才算最优，'
+             '说明它本身分辨不了单讲和双讲。要验证这一点只需加一条对照：<strong>收敛期一过就再也不学</strong>。</p>'
+             % r1(DT['best']['fa']))
+    o.append(step('一条对照：收敛期之后不再学'))
+    o.append(fig('dtd2', '<strong>四个小图。</strong>① 路径不变；② 第 12 s 路径整条换掉；③ 近端电平变化；'
+                 '④ 三类做法：要检测器的、不要检测器的、上界。'))
+    o.append(ex('实测① 路径不变（近端电平 = 回声，近端占 25%% 时间；%s 个种子）' % len(D2['const']['seeds']),
+                table(['做法', '#单讲段 ERLE', '#双讲段近端保真', '#失调', '#漏检', '#误检'],
+                      [[r['name'], '#%s dB' % r2(r['erle']), '#%s dB' % r2(r['near']), '#%s dB' % neg(r2(r['mis'])),
+                        '#%s' % (('%s%%' % r1(r['miss'])) if 'miss' in r else '—'),
+                        '#%s' % (('%s%%' % r1(r['fa'])) if 'fa' in r else '—')] for r in D2['static']], cls='dp')
+                + '<p>"收敛后不再学"的 ERLE 是 <strong>%s dB</strong>，比能量比 DTD 的 %s dB <strong>高 %s dB</strong>。'
+                  '换句话说 C4 里那个"最优点"没有带来任何超出"不学"的东西。'
+                  '它还把失调拖到 %s dB——比"不冻结"的 %s dB 更差——因为冻的时候恰好不该冻。</p>'
+                % (r2(N2['frozen_static']), r2(N2['energy_static']), r2(N2['frozen_vs_energy']),
+                   neg(r2(S2['energy']['mis'])), neg(r2(S2['none']['mis'])))))
+    o.append(step('代价：路径一换，被冻住的滤波器回不来'))
+    o.append(ex('实测② 第 %s s 路径整条换掉（统计从换路径后 4 s 开始）' % r0(D2['const']['change_s']),
+                table(['做法', '#单讲段 ERLE', '#双讲段近端保真', '#失调'],
+                      [[r['name'], '#%s dB' % neg(r2(r['erle'])), '#%s dB' % neg(r2(r['near'])),
+                        '#%s dB' % neg(r2(r['mis']))] for r in D2['change']], cls='dp')
+                + '<p>"不再学"掉到 <strong>%s dB</strong>，能量比 DTD 只剩 <strong>%s dB</strong>，'
+                  '失调回到 0 dB 附近——滤波器根本没动过。无检测器的两种做法仍有 %s dB 和 %s dB。'
+                  '这就是 C4 里"误检只是渐进型代价"那句话的盲区：<strong>渐进型是针对路径不变而言的</strong>。</p>'
+                % (neg(r2(N2['frozen_change'])), neg(r2(N2['energy_change'])),
+                   r1(N2['fdkf_change']), r1(N2['twopath_change']))))
+    o.append(step('两种不用检测器的办法'))
+    o.append(fml('双路径：后台乱学，前台只在后台明显更好时才换', 'twopath'))
+    o.append('<p>双路径装两个滤波器。后台那个<strong>一直</strong>在学，不管近端在不在说；'
+             '前台那个只负责输出，只有当后台的误差明显比前台小（本实验里 ρ = %s）时，才把后台的权重拷过去。'
+             '双讲时后台被近端语音带偏，但它不比前台好，所以不会被采用；路径一变，后台先收敛、先变好，就被拷过去。'
+             '代价是多一份滤波器的算力，以及拷贝时机总要慢半拍。</p>' % D2['const']['twopath']['thr'])
+    o.append(fml('频域卡尔曼：步长由观测噪声自己定', 'kalman'))
+    o.append('<p>卡尔曼把"滤波器抽头随时间随机游走"当成状态模型，每个分区、每个频点维护一个协方差 P。'
+             '增益 K 的分母里有观测噪声功率 Ψ，而 Ψ 是用<strong>后验误差的功率</strong>递推出来的：'
+             '近端一开口，误差变大，Ψ 变大，K 自动变小，滤波器就慢下来——'
+             '这正是 DTD 想做的事，只是它不做二值判决。这里用的是对角协方差的近似，'
+             '常数 a=%s、λ=%s 在种子 0、1 上做过一次 3×3 的网格，本节的数字用的是另外三个种子（%s）。'
+             % (D2['const']['fdkf']['a'], D2['const']['fdkf']['lam'],
+                '、'.join(str(x) for x in D2['const']['seeds'])) + '</p>')
+    o.append(step('近端有多响，谁更扛得住'))
+    nrows = []
+    for blk in D2['ner']:
+        R_ = {r['key']: r for r in blk['rows']}
+        nrows.append(['近端 %s dB' % neg('%+.0f' % blk['ner'])] +
+                     ['#%s' % r2(R_[k]['erle']) for k in ('none', 'frozen', 'energy', 'twopath', 'fdkf', 'oracle')])
+    o.append(ex('实测③ 近端相对回声的电平（单讲段 ERLE，dB）',
+                table(['', '#不冻结', '#不再学', '#能量比', '#双路径', '#卡尔曼', '#全知'], nrows, cls='dp')
+                + '<p>不冻结的做法对近端电平极其敏感：近端轻 10 dB 时 %s dB，响 10 dB 时 %s dB。'
+                  '卡尔曼随近端变响而下降（%s → %s dB），双路径几乎不受影响（%s → %s dB）。'
+                  '所以<strong>没有一个办法在所有近端电平下都最好</strong>：近端很响时，双路径比卡尔曼更稳。</p>'
+                % (r1([r for r in D2['ner'][0]['rows'] if r['key'] == 'none'][0]['erle']),
+                   neg(r1([r for r in D2['ner'][2]['rows'] if r['key'] == 'none'][0]['erle'])),
+                   r1([r for r in D2['ner'][0]['rows'] if r['key'] == 'fdkf'][0]['erle']),
+                   r1([r for r in D2['ner'][2]['rows'] if r['key'] == 'fdkf'][0]['erle']),
+                   r1([r for r in D2['ner'][0]['rows'] if r['key'] == 'twopath'][0]['erle']),
+                   r1([r for r in D2['ner'][2]['rows'] if r['key'] == 'twopath'][0]['erle']))))
+    o.append(trap('我又猜错了一处：相干性 DTD 并不比能量比好',
+                  '教科书上相干性检测（滤波器输出与麦克风信号的逐频点相干系数）通常比能量比更稳。'
+                  '在这套实验里它的单讲段 ERLE 只有 %s dB，低于能量比的 %s dB，漏检 %s%%、误检 %s%%。'
+                  '原因我的判断（没有单独验证）是：T60 = 0.25 s 的回声路径比一个 16 ms 的块长得多，'
+                  '相干性依赖的"滤波器输出和麦克风信号线性相关"在滤波器还没收敛好时本身就不成立——'
+                  '检测器想要一个收敛好的滤波器，而滤波器要靠检测器才能收敛好。'
+                  '这是在<strong>这套参数</strong>下的结果，没有对相干性检测做过逐项调参。'
+                  % (r2(S2['coh']['erle']), r2(S2['energy']['erle']), r1(S2['coh']['miss']), r1(S2['coh']['fa']))))
+    o.append(note('没解决的部分',
+                  '无检测器的最好做法（卡尔曼）距全知 DTD 仍差 %s dB。这 %s dB 是"知道哪几块是双讲"这条信息的价值，'
+                  '目前没有一种在线办法拿得到。神经网络做的双讲判决或端到端回声消除可以逼近它，本书没有训这一类模型。'
+                  % (r1(N2['fdkf_gap_to_oracle']), r1(N2['fdkf_gap_to_oracle']))))
+    o.append('</section>')
+
     # ── C5 ────────────────────────────────────────────────────
     pn = DR['ppm_note']
     ln = DR['len_drift_note']
     dn = DR['delay_note']
-    o.append(sec('f5', 'C5', '追不上的那一部分：漂移、延迟与路径变化', '进阶',
+    o.append(sec('f6', 'C6', '追不上的那一部分：漂移、延迟与路径变化', '进阶',
                  tldr='有三件事是自适应滤波"追不上"的：采样时钟漂移、整块延迟超出滤波器范围、路径突变。'
                       '前两件是<strong>结构性</strong>的——不是调参能解决的。'
                       '尤其是延迟：差一点就从 %s dB 掉到 %s dB，是悬崖。'
@@ -251,6 +342,42 @@ def build_echo():
                 + '<p>延迟吃掉了滤波器的覆盖范围。<strong>剩余尾巴一旦不够装下房间，ERLE 一路掉到 0 附近</strong>，'
                   '最后一行 %s dB 说明滤波器已经完全对不上路径。换设备、接蓝牙、加一级缓冲，'
                   '都是在悄悄推这个数。' % neg(r2(dn['last']))))
+    o.append(step('延迟是怎么估出来的，估偏了往哪边偏'))
+    DN = DL['note']
+    o.append('<p>上面把延迟当成已知。真实系统里要自己估：用远端参考和麦克风信号做广义互相关（GCC-PHAT），'
+             '峰的位置就是参考到回声的延迟。估完以后把参考多延迟这么多再喂给滤波器。</p>')
+    o.append(fml('GCC-PHAT 与"往低的一侧偏"', 'gcc'))
+    o.append(fig('delay', '<strong>两个小图。</strong>① 窗长与估对的比例，红线和橙线是最差的两种条件；'
+                 '② 估偏之后的 ERLE，实线不留余量，虚线留 8 ms 余量。'))
+    wi = {w: i for i, w in enumerate(DL['const']['wins'])}
+    o.append(ex('实测：GCC-PHAT 估对（误差 ≤ 2 ms）的比例，真值 %s ms（%s 次试验）' % (r0(DL['const']['pre_ms']), DL['const']['trials']),
+                table(['条件'] + ['#%s s' % ('%g' % w) for w in DL['const']['wins']] + ['#最早峰 · 1 s'],
+                      [[r['cond']] + ['#%s%%' % r0(c['ok']) for c in r['wins']] + ['#%s%%' % r0(r['wins'][wi[1.0]]['ok_early'])]
+                       for r in DL['acc']], cls='dp')
+                + '<p>窗长是第一决定因素：0.25 s 只有 %s%% 估对，1 s 起才靠得住，2 s 起基本都对。'
+                  '近端插话、混响、喇叭非线性在 1 s 窗下都没把它拖垮；最差的两种是<strong>回声比底噪还低 10 dB</strong> 和'
+                  '<strong>直达声很弱</strong>（最强的峰是反射，不是直达声，估出来比真值大，也就是高估）。'
+                  '我曾想用"取第一个高过最大峰 40%% 的峰"去对付后者，结果在多数条件下更差'
+                  '（回声/底噪 −10 dB 时 1 s 窗只有 %s%%，而全局最大峰是 %s%%）——前面的小峰多半是噪声。</p>'
+                % (r0(DN['ok_short']),
+                   r0([r for r in DL['acc'] if r['cond'].startswith('回声/底噪')][0]['wins'][wi[1.0]]['ok_early']),
+                   r0([r for r in DL['acc'] if r['cond'].startswith('回声/底噪')][0]['wins'][wi[1.0]]['ok']))))
+    erows = []
+    for ci in range(len(DL['err'][0]['cells'])):
+        c0, c1 = DL['err'][0]['cells'][ci], DL['err'][1]['cells'][ci]
+        erows.append(['#%s ms' % neg('%+d' % c0['err_ms']) if c0['err_ms'] else '#0', '#%s dB' % neg(r2(c0['erle'])),
+                      '#%s dB' % neg(r2(c1['erle']))])
+    o.append(ex('实测：估偏之后的 ERLE（滤波器 %s ms，估计 − 真值）' % r0(DL['const']['l_ms']),
+                table(['#估计 − 真值', '#余量 0', '#余量 8 ms'], erows, cls='dp')
+                + '<p>两边完全不对称：估低 %s ms 还有 %s dB，估高 %s ms 就只剩 %s dB。'
+                  '道理在滤波器的结构里：滤波器只覆盖从参考出发的 [0, L)，<strong>估高了，直达声和早期反射落在 0 之前，滤波器结构上表示不了</strong>；'
+                  '估低了，只是把滤波器的前端空出来一段、尾巴被截短一点。'
+                  '所以工程上要<strong>故意往低估的一侧偏一点</strong>：留 8 ms 余量时，估高 8 ms 仍有 %s dB，'
+                  '代价是估准时少 %s dB。</p>'
+                % (r0(abs(-48)), r2(DN['under48']), r0(8), neg(r2(DN['over8'])),
+                   r2(DN['m8_over8']), r2(DN['erle_exact'] - DN['m8_exact']))))
+    o.append(why('这也解释了 C6 前面那张延迟表为什么是悬崖：那是"估低太多、滤波器装不下尾巴"的一侧；'
+                 '而这里量的是反方向——估高——它在更小的偏差（4–8 ms）上就垮了。'))
     o.append(step('路径中途变了'))
     o.append(ex('实测：路径变了多少，掉多深，多久回来',
                 table(['变化', '#ERLE 掉了（dB）', '#恢复要花（s）'],
@@ -264,7 +391,7 @@ def build_echo():
     rn = RS['res_note']
     nn = RS['nl_note']
     sn = RS['split_note']
-    o.append(sec('f6', 'C6', '非线性与残余抑制：把 ERLE 当目标，会毁掉近端', '进阶',
+    o.append(sec('f7', 'C7', '非线性与残余抑制：把 ERLE 当目标，会毁掉近端', '进阶',
                  tldr='线性滤波器结构上拿不到喇叭的非线性部分，所以 ERLE 上限是 −20·log₁₀(非线性占比)。'
                       '剩下的靠残余抑制（RES）压，但 <strong>RES 越狠，近端语音越被削</strong>。'
                       '把 ERLE 当唯一目标，会走到近端 SNR 掉 %s dB 的地步。'
@@ -306,8 +433,105 @@ def build_echo():
                 % (sn['best'], r1(sn['gap']))))
     o.append('</section>')
 
+    # ── C8（新）──────────────────────────────────────────────
+    MN = MU2['note']
+    MR = {r['name']: r for r in MU2['rows']}
+    o.append(sec('f8', 'C8', '多参考通道：ERLE 好看，路径却没辨识对', '进阶',
+                 tldr='立体声或多喇叭时，如果几路参考相互高度相关（同一个说话人，只差时延和增益），'
+                      '滤波器只能辨识出一个<strong>组合</strong>，而不是每条路径本身。'
+                      '换人之前 ERLE 有 %s dB、失调却只有 %s dB；远端一换人 ERLE 掉 %s dB。'
+                      '去相关能买回一些，但每一种都要付播放质量的代价。'
+                      % (r1(MN['base_before']), neg(r1(MN['base_mis'])), r1(MN['base_drop']))))
+    o.append('<p>A14 末尾提到过多参考的非唯一性，这里把它量出来。'
+             '设远端是立体声，但两路来自同一个说话人，所以 x₂ = c∗x₁，c 只是个短滤波器（位置不同，时延和增益不同）。</p>')
+    o.append(fml('多参考的非唯一性', 'stereo'))
+    o.append(fig('multi', '<strong>两个小图。</strong>① 远端说话人换人之后 ERLE 掉多少；'
+                 '② 去相关换来的失调改善与它的播放信噪比代价。'))
+    o.append(ex('实测：第 %s s 远端换人（c 由"时延 2、增益 0.9"变成"时延 14、增益 0.6"）' % r0(MU2['const']['change_s']),
+                table(['去相关做法', '#两路相干性', '#换人前 ERLE', '#换人后 2 s', '#掉了', '#换人前失调', '#播放信噪比'],
+                      [[r['name'], '#%s' % r3(r['coh']), '#%s dB' % r1(r['erle_before']),
+                        '#%s dB' % r1(r['erle_after2s']), '#%s dB' % r1(r['drop']), '#%s dB' % neg(r1(r['mis'])),
+                        '#%s' % (('%s dB' % r0(r['play_snr'])) if r['play_snr'] < 59 else '—')]
+                       for r in MU2['rows']], cls='dp')
+                + '<p>"播放信噪比"是去相关之后的播放信号相对原信号的信噪比（先去掉最佳的整体增益，不算单纯变响）。'
+                  '不去相关时两路相干性是 %s，滤波器只辨识出 h₁ + h₂∗c 这一个组合：<strong>失调 %s dB，却有 %s dB 的 ERLE</strong>。'
+                  'ERLE 在这种设备上不是"辨识对了"的证据。</p>'
+                % (r3(MN['base_coh']), neg(r1(MN['base_mis'])), r1(MN['base_before']))))
+    o.append(trap('我原以为：半波整流去相关就够了',
+                  '经典的做法是给两路参考加相反方向的半波整流（Benesty 的非线性去相关）。α = 0.5 时两路相干性降到 %s，'
+                  '但换人后的 ERLE 只少掉 %s dB（从 %s 到 %s），换人前的 ERLE 还少了 %s dB——线性滤波器拿不到的那部分变成了新的天花板（C7）。'
+                  '加独立噪声更有效：−10 dB 的噪声把掉量降到 %s dB、失调到 %s dB，但<strong>播放信噪比只剩 %s dB，是听得出来的</strong>。'
+                  '−20 dB（信噪比 %s dB）买到的只有 %s dB 的改善。'
+                  % (r3(MR['半波整流 α=0.5']['coh']), r1(MN['base_drop'] - MN['hw05_drop']), r1(MN['base_drop']), r1(MN['hw05_drop']),
+                     r1(MN['base_before'] - MN['hw05_before']), r1(MN['n10_drop']), neg(r1(MN['n10_mis'])), r0(MN['n10_snr']),
+                     r0(MN['n20_snr']), r1(MN['base_drop'] - MN['n20_drop']))))
+    o.append(note('怎么办',
+                  '本书只量了上面两种去相关。工程上更常见的是<strong>不让问题出现</strong>：单喇叭设备用单路参考（一个喇叭只有一条路径，没有非唯一性）；'
+                  '立体声设备把参考下混成一路给 AEC 之前先确认喇叭是否真有两路独立声道；'
+                  '多说话人的会议系统把每个远端说话人当成独立参考。这几条是工程惯例，不是本书的实测。'
+                  '实验里的 c 只是时延加增益；真实立体声录音里 c 是频率相关的，相干性不会这么高，但同样会随说话人位置变化。'))
+    o.append('</section>')
+
+    # ── C9（新）──────────────────────────────────────────────
+    DN2 = DX['note']
+    o.append(sec('f9', 'C9', '全双工与打断：回声消除之后真正要回答的问题', '深入',
+                 tldr='半双工是播放时关麦，用户插不进话；全双工靠 AEC 在播放时还能听见用户。'
+                      '听见的灵敏度由<strong>回声底</strong>（平均 ERLE）和<strong>瞬态尖峰</strong>一起定：'
+                      '本实验里 ERLE %s dB → 近端比回声轻 %s dB 仍可检；ERLE %s dB（卡尔曼）→ %s dB；'
+                      '而全知 DTD（ERLE %s dB）并不比卡尔曼更灵。'
+                      % (r0(DXK['energy']['erle']), neg(r0(abs(DN2['energy_min']))) if DN2['energy_min'] is not None else '—',
+                         r0(DXK['fdkf']['erle']), neg(r0(abs(DN2['fdkf_min']))) if DN2['fdkf_min'] is not None else '—',
+                         r0(DXK['oracle']['erle']))))
+    o.append('<p>语音助手在播报（TTS）时用户开口——这叫<strong>打断</strong>（barge-in）。'
+             '半双工设备在播放时把麦克风关掉（或者门限抬得很高），用户只能等它说完。'
+             '全双工的前提是 AEC 够好，好到<strong>还能在回声里听见用户</strong>。'
+             '这里把"够好"量成两个数：最轻能检出多轻的近端，以及要等多久。</p>')
+    o.append(fml('打断的检测量', 'barge'))
+    o.append('<p>检测量取残差功率与回声估计功率之比。只有回声时它等于 −ERLE；用户开口后它抬到大约近端相对回声的电平。'
+             '阈值 θ 用<strong>只有回声</strong>的校准段定：校准段里最高的一次再加 1 dB，保证校准段里一次误触发都没有；'
+             '然后在插话段里看多快触发、多轻触发不了。连续 %s ms 超过阈值才算。'
+             % r0(DX['const']['hold_ms']) + '</p>')
+    o.append(fig('duplex', '<strong>两个小图。</strong>① 各种前端下，近端有多轻还能检出；'
+                 '② 稳态回声底与校准出的阈值——两者之间隔着一段瞬态尖峰。'))
+    o.append(ex('实测：前端与可检测电平（%s 次试验，近端 %s s 插话；误触发在 %s 段只有回声的测试上数）'
+                % (len(DX['const']['test_seeds']), r0(DX['const']['t_len']), len(DX['const']['test_seeds'])),
+                table(['前端', '#ERLE', '#回声底', '#阈值', '#阈值 − 回声底', '#误触发', '#最轻可检（≥90%）'],
+                      [[r['name'], '#%s dB' % r1(r['erle']) if r['kind'] != 'raw' else '#—',
+                        '#%s dB' % neg(r1(r['floor'])), '#%s dB' % neg(r1(r['theta'])),
+                        '#%s dB' % r1(r['theta'] - r['floor']), '#%d/%d' % (r['fa_runs'], len(DX['const']['test_seeds'])),
+                        '#%s' % (('%s dB' % neg('%+.0f' % r['min_ner'])) if r['min_ner'] is not None else '检不出')]
+                       for r in DX['kinds']], cls='dp')
+                + '<p>"最轻可检"取检出率 ≥ 90% 的最低近端电平，分辨率只有 5 dB 一档。'
+                  '不做 AEC 时，近端比回声轻 5 dB 以下一个也检不出；有了 AEC，ERLE 每高一截，最轻可检就低一截。</p>'))
+    lat_rows = []
+    for r in DX['kinds']:
+        lat_rows.append([r['name']] + ['#%s' % (('%s%%<br>%s' % (r0(c['det']), ('%s ms' % r0(c['lat_ms'])) if c['lat_ms'] else '—')))
+                                        for c in r['by_ner']])
+    o.append(ex('实测：检出率与中位延迟（从用户开口算起）',
+                table(['前端'] + ['#%s dB' % neg('%+.0f' % c['ner']) for c in DX['kinds'][0]['by_ner']], lat_rows, cls='dp')
+                + '<p>延迟里有 %s ms 是"连续超过阈值"的保持时间。近端比回声响 10 dB 时 %s ms 就能触发；'
+                  '近端和回声一样响（0 dB）时要 %s ms——因为要等用户的第一个响亮元音。'
+                  '这是在<strong>这套检测量</strong>下的结果，一个把"远端当前说话 / 用户在说"一起考虑的判决器会好得多，本书没有做。</p>'
+                % (r0(DX['const']['hold_ms']), r0(DN2['fdkf_lat10']), r0(DN2['fdkf_lat0']))))
+    o.append(trap('我原以为：ERLE 每高 10 dB，能听见的声音就轻 10 dB',
+                  '从 ERLE %s dB 到 %s dB（高 %s dB），最轻可检只低了 5 dB 一档；ERLE %s dB 的全知 DTD 也没有更灵。'
+                  '原因是阈值不是由平均回声底定的，而是由<strong>校准段里最高的那个瞬态尖峰</strong>定的：'
+                  '它比回声底高 %s–%s dB，平均 ERLE 的好处被这段"尖峰余量"抵掉大半。'
+                  '我试过"远端起音后屏蔽 %s ms"，阈值没有降（%s → %s dB），所以尖峰不集中在远端起音处——'
+                  '它们具体来自哪里，这一节没有查清。'
+                  % (r0(DXK['energy']['erle']), r0(DXK['fdkf']['erle']), r0(DXK['fdkf']['erle'] - DXK['energy']['erle']),
+                     r0(DXK['oracle']['erle']), r0(DXK['energy']['theta'] - DXK['energy']['floor']),
+                     r0(DXK['fdkf']['theta'] - DXK['fdkf']['floor']),
+                     r0(190), neg(r1(DXK['fdkf']['theta'])), neg(r1(DXK['fdkf_mask']['theta'])))))
+    o.append(note('这一节没覆盖的',
+                  '打断真正的判决还要看<strong>用户是不是在说话</strong>（VAD）、说的是不是<strong>唤醒词或指令</strong>（D 部分的唤醒），'
+                  '以及是不是<strong>该设备的用户</strong>（D 部分的声纹）。这些都不是靠回声消除后的能量能回答的。'
+                  '停播的响应时间（判决之后设备多久真的静下来）、重新开始识别要多久，本书也没有测。'
+                  '实验里的近端和远端都是合成语音，近端插话的位置已知；真机上是未知的，误触发会更多。'))
+    o.append('</section>')
+
     # ── C7 ────────────────────────────────────────────────────
-    o.append(sec('f7', 'C7', '三段合起来：全双工的预算与翻车点', '深入',
+    o.append(sec('f10', 'C10', '三段合起来：全双工的预算与翻车点', '深入',
                  tldr='全双工的效果由链路上最差的一段定，而且三段的上限互不相通。'
                       '这一节把前面所有"天花板"和"悬崖"放进一张表，再列出现场最常见的几个翻车点。'))
     o.append(table(['环节', '天花板由什么定', '典型的数', '它怎么失效'], [
@@ -322,7 +546,15 @@ def build_echo():
                                                                  r1(AD['part_note']['mac_ratio'])),
          '唯一明码标价的取舍'],
         ['双讲检测', '漏检阈值型 / 误检渐进型',
-         '不冻结比全知差 %s dB' % r2(DT['no_dtd_cost']), '按 EER 定阈值会亏 %s dB' % r2(DT['eer_cost'])],
+         '不冻结比全知差 %s dB' % r2(DT['no_dtd_cost']), '检测器弱时最优点只是"几乎不学"，路径一换就回不来（C5）'],
+        ['不靠检测器', '观测噪声自己定步长', '卡尔曼 %s dB，距全知差 %s dB' % (r1(D2['note']['fdkf_static']), r1(D2['note']['fdkf_gap_to_oracle'])),
+         '近端很响时不如双路径'],
+        ['延迟估计', '高估是悬崖，低估是斜坡', '估高 8 ms：%s dB；估低 48 ms：%s dB' % (r1(DL['note']['over8']), r1(DL['note']['under48'])),
+         '要故意往低的一侧偏'],
+        ['多参考通道', '参考相关 → 解不唯一', '换人掉 %s dB，失调只有 %s dB' % (r1(MU2['note']['base_drop']), r1(MU2['note']['base_mis'])),
+         'ERLE 不是"辨识对了"的证据'],
+        ['打断灵敏度', '回声底 + 瞬态尖峰', 'ERLE %s → %s dB，最轻可检仅低 5 dB' % (r0(DXK['energy']['erle']), r0(DXK['fdkf']['erle'])),
+         '平均 ERLE 的好处被尖峰余量抵掉大半'],
         ['时钟', '尾部抽头先解相关', '%d ppm 掉 6 dB' % pn['ppm_6db'], '加长滤波器反而更亏'],
         ['整块延迟', '滤波器装不下就是悬崖', '落到 %s dB' % r1(dn['last']), '换设备、接蓝牙时悄悄发生'],
         ['喇叭非线性', '−20·log₁₀(占比)', '%s%% → %s dB' % (r1(nn['worst_thd']), r1(nn['worst_erle'])),
@@ -331,14 +563,30 @@ def build_echo():
                                                               r1(RES[0]['near_segsnr'] - rn['q_at_erle'])),
          '把 ERLE 当目标会毁掉近端'],
     ], minw=640))
+    o.append(step('AEC 之后那一级：RES 与单通道降噪各管什么'))
+    CN = CH['note']
+    o.append('<p>前面把"AEC 之后再压一次"都叫 RES（C7）。而 B 部分的单通道降噪也能放在这个位置。'
+             '它们能互相替代吗？分三个场景量：只有回声、只有近端语音加房间噪声、三样都有。AEC 是频域卡尔曼（C5）。</p>')
+    o.append(fig('chain', '<strong>三个小图。</strong>各自管各自的事：RES 压回声、NS 压噪声；两者先后顺序几乎无所谓。'))
+    o.append(ex('实测：AEC（频域卡尔曼）之后的一级（喇叭 THD ≈ %s%%，近端噪声信噪比 %s dB，近端 = 回声）'
+                % (r0(CH['thd']), r0(CH['const']['noise_snr'])),
+                table(['这一级', '#只有回声：下降（dB）', '#只有噪声：近端 segSNR', '#三样都有：近端 segSNR', '#三样都有：STOI'],
+                      [['不做处理（麦克风信号）', '#—', '#%s dB' % r1(CH['base']['noise_near']), '#%s dB' % r1(CH['base']['all_near']), '#—']] +
+                      [[r['name'], '#%s dB' % r1(r['echo']), '#%s dB' % r1(r['noise_near']), '#%s dB' % r1(r['all_near']),
+                        '#%s' % r3(r['all_stoi'])] for r in CH['rows']], cls='dp')
+                + '<p>NS 在只有回声时只多压 %s dB——回声不平稳，它把残余回声当语音留下来；RES 多压 %s dB。'
+                  '只有噪声时 NS 让近端 segSNR 好 %s dB，RES 一点没有（它只看回声估计）。'
+                  '三样都有时 RES→NS 比 NS→RES 只好 %s dB，顺序几乎无所谓；<strong>两个都留</strong>比任何单独一个都好。</p>'
+                % (r1(CN['ns_echo'] - CN['aec_echo']), r1(CN['res_echo'] - CN['aec_echo']),
+                   r1(CN['ns_noise'] - CN['base_noise']), r2(CN['order_gap']))))
     o.append(note('三段怎么串',
                   '链路顺序是：<strong>回声消除（C）→ 自适应波束与分离（A）→ 单通道增强（B）</strong>，'
                   'C 在最前。原因在 A14 里算过：波束权重每帧都在变，波束后面的 AEC 要辨识的路径就跟着变，'
                   '指向只动 1°，AEC 的上限就掉到 14.6 dB，动 5° 掉到 5.03 dB。'
                   '所以 AEC 要么在自适应波束<strong>之前</strong>（每路一个，算力 ×M），'
-                  '要么让波束固定 / 在远端有声时冻结权重。B 部分的单通道增强放在最后，接手的是线性消除之后留下的残余——'
-                  '它与 C6 的 RES 是同一个位置上的两种做法，不要叠着用两遍。'
-                  '这段顺序的数字来自 A14，本书没有另外跑 A→C→B 的联合实验。'))
+                  '要么让波束固定 / 在远端有声时冻结权重。AEC 之后的那一级是 <strong>RES 加 NS 一起留着</strong>（上面的实测），'
+                  '先后顺序几乎无所谓。AEC 与波束的先后顺序来自 A14 的计算；<strong>本书没有把阵列、AEC、RES、NS '
+                  '四段一起跑成端到端实验</strong>，上面这一级的实测是在单麦克风上做的。'))
     o.append(trap('现场常见的五个翻车点',
                   '<p>① 只在安静房间测 ERLE，上线后一说话就坏——没测双讲。<br>'
                   '② 用 ERLE 当唯一指标，把 RES 调到近端发闷。<br>'
@@ -349,10 +597,21 @@ def build_echo():
         ('滤波器从 256 ms 加到 512 ms，ERLE 几乎没变（%s dB）。下一步应该调什么？' % neg(r2(AD['length_note']['d256_512'])),
          '加长滤波器已经没用：此时卡住的是近端底噪（%s dB 的上限）。应该看 RES、阵列或者提高近端信噪比。'
          % r0(LEN[3]['cap_noise']), '提示：先找最低的天花板。'),
-        ('DTD 的两种错误率相等是最优点吗？',
-         '不是。漏检是阈值型（短于 %s s 几乎免费，长了发散），误检是渐进型，所以应该宁可多冻。'
-         '实测最优点漏检 %s%%、误检 %s%%，按 EER 去定要亏 %s dB。'
-         % (r1(DT['miss_knee']['free_up_to']), r1(best['miss']), r1(best['fa']), r2(DT['eer_cost']))),
+        ('DTD 的两种错误率相等是最优点吗？那"误检高达 80%"的最优点就是该冻的比例吗？',
+         '不是最优点：漏检是阈值型（短于 %s s 几乎免费，长了发散），误检是渐进型，两种错误的代价形状不同，按 EER 去定要亏 %s dB。'
+         '但 80%% 的误检不是工程建议——它意味着滤波器几乎不再学，"收敛后不再学"的对照比它还高 %s dB，而路径一换它就回不来。'
+         % (r1(DT['miss_knee']['free_up_to']), r2(DT['eer_cost']), r2(D2['note']['frozen_vs_energy'])),
+         '提示：看 C5 的对照与"路径整条换掉"那一行。'),
+        ('延迟估计有 ±8 ms 的不确定，应该往哪边偏？',
+         '往低估的一侧偏。估高 8 ms 就从 %s dB 掉到 %s dB（直达声落到滤波器之外），估低 48 ms 也还有 %s dB。留 8 ms 余量，代价是估准时少 %s dB。'
+         % (r1(DL['note']['erle_exact']), r1(DL['note']['over8']), r1(DL['note']['under48']), r1(DL['note']['erle_exact'] - DL['note']['m8_exact']))),
+        ('立体声设备上 ERLE 有 %s dB，可以认为两条路径都辨识对了吗？' % r0(MU2['note']['base_before']),
+         '不能。两路参考相干时滤波器只辨识出 h₁ + h₂∗c 这个组合，实测失调只有 %s dB；远端一换人 ERLE 就掉 %s dB。'
+         % (neg(r1(MU2['note']['base_mis'])), r1(MU2['note']['base_drop']))),
+        ('AEC 的 ERLE 从 %s dB 提到 %s dB，打断检测能听见的近端会轻 %s dB 吗？'
+         % (r0(DXK['energy']['erle']), r0(DXK['fdkf']['erle']), r0(DXK['fdkf']['erle'] - DXK['energy']['erle'])),
+         '不会。本实验里只轻了 5 dB（一档）：阈值由回声里的瞬态尖峰定，比回声底高 %s–%s dB，平均 ERLE 的好处被抵掉大半。'
+         % (r0(DXK['energy']['theta'] - DXK['energy']['floor']), r0(DXK['fdkf']['theta'] - DXK['fdkf']['floor']))),
         ('50 ppm 的时钟差下，32 ms 和 256 ms 的滤波器哪个更亏？',
          '256 ms 的：赔 %s dB，而 32 ms 的几乎不受影响（%s dB）。尾部抽头最先解相关。'
          % (r2(ln['long']), r2(ln['short']))),
@@ -362,8 +621,8 @@ def build_echo():
     ]))
     o.append('</section>')
 
-    # ── C8 ────────────────────────────────────────────────────
-    o.append(sec('f8', 'C8', '复现与术语', ''))
+    # ── C11 ───────────────────────────────────────────────────
+    o.append(sec('f11', 'C11', '复现与术语', ''))
     o.append('<div class="gl"><dl>'
              '<div class="gitem"><dt>AEC</dt><dd>回声消除。用已知的参考信号辨识回声路径并从麦克风信号里减掉。</dd></div>'
              '<div class="gitem"><dt>ERLE</dt><dd>回声损耗增强。消除前后回声能量比（dB）。只衡量"消了多少"，不衡量"伤了多少"。</dd></div>'
@@ -372,15 +631,26 @@ def build_echo():
              '<div class="gitem"><dt>PBFDAF</dt><dd>分区块频域自适应滤波。块长定延迟，分区数定覆盖。</dd></div>'
              '<div class="gitem"><dt>DTD</dt><dd>双讲检测。近端开口时冻结更新，避免滤波器把近端语音当回声去追。</dd></div>'
              '<div class="gitem"><dt>RES</dt><dd>残余抑制。线性消除之后在时频域再压一次，代价是同时压到近端。</dd></div>'
+             '<div class="gitem"><dt>双路径</dt><dd>前台输出、后台一直学；后台明显更好时才把权重拷给前台。不需要双讲检测器。</dd></div>'
+             '<div class="gitem"><dt>FDKF</dt><dd>频域卡尔曼滤波。每个分区、每个频点一个"自己的步长"，由观测噪声功率自动决定。</dd></div>'
+             '<div class="gitem"><dt>GCC-PHAT</dt><dd>相位变换加权的广义互相关，用来估参考与回声之间的延迟。</dd></div>'
+             '<div class="gitem"><dt>非唯一性</dt><dd>多路参考相关时，不同的 (h₁, h₂) 给出同一个麦克风信号，滤波器只能辨识出一个组合。</dd></div>'
+             '<div class="gitem"><dt>barge-in</dt><dd>打断。设备在播放（TTS）时用户开口。半双工做不到，全双工靠 AEC 做到。</dd></div>'
+             '<div class="gitem"><dt>NER</dt><dd>近端相对回声的电平（near-to-echo ratio）。</dd></div>'
              '<div class="gitem"><dt>ppm</dt><dd>百万分之一。晶振的频率偏差单位，10 ppm 在 16 kHz 下每秒错开 0.16 个采样点。</dd></div>'
              '</dl></div>')
     o.append('<div class="note"><span class="tag">复现</span>'
              '<span><b>aeclib.py</b> 滤波器与场景</span> '
              '<span><b>demo_aec_adapt.py</b> C1–C3</span> '
              '<span><b>demo_aec_dtd.py</b> C4</span> '
-             '<span><b>demo_aec_drift.py</b> C5</span> '
-             '<span><b>demo_aec_res.py</b> C6</span> '
-             '<span><b>figs_fe.py</b> 五张图</span> '
+             '<span><b>demo_aec_drift.py</b> C6</span> '
+             '<span><b>demo_aec_res.py</b> C7</span> '
+             '<span><b>aecadv.py / demo_aec_dtd2.py</b> C5（双路径、卡尔曼）</span> '
+             '<span><b>demo_aec_delay.py</b> C6（延迟估计）</span> '
+             '<span><b>demo_aec_multi.py</b> C8</span> '
+             '<span><b>demo_aec_duplex.py</b> C9</span> '
+             '<span><b>demo_aec_chain.py</b> C10</span> '
+             '<span><b>figs_fe.py / figs_fe2.py</b> 十张图</span> '
              '<span><b>fe.js</b> 全部公式</span>'
              '<p>每个 demo 独立运行，各写一个同名 JSON；正文、图与公式里的数都从 JSON 里取。</p></div>')
     o.append('</section>')

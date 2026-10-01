@@ -192,7 +192,7 @@ def fig_dtd():
     W, H = 700, 470
     o = ['<text x="10" y="18" class="ct">双讲检测：'
          '<tspan font-weight="700">漏检是阈值型的，误检是渐进型的</tspan>'
-         '<tspan class="cu"> · 所以最优工作点必然偏向多冻结</tspan></text>']
+         '<tspan class="cu"> · 但"最优点"的含义要打折，见 C5 的对照</tspan></text>']
     # ① 阈值扫描
     AX, AY, AW, AH = 58, 72, 248, 126
     sw = DT['sweep']
@@ -279,7 +279,7 @@ def fig_dtd():
          '%.1f s 就跳到 %.2f dB 并要 %.2f s 才还清；'
          % (kn['free_up_to'], kn['free_jump'], mi[3]['dur'], mi[3]['jump'],
             mi[4]['recover']), HOT),
-        ('而误检只是少了更新机会：冻掉一半单讲时间，ERLE 才少 %.2f dB，而且是可以慢慢补回来的。'
+        ('而误检只是少了更新机会：冻掉一半单讲时间，ERLE 才少 %.2f dB；但路径一变，被冻住的就补不回来（C5）。'
          % (base - [r_ for r_ in fa if r_['frac'] == 0.5][0]['erle']), C3),
     ], y0=394)
     return svg(W, H, o, '双讲检测阈值扫描、两种错误的代价形状，以及冻结与否的差距')

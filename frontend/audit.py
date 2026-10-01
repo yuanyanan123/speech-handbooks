@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """《前端信号处理手册》的自检：总纲与 C 部分是新写的，A、B 两部分是并入的，所以还要核对"原样"。"""
-import re, json, io, sys
+import re, json, io, sys, os
+
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 h = io.open('frontend-handbook.html', encoding='utf-8').read()
 body = h[h.index('<main>'):h.index('</main>')]
@@ -62,7 +64,7 @@ for s_ in inner:
 print('    （同时用 --hot 与 --s3 的图：%d 张，三种信息各占一色，属有意）' % len(rg))
 caps = re.findall(r'<figcaption>(.*?)</figcaption>', newpart, re.S)
 chk(not [c for c in caps if any(t in c for t in ('<h3', '<table', '<figure', '<section'))], 'figcaption 内无块级内容')
-chk(len(caps) == 5, '新写的五张图都有图注（%d）' % len(caps))
+chk(len(caps) == 10, '新写的十张图都有图注（%d）' % len(caps))
 
 print('── 4. 公式与格式符 ' + '─' * 43)
 chk('undefined' not in newpart and 'NaN' not in newpart and 'None' not in txt, '无 undefined / NaN / None')
@@ -76,6 +78,7 @@ chk(not unused, '所有公式都用上了（%d 个）' % len(K) + ('' if not unu
 KI = json.load(open('aec/fe_ki.json'))
 print('    （行内公式 %d 个已渲染，正文暂未引用；留作术语用）' % len(KI))
 F = json.load(open('aec/figs_fe.json'))
+F.update(json.load(open('aec/figs_fe2.json')))
 for k, v in F.items():
     chk(v in newpart, '图 %s 已嵌入' % k)
 
@@ -83,6 +86,9 @@ print('── 5. 数字和脚本对得上 ' + '─' * 39)
 AD = json.load(open('aec/demo_aec_adapt.json')); DT = json.load(open('aec/demo_aec_dtd.json'))
 DR = json.load(open('aec/demo_aec_drift.json')); RS = json.load(open('aec/demo_aec_res.json'))
 RES0 = RS['res'][0]['near_segsnr']
+D2 = json.load(open('aec/demo_aec_dtd2.json')); DL = json.load(open('aec/demo_aec_delay.json'))
+MU2 = json.load(open('aec/demo_aec_multi.json')); DX = json.load(open('aec/demo_aec_duplex.json'))
+CH = json.load(open('aec/demo_aec_chain.json'))
 NUMS = {
     '%.2f' % AD['length_note']['d64_128']: '滤波器 64→128 ms 的 ERLE 收益',
     '%.1f' % AD['mu_tradeoff']['prod_spread']: 'μ 扫描里快与准之积的浮动',
@@ -99,6 +105,15 @@ NUMS = {
     '%.2f' % abs(DR['delay_note']['last']): '延迟悬崖尽头的 ERLE',
     '%.2f' % RS['nl_note']['bind_drop']: '非线性 4.65% 处的掉量',
     '%.2f' % (RES0 - RS['res_note']['q_at_erle']): 'ERLE 最大点的近端代价',
+    '%.2f' % D2['note']['frozen_vs_energy']: '"不再学"比能量比 DTD 高多少',
+    '%.1f' % D2['note']['fdkf_gap_to_oracle']: '卡尔曼距全知 DTD',
+    '%.1f' % D2['note']['fdkf_vs_none']: '卡尔曼比不冻结高',
+    '%.1f' % DL['note']['under48']: '低估 48 ms 的 ERLE',
+    '%.1f' % abs(DL['note']['over8']): '高估 8 ms 的 ERLE',
+    '%.1f' % MU2['note']['base_drop']: '立体声换人后 ERLE 掉量',
+    '%.1f' % abs(MU2['note']['base_mis']): '立体声失调',
+    '%.0f' % DX['kinds'][2]['erle']: '卡尔曼 AEC 的 ERLE',
+    '%.1f' % CH['note']['order_gap'] if False else '%.2f' % CH['note']['order_gap']: 'RES/NS 顺序差',
     '%.1f' % RS['split_note']['gap']: '线性/RES 分工的最大差距',
     '%.2f' % RS['res_note']['knee_erle_gain']: 'RES 拐点的 ERLE 收益',
 }

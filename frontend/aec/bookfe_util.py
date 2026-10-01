@@ -13,6 +13,12 @@ AD = _j('demo_aec_adapt.json')
 DT = _j('demo_aec_dtd.json')
 DR = _j('demo_aec_drift.json')
 RS = _j('demo_aec_res.json')
+F.update(_j('figs_fe2.json'))
+D2 = _j('demo_aec_dtd2.json')
+DL = _j('demo_aec_delay.json')
+MU2 = _j('demo_aec_multi.json')
+DX = _j('demo_aec_duplex.json')
+CH = _j('demo_aec_chain.json')
 
 
 def ki(key):
