@@ -17,7 +17,9 @@ JS = """() => {
 }"""
 async def main():
     async with async_playwright() as p:
-        b = await p.chromium.launch()
+        import os
+        exe = os.environ.get('CHROMIUM_PATH')
+        b = await p.chromium.launch(executable_path=exe) if exe else await p.chromium.launch()
         for w in (1280, 420):
             for mode in ('light','dark'):
                 pg = await b.new_page(viewport={'width': w, 'height': 900}, color_scheme=mode)

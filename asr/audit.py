@@ -62,7 +62,7 @@ chk(not rg, '无图同时用 --hot 与 --s3 作数据标记'
 caps = re.findall(r'<figcaption>(.*?)</figcaption>', body, re.S)
 badcap = [c[:20] for c in caps if any(t in c for t in ('<h3', '<table', '<figure', '<section'))]
 chk(not badcap, 'figcaption 内无块级内容' + ('' if not badcap else ' 违规：%s' % badcap))
-chk(len(caps) >= 9, '图都有图注（%d）' % len(caps))
+chk(len(caps) >= 15, '图都有图注（%d）' % len(caps))
 
 print('── 3. 公式与格式符 ' + '─' * 43)
 chk('undefined' not in body and 'NaN' not in body, '无 undefined / NaN')
@@ -82,6 +82,7 @@ chk('amsrm' not in body and 'mathsf' not in body and 'mathtt' not in body,
 print('── 4. 图都嵌进去了 ' + '─' * 43)
 F = json.load(open('figs_a.json'))
 F.update(json.load(open('figs_b.json')))
+F.update(json.load(open('figs_c.json')))
 for k, v in F.items():
     chk(v in body, '图 %s 已嵌入' % k)
 
@@ -92,7 +93,24 @@ cnt, mem, oc = AL['count'][-1], AL['mem'][-1], AL['occupancy']
 opt = {r['tag']: r for r in WF['opt']}
 b = ST['look_best']; ca = ST['cache']
 dia3 = [r for r in ST['dia'] if r['overlap'] == 0.3][0]
+AG = json.load(open('demo_aug.json')); AP = json.load(open('demo_adapt.json')); CF = json.load(open('demo_conf.json'))
+KD = json.load(open('demo_kd.json')); VD = json.load(open('demo_vad.json'))
 NUMS = {
+    '%.0f' % AG['note']['clean_white10']: '只用干净数据在白噪 10 dB 下的准确率',
+    '%.0f' % AG['note']['noise_white10']: '加噪之后',
+    '%.0f' % AG['note']['noise_babble10']: '没见过的 babble',
+    '%.1f' % AG['note']['allcmvn_unseen']: '增强加 CMVN 在没见过条件上的平均',
+    '%.0f' % AP['note']['all_3']: '3 秒全部微调',
+    '%.0f' % AP['note']['first_3']: '3 秒只调第一层',
+    '%.0f' % AP['note']['forget_all_3']: '全部微调后源域',
+    '%.0f' % CF['note']['w10_acc']: '白噪 10 dB 准确率',
+    '%.0f' % CF['note']['w10_conf']: '白噪 10 dB 置信度',
+    '%.2f' % CF['note']['w10_auc']: '白噪 10 dB 的 AUROC',
+    '%.0f' % KD['note']['kdu32_babble']: '教师打标的无标注增强数据后的学生',
+    '%.1f' % KD['note']['q4_pc']: '教师 int4 按通道',
+    '%.1f' % VD['note']['fix10_pct']: '10 s 固定切块的切断率',
+    '%.2f' % VD['note']['isl_max_s']: '最长语音岛',
+
     '%.0f' % AL['count_gap']: 'CTC 与 RNN-T 的路径数量级差',
     '%.1f' % cnt['ctc_log10']: 'CTC 的路径数指数',
     '%.1f' % cnt['rnnt_log10']: 'RNN-T 的路径数指数',
@@ -129,7 +147,7 @@ print('── 6. 排版细节 ' + '─' * 47)
 bad_minus = re.findall(r'[（(\s]-\d', txt)
 chk(not bad_minus, '负号用 − 而不是 -' + ('' if not bad_minus else ' %d 处' % len(bad_minus)))
 chk('姊妹篇' in h, '有姊妹篇链接')
-chk(h.count('claude.ai/artifact') >= 4, '四本姊妹篇都链上了')
+chk('前端信号处理手册' in h and h.count('claude.ai/artifact') >= 1, '姊妹篇（前端手册、TTS 手册）都提到了')
 chk(h.count('<title>') == 1 and 'ASR 链路手册' in h, '标题正确')
 chk('麦克风阵列手册</title>' not in h, '外壳标题没留下上一本的痕迹')
 nq = len(re.findall(r'class="qz"', body))

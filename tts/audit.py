@@ -62,7 +62,7 @@ chk(not rg, '无图同时用 --hot 与 --s3 作数据标记'
 caps = re.findall(r'<figcaption>(.*?)</figcaption>', body, re.S)
 badcap = [c[:20] for c in caps if any(t in c for t in ('<h3', '<table', '<figure', '<section'))]
 chk(not badcap, 'figcaption 内无块级内容' + ('' if not badcap else ' 违规：%s' % badcap))
-chk(len(caps) >= 12, '图都有图注（%d）' % len(caps))
+chk(len(caps) >= 17, '图都有图注（%d）' % len(caps))
 
 print('── 3. 公式与格式符 ' + '─' * 43)
 chk('undefined' not in body and 'NaN' not in body, '无 undefined / NaN')
@@ -89,6 +89,7 @@ chk(not _miss, '用到的 KaTeX 字体都内嵌了'
 print('── 4. 图都嵌进去了 ' + '─' * 43)
 F = json.load(open('figs.json'))
 F.update(json.load(open('figs_b.json')))
+F.update(json.load(open('figs_d.json')))
 for k, v in F.items():
     chk(v in body, '图 %s 已嵌入' % k)
 
@@ -99,7 +100,24 @@ ME = json.load(open('demo_mel.json')); EV = json.load(open('demo_eval.json'))
 tm = {r['temp']: r for r in TP['temp']}
 clr = CL['pairs']['raw']; clc = CL['pairs']['cmn']
 ck = {r['chunk']: r for r in CK['chunk']}
+CF_ = json.load(open('demo_cfg.json')); LG_ = json.load(open('demo_lang.json')); VC_ = json.load(open('demo_vc.json'))
+LO_ = json.load(open('demo_long.json')); OB_ = json.load(open('demo_obj.json'))
 NUMS = {
+    '%.1f' % CF_['note']['perfect_adh']: '条件项完美时的遵循率',
+    '%.1f' % CF_['note']['s2_lo']: 's=2 时较大子峰占比',
+    '%.3f' % CF_['note']['weak_w2']: 'λ=0.5 时与真分布的 W2',
+    '%.3f' % LG_['note']['raw_lang_gap']: '同人换语言的余弦下降',
+    '%.1f' % LG_['note']['raw_eer_cross']: '跨语种 EER',
+    '%.0f' % LG_['note']['xl_below_wrong']: '完美克隆比同语言另一个人还低的说话人占比',
+    '%.0f' % VC_['note']['probe_ph']: '音素探针上限',
+    '%d' % VC_['note']['best_k']: '最好的折中 k',
+    '%.3f' % VC_['note']['k1_mse']: 'k=1 离标准答案',
+    '%d' % LO_['cross']['tokens']: '注意力追平线性层的 token 数',
+    '%.1f' % LO_['note']['m10_kv']: '十分钟一次生成的 KV',
+    '%.1f' % LO_['note']['m10_ratio']: '注意力 / 线性',
+    '%.2f' % OB_['tau']['mcd-f0']: 'MCD 与 F0 的 Kendall τ',
+    '%.1f' % OB_['note']['legal_mcd']: '合法读法的 MCD',
+
     '%.1f' % S['explain']['dur']: '时长解释的不确定性比例',
     '%.3f' % S['loss']['l2_ct']: 'L2 的谱对比度',
     '%.1f' % tm[0.0]['rep']: '贪心的复读率',

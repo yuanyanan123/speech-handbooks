@@ -10,6 +10,11 @@ const VO = JSON.parse(fs.readFileSync('demo_voc.json', 'utf8'));
 const TP = JSON.parse(fs.readFileSync('demo_temp.json', 'utf8'));
 const CK = JSON.parse(fs.readFileSync('demo_chunk.json', 'utf8'));
 const CL = JSON.parse(fs.readFileSync('demo_clone.json', 'utf8'));
+const CF = JSON.parse(fs.readFileSync('demo_cfg.json', 'utf8'));
+const LG = JSON.parse(fs.readFileSync('demo_lang.json', 'utf8'));
+const VCJ = JSON.parse(fs.readFileSync('demo_vc.json', 'utf8'));
+const LO = JSON.parse(fs.readFileSync('demo_long.json', 'utf8'));
+const OB = JSON.parse(fs.readFileSync('demo_obj.json', 'utf8'));
 const r = (x, n) => Number(x).toFixed(n);
 const tb = TP.temp_best, tsb = TP.temp_small_best;
 const cb = TP.calib, clr = CL.pairs.raw, clc = CL.pairs.cmn;
@@ -286,6 +291,43 @@ chunkcost: String.raw`\eta=\frac{L+R}{C}
  _{\textstyle \text{首包 }${r(CK.chunk[0].lat_ms, 0)}\text{ ms}}
  \qquad
  \underbrace{\text{延迟是拿算力买的}}_{\textstyle \text{而且越买越贵}}`,
+
+// ── 29 引导 ─────────────────────────────────────────────────
+cfg: String.raw`v_g=\hat v_c+s\,(\hat v_c-v_u)
+ \qquad
+ \underbrace{\hat v_c=v_u+\lambda\,(v_c-v_u)}
+  _{\textstyle \substack{\lambda<1:\ \text{条件项被学小了}}}
+ \ \Longrightarrow\
+ \underbrace{v_g=v_u+\lambda(1+s)\,(v_c-v_u)}
+  _{\textstyle \text{只看有效强度 }\lambda(1+s)}`,
+
+// ── 30 跨语种 ───────────────────────────────────────────────
+lang: String.raw`\underbrace{\bar{\mathbf m}=\sum_{p}\pi_p\,\mathbf m_p}
+  _{\textstyle \substack{\text{长时平均谱 = 按音素频率 }\pi_p\ \text{加权}\\ \text{语言一换，}\pi\ \text{就变}}}
+ \qquad
+ \underbrace{\bar{\mathbf m}_{\text{均衡}}=\frac{1}{P}\sum_{p}\mathbf m_p}
+  _{\textstyle \substack{\text{每个音素等权，需要音素对齐}\\ \text{语言差距}\ ${r(LG.note.raw_lang_gap, 4)}\to ${r(LG.note.bal_lang_gap, 4)}}}`,
+
+// ── 31 语音转换 ─────────────────────────────────────────────
+vc: String.raw`\hat X_{A\to B}=\mathrm{Dec}\big(\underbrace{\mathrm{Enc}(X_A)}_{\textstyle k\ \text{维瓶颈}},\ \mathbf e_B\big)
+ \qquad
+ \underbrace{k\downarrow:\ \text{说话人}\ ${r(100 * VCJ.rows[0].code_spk, 0)}\%\ \text{但音素}\ ${r(100 * VCJ.rows[0].code_ph, 0)}\%}
+  _{\textstyle \text{拆开说话人也拆掉内容}}`,
+
+// ── 32 长文本 ───────────────────────────────────────────────
+longctx: String.raw`\underbrace{\frac{\text{注意力乘加}}{\text{线性层乘加}}=\frac{n}{12\,d}}
+  _{\textstyle \substack{n\ \text{个 token 一次生成：}\\ n=12d=${LO.cross.tokens}\ \text{时两项相等}}}
+ \qquad
+ \underbrace{\mathrm{KV}=2\cdot L\cdot d\cdot b\cdot n}
+  _{\textstyle \substack{\text{每个 token}\ ${LO.note.kv_per_tok_kb}\ \text{KB，}\\ \text{随}\ n\ \text{线性涨}}}`,
+
+// ── 33 客观指标 ─────────────────────────────────────────────
+mcd: String.raw`\mathrm{MCD}=\frac{10}{\ln 10}\sqrt{2\sum_{d=1}^{13}\big(c_d-\hat c_d\big)^{2}}
+ \qquad
+ \mathrm{F0\text{-}RMSE}=\sqrt{\operatorname{E}\Big[\big(1200\log_2\tfrac{\hat f_0}{f_0}\big)^{2}\Big]}\ \ \text{(cents)}
+ \qquad
+ \underbrace{\tau_{\text{MCD,F0}}=${r(OB.tau['mcd-f0'], 2)}}
+  _{\textstyle \text{排序互不相关}}`,
 };
 
 const I = {

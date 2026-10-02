@@ -6,6 +6,11 @@ const AD = JSON.parse(fs.readFileSync('demo_aec_adapt.json', 'utf8'));
 const DT = JSON.parse(fs.readFileSync('demo_aec_dtd.json', 'utf8'));
 const DR = JSON.parse(fs.readFileSync('demo_aec_drift.json', 'utf8'));
 const RS = JSON.parse(fs.readFileSync('demo_aec_res.json', 'utf8'));
+const D2 = JSON.parse(fs.readFileSync('demo_aec_dtd2.json', 'utf8'));
+const DL = JSON.parse(fs.readFileSync('demo_aec_delay.json', 'utf8'));
+const MU2 = JSON.parse(fs.readFileSync('demo_aec_multi.json', 'utf8'));
+const DX = JSON.parse(fs.readFileSync('demo_aec_duplex.json', 'utf8'));
+const CH = JSON.parse(fs.readFileSync('demo_aec_chain.json', 'utf8'));
 const r = (x, n) => Number(x).toFixed(n);
 const mu0 = AD.mu[0], mu4 = AD.mu[AD.mu.length - 1];
 const best = DT.sweep.reduce((a, b) => (b.erle > a.erle ? b : a));
@@ -117,7 +122,7 @@ drift: String.raw`\Delta n(t)=\varepsilon\,f_s\,t
   _{\textstyle \substack{\text{和}\ \ell\ \text{无关，但尾部抽头的}\\
    \text{相关时间最短，先解相关}}}
  \qquad
- \underbrace{\varepsilon\gtrsim ${ppm6}\ \text{ppm}}
+ \underbrace{\varepsilon\ge ${ppm6}\ \text{ppm}}
   _{\textstyle \substack{\text{实测掉}\ 6\ \text{dB 的拐点}}}`,
 
 // ② 延迟预算：滤波器要装下什么
@@ -147,6 +152,52 @@ res: String.raw`G_{k,l}=\max\!\Big(\frac{\lvert E_{k,l}\rvert^{2}
  \underbrace{\gamma\uparrow\;\Rightarrow\;\mathrm{ERLE}\uparrow\ \text{而近端}\downarrow}
   _{\textstyle \substack{\text{实测 ERLE}\ +${r(RS.res_note.erle_best - RS.res[0].erle, 1)}\
    \text{dB，近端}\ -${r(RS.res[0].near_segsnr - RS.res_note.q_at_erle, 1)}\ \text{dB}}}`,
+
+// ══ 不靠检测器：卡尔曼与双路径 ═══════════════════════════════════
+// ① 频域卡尔曼的增益：步长是自己算出来的
+kalman: String.raw`\mathbf{K}_{p,k}=\frac{P_{p,k}\,X_{p,k}^{*}}
+   {\sum_{p'}P_{p',k}\lvert X_{p',k}\rvert^{2}+\Psi_k}
+ \qquad
+ \underbrace{\Psi_k\ \leftarrow\ \lambda\Psi_k+(1-\lambda)\lvert E^{+}_k\rvert^{2}}
+  _{\textstyle \substack{\text{观测噪声功率}=\text{后验误差的功率}\\
+   \text{近端一开口它就变大，}\mathbf{K}\ \text{自己缩小}}}
+ \qquad
+ \underbrace{\text{无外挂检测器}}
+  _{\textstyle \substack{\text{静态}\ ${r(D2.note.fdkf_static, 1)}\ \text{dB，换路径}\ ${r(D2.note.fdkf_change, 1)}\ \text{dB}}}`,
+
+// ② 双路径的拷贝规则
+twopath: String.raw`\hat{\mathbf W}_{\text{前台}}\ \leftarrow\ \hat{\mathbf W}_{\text{后台}}
+ \quad\text{当}\quad
+ \underbrace{P_{\text{后台}}<\rho\,P_{\text{前台}}}
+  _{\textstyle \substack{\text{后台明显更好（}\rho=${D2.const.twopath.thr}\text{）}}}
+ \qquad
+ \underbrace{\text{输出}=\text{前台的误差}}
+  _{\textstyle \substack{\text{后台乱学不会污染输出，}\\ \text{只是"没被采用"}}}`,
+
+// ══ 延迟估计 ═════════════════════════════════════════════════════
+gcc: String.raw`\hat\tau=\arg\max_{\tau}\ \mathcal{F}^{-1}\!\Big\{
+ \frac{X^{*}(f)\,Y(f)}{\lvert X^{*}(f)\,Y(f)\rvert}\Big\}(\tau)
+ \qquad
+ \underbrace{\text{留余量：}\ \tau_{\text{用}}=\hat\tau-m}
+  _{\textstyle \substack{\text{高估}\ \Rightarrow\ \text{直达声落到滤波器之外（悬崖）}\\
+   \text{低估}\ \Rightarrow\ \text{只是尾巴被截短（斜坡）}}}`,
+
+// ══ 多参考通道 ═══════════════════════════════════════════════════
+stereo: String.raw`y=h_1\!*\!x_1+h_2\!*\!x_2,\ \ x_2=c\!*\!x_1
+ \ \Longrightarrow\
+ \underbrace{y=(h_1+h_2\!*\!c)\!*\!x_1}
+  _{\textstyle \substack{\text{只能辨识出这个组合，}\\ \text{解有一整条曲线}}}
+ \qquad
+ \underbrace{c\to c'}
+  _{\textstyle \substack{\text{换个说话人，}\\ \text{原来凑出来的解就不对了}}}
+ \ \Rightarrow\ \underbrace{-${r(MU2.note.base_drop, 1)}\ \text{dB}}_{\textstyle \text{实测}}`,
+
+// ══ 全双工打断 ═══════════════════════════════════════════════════
+barge: String.raw`s(t)=10\log_{10}\frac{P_e(t)}{P_{\hat y}(t)}
+ \ \xrightarrow{\ \text{只有回声}\ }\ -\mathrm{ERLE}
+ \qquad
+ \underbrace{\text{可检出}:\ \mathrm{NER}\ge\theta}
+  _{\textstyle \substack{\theta=\text{校准段里最高的一次}\\ \text{比回声底高}\ ${r(DX.kinds[2].theta - DX.kinds[2].floor, 0)}\ \text{dB（卡尔曼）}}}`,
 };
 
 const I = {

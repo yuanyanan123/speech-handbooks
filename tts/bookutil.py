@@ -18,6 +18,12 @@ EV = json.load(open('demo_eval.json'))
 TP = json.load(open('demo_temp.json'))
 CK = json.load(open('demo_chunk.json'))
 CL = json.load(open('demo_clone.json'))
+F.update(json.load(open('figs_d.json')))
+CF = json.load(open('demo_cfg.json'))
+LG = json.load(open('demo_lang.json'))
+VC = json.load(open('demo_vc.json'))
+LO = json.load(open('demo_long.json'))
+OB = json.load(open('demo_obj.json'))
 
 
 def fml(name, key, where=None):
