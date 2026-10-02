@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>中文语音技术手册</title>
+<style>
+:root{--bg:#fbfaf7;--fg:#1c1b19;--mut:#6b675f;--line:#dcd8cf;--card:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#161512;--fg:#ece9e2;--mut:#9a958a;--line:#37342d;--card:#1e1d19}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.7 "Noto Serif SC","Songti SC",serif}
+main{max-width:720px;margin:0 auto;padding:48px 16px}
+h1{font-size:28px;margin:0 0 8px}p.d{color:var(--mut);margin:0 0 32px}
+a.c{display:block;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:0 0 14px;color:inherit;text-decoration:none}
+a.c:hover{border-color:var(--mut)}a.c b{font-size:19px}a.c span{display:block;color:var(--mut);font-size:14px;margin-top:4px}
+</style></head><body><main>
+<h1>中文语音技术手册 · 三本</h1>
+<p class="d">声音进来、变成文字、再变回声音。每本是一个独立的 HTML 文件，双击即可在浏览器打开，无需联网（字体联网时才会加载，离线时自动回退到系统字体）。</p>
+<a class="c" href="frontend.html"><b>前端信号处理手册</b><span>阵列 · 单通道增强 · 回声消除与全双工 · 唤醒与声纹 · 补遗</span></a>
+<a class="c" href="asr.html"><b>ASR 链路手册</b><span>七代脉络 · 解码与 WFST · 流式与部署 · 补篇</span></a>
+<a class="c" href="tts.html"><b>TTS 合成手册</b><span>七代脉络 · 声码器 · 克隆与评测 · 补篇</span></a>
+</main></body></html>
