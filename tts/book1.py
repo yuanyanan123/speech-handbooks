@@ -572,7 +572,7 @@ def part3():
              '不要求每个位置至少被看一次。</p>')
     o.append('<p>17 节会把这件事量出来：在一段边界已知的语音上，'
              '去掉单调约束、逐帧取似然最大，结果是 '
-             '<strong>%s%% 的帧出现"时间倒流"，%d 个音素一帧也没分到</strong>。'
+             '<strong>%s%% 的帧出现"时间倒流"，%d 个音素一帧也没分到</strong>。</p>'
              % (r1(AL['soft']['nonmono_pct']), AL['soft']['n_skipped']))
     o.append(why('“一帧没分到”在合成时就是<strong>漏词</strong>；'
                  '“时间倒流”就是<strong>复读</strong>。'
