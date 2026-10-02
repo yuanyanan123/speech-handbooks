@@ -87,6 +87,10 @@ def toc_html():
     for sid, num, name in book_fe.TOC_C:
         o.append('<li><a href="#%s"><span class="num">%s</span>%s</a></li>' % (sid, num, name))
     part_a_b_d('D')
+    import extra_e
+    o.append('<li class="part">E 补遗 · 链路两端与相邻问题</li>')
+    for sid, num, name in extra_e.TOC_E:
+        o.append('<li><a href="#%s"><span class="num">%s</span>%s</a></li>' % (sid, num, name))
     o.append('</ol></nav>')
     return ''.join(o)
 
@@ -129,6 +133,7 @@ FOOT = '''<footer>
     ERLE 每高 10 dB 能听见的近端就轻 10 dB、自适应波束一定比固定波束好。
     阵列、AEC、RES、NS 四段在 C10 里按六种顺序真的串起来跑过（一种房间、一个近端方向、弥散噪声，没有方向性干扰）。</p>
     <p>C11 是理论补篇：神经方法、打断与唤醒/声纹的联动、回声尖峰的来源、带记忆的喇叭非线性——这四块<b>没有做实验</b>，只给定义、推导与评测规范，不含任何实测数字。</p>
+    <p>E 部分（补遗）同样<b>没有实验</b>：麦克风硬件指标、增益控制、啸叫与风噪、丢包补偿与带宽扩展、多通道端到端、神经 AEC，只写机理、定义与评测规范。</p>
         <p>姊妹篇：<a href="https://claude.ai/artifact/NL7s2XicLUVjGk8uq4jXvw">ASR 链路手册</a>
     ——语音识别的七代脉络；
     <a href="https://claude.ai/artifact/JoVn5ZfQeMhCGQbfScKuwC">TTS 合成手册</a>
@@ -185,11 +190,11 @@ def array_scripts():
 
 
 def main():
-    import book_fe
+    import book_fe, extra_e
     a = retag(body_of(SRC['A']), 'A')
     b = retag(body_of(SRC['B']), 'B')
     d = retag(body_of(SRC['D']), 'D')
-    body = fix_text(book_fe.build_intro()) + fix_xref(a + b, True) + fix_text(book_fe.build_echo()) + '<!--part-D-->' + fix_xref(d, True)
+    body = fix_text(book_fe.build_intro()) + fix_xref(a + b, True) + fix_text(book_fe.build_echo()) + '<!--part-D-->' + fix_xref(d, True) + '<!--part-E-->' + fix_text(extra_e.build_extra())
     ids = re.findall(r'\bid="([^"]+)"', body)
     dup = sorted({i for i in ids if ids.count(i) > 1})
     if dup:

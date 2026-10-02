@@ -216,6 +216,27 @@ stoplat: String.raw`T_{\text{stop}}=T_{\text{hold}}+\tfrac{T_{\text{smooth}}}{2}
 fa: String.raw`\theta=\mu_0+\sigma_0\,z_{1-p},\qquad
  \mathbb{E}[\#\text{误触发}]\approx\frac{T}{T_{\text{blk}}}\,p_H,\qquad
  p_H\ \xrightarrow{\ \text{块间相关}\ }\ \text{远大于}\ p^{H}`,
+
+// ══ E 补遗 ═════════════════════════════════════════════════════
+micsnr: String.raw`\mathrm{SNR}_{\text{mic}}=L_{\text{ref}}-L_{\text{self}}\ \ [\mathrm{dB}],\quad L_{\text{ref}}=94\ \mathrm{dB\,SPL}\ (1\ \mathrm{Pa}),
+ \qquad L_{\text{self}}:\ \text{等效输入噪声（A 计权）}`,
+mismatch: String.raw`\underbrace{\Big\lvert 1-(1+\varepsilon)\,e^{j\varphi}\Big\rvert^{2}\approx\varepsilon^{2}+\varphi^{2}}_{\text{两路相减时的残余}},\qquad
+ \text{零陷深度}\approx-10\log_{10}\!\big(\varepsilon^{2}+\varphi^{2}\big)\ \mathrm{dB}`,
+comp: String.raw`y_{\mathrm{dB}}=\begin{cases}x_{\mathrm{dB}}, & x_{\mathrm{dB}}<T\\[2pt] T+\dfrac{x_{\mathrm{dB}}-T}{R}, & x_{\mathrm{dB}}\ge T\end{cases}
+ \qquad
+ g[n]=\alpha\,g[n-1]+(1-\alpha)\,g_{\text{目标}}[n],\quad \alpha=e^{-1/(\tau f_s)}`,
+howl: String.raw`Y(\omega)=\frac{G(\omega)}{1-G(\omega)H(\omega)}\,X(\omega),\qquad
+ \text{稳定}\iff \lvert G H\rvert<1\ \text{在}\ \angle(GH)=2\pi k\ \text{的频点上},\qquad
+ \mathrm{GBF}=-20\log_{10}\max_{\omega\in\Omega_0}\lvert G H\rvert`,
+coh: String.raw`\gamma_{12}^{2}(\omega)=\frac{\lvert S_{12}(\omega)\rvert^{2}}{S_{11}(\omega)\,S_{22}(\omega)}\in[0,1],\qquad
+ \text{近场语音}\ \gamma^{2}\to 1,\quad \text{风湍流（两路不相关）}\ \gamma^{2}\to 0`,
+bwe: String.raw`\hat{\mathbf X}_{h}=\mathbb{E}\big[\mathbf X_{h}\mid\mathbf X_{l}\big]\ \ (\text{回归：条件均值，偏平滑}),\qquad
+ \hat x[n]=\sum_{k=1}^{p}a_k\,x[n-k]\ \ (\text{LPC 外推}),\ \ x[n]\!\leftarrow\!x[n-T_0]\ \ (\text{基音重复})`,
+mvdr: String.raw`\mathbf w(f)=\frac{\boldsymbol\Phi_{nn}^{-1}(f)\,\boldsymbol\Phi_{ss}(f)}{\mathrm{tr}\big(\boldsymbol\Phi_{nn}^{-1}(f)\,\boldsymbol\Phi_{ss}(f)\big)}\,\mathbf u,\qquad
+ \boldsymbol\Phi_{vv}(f)=\frac{\sum_t m_v(t,f)\,\mathbf y\mathbf y^{H}}{\sum_t m_v(t,f)},\ \ v\in\{s,n\}`,
+nlaec: String.raw`\mathcal L=\sum_{t,f}\Big(\lvert\hat S\rvert^{c}-\lvert S\rvert^{c}\Big)^{2}
+ +\ \mu\sum_{t,f\in\text{单讲回声段}}\lvert\hat S\rvert^{2},\qquad c\approx 0.3`,
+
 };
 
 const I = {

@@ -9,7 +9,7 @@ h = io.open('frontend-handbook.html', encoding='utf-8').read()
 body = h[h.index('<main>'):h.index('</main>')]
 _c0 = body.index('<section id="f1">')
 _c1 = body.index('<!--part-D-->')
-newpart = re.search(r'<section id="g0">.*?</section>', body, re.S).group(0) + body[_c0:_c1]
+newpart = re.search(r'<section id="g0">.*?</section>', body, re.S).group(0) + body[_c0:_c1] + body[body.index('<!--part-E-->'):]
 txt = re.sub(r'<[^>]+>', '', re.sub(r'<svg.*?</svg>', '', newpart, flags=re.S))
 bad = []
 

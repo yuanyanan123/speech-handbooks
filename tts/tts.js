@@ -348,6 +348,21 @@ drift: String.raw`\underbrace{\mathrm{Var}[\Delta T_N]=N\,\sigma_d^{2}}_{\text{�
  \underbrace{\mathbb{E}[\Delta T_N]=N\,b}_{\text{有系统偏差：}\ N\ \text{增长}},\qquad
  \text{漂移率}=\frac{\lvert T_{\text{gen}}-T_{\text{ref}}\rvert}{T_{\text{ref}}}`,
 
+
+// ══ 39–44 补遗 ═════════════════════════════════════════════════
+dpo: String.raw`\mathcal L_{\text{DPO}}=-\log\sigma\!\Big(\beta\Big[\log\frac{\pi_\theta(y_w\mid c)}{\pi_{\text{ref}}(y_w\mid c)}-\log\frac{\pi_\theta(y_l\mid c)}{\pi_{\text{ref}}(y_l\mid c)}\Big]\Big),\qquad
+ \max_\theta\ \mathbb E\big[r(y)\big]-\beta\,\mathrm{KL}\big(\pi_\theta\,\Vert\,\pi_{\text{ref}}\big)`,
+rtf: String.raw`\mathrm{RTF}=\frac{T_{\text{合成耗时}}}{T_{\text{音频时长}}}
+ =\frac{\mathrm{NFE}\cdot c_{\text{网络}}\cdot(1+\mathbb 1_{\text{CFG}})+c_{\text{声码器}}}{T_{\text{音频时长}}},\qquad
+ \text{一致性：}\ f_\theta(\mathbf x_t,t)=f_\theta(\mathbf x_{t'},t')\ \ \forall\,t,t'`,
+design: String.raw`p(\mathbf e\mid\text{描述})\ \ \text{而不是}\ \ \mathbf e=\mathrm{SpkEnc}(\text{参考音频}),\qquad
+ \text{一对多：}\ \text{同一句描述对应一族音色}`,
+dub: String.raw`\sum_{i=1}^{N}d_i=T_{\text{目标}},\qquad
+ d_i=\frac{d_i^{0}}{\rho_i},\quad \rho_{\min}\le\rho_i\le\rho_{\max}\ \ (\text{可接受语速范围})`,
+sing: String.raw`f_0(m)=440\cdot 2^{\,(m-69)/12}\ \mathrm{Hz},\qquad
+ \sum_{\text{音符内}}d=\text{乐谱时值}\ \ (\text{硬约束}),\qquad
+ \text{对话：}\ T_{\text{响应}}=T_{\text{判停}}+T_{\text{生成首包}}`,
+
 };
 
 const I = {
