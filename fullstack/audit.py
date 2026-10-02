@@ -15,7 +15,7 @@ def chk(ok, what):
 
 
 print('── 结构')
-for t in ('section', 'h2', 'h3', 'figure', 'figcaption', 'table', 'details', 'summary', 'dl', 'div'):
+for t in ('section', 'h2', 'h3', 'h4', 'figure', 'figcaption', 'table', 'details', 'summary', 'dl', 'div'):
     a, b = len(re.findall(r'<%s[ >]' % t, body)), body.count('</%s>' % t)
     chk(a == b, '<%s> 开闭配对 %d/%d' % (t, a, b))
 ids = re.findall(r'<section id="([a-z]\d+)"', body)
@@ -24,6 +24,7 @@ chk(set(ids) == links, '目录与章节一一对应（%d）' % len(ids))
 chk(len(re.findall(r'\bid="([^"]+)"', body)) == len(set(re.findall(r'\bid="([^"]+)"', body))), 'id 无重复')
 print('── 公式与格式')
 K = json.load(open('fs_k.json'))
+K.update(json.load(open('fs_k2.json')))
 unused = [k for k, v in K.items() if v not in body]
 chk(not unused, '所有公式都用上了（%d）' % len(K) + ('' if not unused else ' 未用：%s' % unused))
 chk('undefined' not in body and 'NaN' not in body and 'None' not in txt, '无 undefined / NaN / None')
@@ -52,5 +53,7 @@ for sid in ids:
     if '评价' not in t or '工程问题' not in t and '工程' not in t:
         miss.append(sid)
 chk(not miss, '每节都含"评价"与"工程问题"' + ('' if not miss else ' 缺：%s' % miss))
+print('── 演进链')
+chk(body.count('解决了上一步的什么') >= 10, '方法演进总览表 %d 张' % body.count('解决了上一步的什么'))
 print('\n未通过 %d 项' % len(bad))
 sys.exit(1 if bad else 0)

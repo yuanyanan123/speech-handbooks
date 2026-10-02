@@ -53,8 +53,8 @@ def mast(body):
     <p class="eyebrow">阵列 · 单通道 · ASR · TTS · 一条闭环的链路</p>
     <h1>全栈音频链路手册</h1>
     <p class="dek">从一组多通道语音出发，走过阵列、回声消除、单通道增强、特征、识别、解码、理解、合成、声码器，再回到麦克风。
-    每一步按同一个顺序写：原理与推导、先进方法、评价、工程问题、与上下游的交接卡。
-    全书 %d 节，只有一张图——总架构图；没有实验，不含实测数字，出现的数字都是算术或定义。
+    每一步按同一个顺序写：原理与推导、方法演进（从最早的方法一路讲到最先进的做法）、先进方法、评价、工程问题、与上下游的交接卡。
+    全书 %d 节、一张总架构图、一百多个公式；没有实验，不含实测数字，出现的数字都是算术或定义。
     要看实验与数字，每节末尾指向前端、ASR、TTS 三本详细手册。</p>
     <dl class="specstrip">
       <div class="spec"><dt>3 秒 × 4 麦 × 16 kHz 的 STFT</dt><dd>4×257×186<small>复数</small></dd></div>
@@ -80,9 +80,30 @@ FOOT = '''<footer>
 '''
 
 
+def splice(body):
+    """把"方法演进"插到各节的"先进方法"之前（没有就插在"评价"之前）。"""
+    import evo_a, evo_b, evo_c
+    EVO = {'u2': evo_a.evo_u2, 'u3': evo_a.evo_u3, 'u4': evo_a.evo_u4, 'u5': evo_a.evo_u5,
+           'u6': evo_b.evo_u6, 'u7': evo_b.evo_u7, 'u8': evo_b.evo_u8,
+           'u10': evo_c.evo_u10, 'u11': evo_c.evo_u11, 'u12': evo_c.evo_u12}
+    for sid, fn in EVO.items():
+        a = body.index('<section id="%s">' % sid)
+        b = body.index('</section>', a)
+        sec = body[a:b]
+        for mk in ('<h3>先进方法</h3>', '<h3>评价与工程问题</h3>', '<h3>评价</h3>'):
+            if mk in sec:
+                i = sec.index(mk)
+                break
+        else:
+            raise SystemExit('找不到插入点：%s' % sid)
+        sec = sec[:i] + fn() + sec[i:]
+        body = body[:a] + sec + body[b:]
+    return body.replace('<h3>先进方法</h3>', '<h3>先进方法（演进链的终点与相邻方向）</h3>')
+
+
 def main():
     import book_a, book_b, book_c
-    body = fix_text(book_a.build_a() + book_b.build_b() + book_c.build_c())
+    body = fix_text(splice(book_a.build_a() + book_b.build_b() + book_c.build_c()))
     ids = re.findall(r'\bid="([^"]+)"', body)
     dup = sorted({i for i in ids if ids.count(i) > 1})
     if dup:
