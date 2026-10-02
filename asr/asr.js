@@ -295,6 +295,30 @@ smooth: String.raw`Y=\big(X\,\mathrm{diag}(s)^{-1}\big)\big(\mathrm{diag}(s)\,W\
 stitch: String.raw`\text{块长 }L,\ \text{重叠 }O:\quad
  \text{算力}\times\frac{L}{L-O},\qquad O\ \ge\ \max(T_{\text{最长词}},\ T_{\text{上下文}})`,
 
+
+// ══ 50–56 补遗 ═════════════════════════════════════════════════
+pit: String.raw`\mathcal L_{\text{PIT}}=\min_{\pi\in\mathcal P_K}\ \sum_{k=1}^{K}\ \ell\big(\hat y_k,\ y_{\pi(k)}\big),\qquad
+ \underbrace{\lvert\mathcal P_K\rvert=K!}_{\text{排列数}},\qquad
+ \text{SOT：}\ y=y_1\,\langle sc\rangle\,y_2\,\langle sc\rangle\cdots y_K`,
+tsasr: String.raw`P(y\mid X,\ \mathbf e_{\text{目标}})\quad\text{而不是}\quad P(y\mid X),\qquad
+ \mathbf e_{\text{目标}}=\mathrm{SpkEnc}(\text{注册语音})`,
+temp: String.raw`p_l=\frac{n_l^{\,1/\tau}}{\sum_{l'}n_{l'}^{\,1/\tau}},\qquad
+ \tau=1:\ \text{按数据量},\quad \tau\to\infty:\ \text{各语言均匀}`,
+unit: String.raw`\begin{aligned}
+ &\underbrace{U\ \le\ \frac{T_{\text{音频}}}{h\cdot s}-\text{（CTC 需要的重复间隔）}}_{\text{单元数受帧率限制}}\\[6pt]
+ &\text{BPE：每步合并}\ \arg\max_{(a,b)}\mathrm{count}(a,b),\qquad
+ \text{Unigram：}\ \hat{\mathbf x}=\arg\max_{\mathbf x\in\mathrm{Seg}(w)}\prod_i p(x_i)
+ \end{aligned}`,
+g2p: String.raw`\hat\phi=\arg\max_{\phi}\ P(\phi\mid g),\qquad
+ P(W\mid X)\ \propto\ \sum_{\phi}\ \underbrace{P(X\mid\phi)}_{\text{声学}}\ \underbrace{P(\phi\mid W)}_{\text{发音词典}}\ P(W)`,
+cascade: String.raw`P(y\mid X)=\sum_{W}P(y\mid W)\,P(W\mid X)\ \approx\ \sum_{W\in\text{N-best}}P(y\mid W)\,\tilde P(W\mid X),\qquad
+ \text{直接式：}\ P_\theta(y\mid X)`,
+mwer: String.raw`\mathcal L_{\text{MWER}}=\sum_{W\in\mathcal N(X)}\tilde P(W\mid X)\,\mathcal R(W,W^{\ast}),\qquad
+ \tilde P(W\mid X)=\frac{P(W\mid X)}{\sum_{W'\in\mathcal N(X)}P(W'\mid X)},\qquad
+ \mathcal R=\text{编辑距离}`,
+boot: String.raw`\mathrm{WER}=\frac{\sum_i e_i}{\sum_i n_i},\qquad
+ \widehat{\mathrm{Var}}(\mathrm{WER})\approx\frac{\sum_{i=1}^{N}\big(e_i-\mathrm{WER}\cdot n_i\big)^{2}}{N\,(N-1)\,\bar n^{2}}`,
+
 };
 
 const I = {

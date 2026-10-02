@@ -172,9 +172,10 @@ def build(num):
     # ── 21 beam search：补上定量部分
     r['s17'] = O.old('s17', num['s17'], append=_beam_tail())
 
-    import new1, new2, more, new3
+    import new1, new2, more, new3, new5
     r.update(new1.build(num))
     r.update(new2.build(num))
     r.update(more.build(num))
     r.update(new3.build(num))
+    r.update(new5.build(num))
     return r
