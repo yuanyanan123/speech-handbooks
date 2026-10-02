@@ -33,7 +33,7 @@ chk(not re.findall(r'%[sdfrg]\b|%%', txt), '无残留格式符')
 chk(not re.findall(r'\\(?:frac|sum|begin|mathbf|boldsymbol)\b', txt), '正文无裸 LaTeX')
 print('── 图')
 svgs = [x for x in re.findall(r'<svg.*?</svg>', body, re.S) if 'class="chart"' in x[:200]]
-chk(len(svgs) == 1, '图数 %d' % len(svgs))
+chk(len(svgs) == 12, '图数 %d' % len(svgs))
 chk(not any('<em>' in s or '<strong>' in s or '<br' in s for s in svgs), 'SVG 内无 HTML 标签')
 chk(all(len(re.findall(r'<text[ >]', s)) == s.count('</text>') for s in svgs), '<text> 闭合')
 chk(not any('var(--hot)' in s and 'var(--s3)' in s for s in svgs), '图未同时用 hot 与 s3')
@@ -49,14 +49,14 @@ miss = []
 for sid in ids:
     m = re.search(r'<section id="%s">.*?</section>' % sid, body, re.S)
     t = m.group(0)
-    if sid in ('u1', 'u14', 'u15', 'u16', 'u20', 'u21', 'u22') or sid == 'g0':
+    if sid in ('u1', 'u14', 'u15', 'u16', 'u20', 'u21', 'u22', 'u23', 'u24', 'u25') or sid == 'g0':
         continue
     if '评价' not in t or '工程问题' not in t and '工程' not in t:
         miss.append(sid)
 chk(not miss, '每节都含"评价"与"工程问题"' + ('' if not miss else ' 缺：%s' % miss))
 print('── 演进链')
 chk(body.count('解决了上一步的什么') >= 12, '方法演进总览表 %d 张' % body.count('解决了上一步的什么'))
-chk(len(ids) == 23, '章节数 %d（含导读）' % len(ids))
+chk(len(ids) == 26, '章节数 %d（含导读）' % len(ids))
 chk(not re.findall(r'%[0-9]*[sdf]', txt), '算例没有残留格式符')
 print('\n未通过 %d 项' % len(bad))
 sys.exit(1 if bad else 0)
