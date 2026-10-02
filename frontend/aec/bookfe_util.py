@@ -19,6 +19,7 @@ DL = _j('demo_aec_delay.json')
 MU2 = _j('demo_aec_multi.json')
 DX = _j('demo_aec_duplex.json')
 CH = _j('demo_aec_chain.json')
+JT = _j('demo_aec_joint.json')
 
 
 def ki(key):

@@ -18,3 +18,5 @@ pass*.pdf
 
 # 大的中间数组
 *.npy
+*.npz
+.cache_*

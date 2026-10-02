@@ -4,7 +4,7 @@
 
 所有数字都从 demo_aec_*.json 里取，不手抄。节号用 C1…C8，与阵列(A)、单通道(B)两部分各自独立。
 """
-from bookfe_util import (K, KI, F, AD, DT, DR, RS, D2, DL, MU2, DX, CH, fml, fig, sec, part,
+from bookfe_util import (K, KI, F, AD, DT, DR, RS, D2, DL, MU2, DX, CH, JT, fml, fig, sec, part,
                          table, ex, note, trap, step, why, q, ki)
 
 r0 = lambda x: '%.0f' % x
@@ -579,14 +579,32 @@ def build_echo():
                   '三样都有时 RES→NS 比 NS→RES 只好 %s dB，顺序几乎无所谓；<strong>两个都留</strong>比任何单独一个都好。</p>'
                 % (r1(CN['ns_echo'] - CN['aec_echo']), r1(CN['res_echo'] - CN['aec_echo']),
                    r1(CN['ns_noise'] - CN['base_noise']), r2(CN['order_gap']))))
+    o.append(step('四段按不同顺序串起来'))
+    JN = JT['note']
+    o.append('<p>前面把每一段单独量过。这里把阵列（A）、回声消除（C）、残余抑制（R）、单通道降噪（N）真的串起来跑：'
+             '四麦线阵（间距 %s mm）、喇叭紧挨阵列、近端说话人在 %s° 方向、粉噪，回声与近端各有每个麦克风自己的混响冲激响应，喇叭带轻度非线性（THD %s%%）。'
+             'MVDR 的噪声协方差在近端没说话的帧上递推，所以权重是真的时变（相邻帧中位变化 %s%%）。</p>'
+             % (r0(JT['const']['spacing_mm']), r0(JT['const']['theta_deg']), r1(JN['thd']), r1(100 * JN['w_change'])))
+    o.append(fig('joint', '<strong>六种串法。</strong>① 只有回声时输出相对回声下降多少；② 近端说话时对直达声的分段信噪比。'))
+    o.append(ex('实测：端到端（%d 个种子）' % len(JT['const']['seeds']),
+                table(['串法', '#回声下降', '#近端 segSNR', '#近端 STOI'],
+                      [['不处理（参考麦克风）', '#0', '#%s dB' % neg(r1(JT['base']['near'])), '#%s' % r3(JT['base']['stoi'])]] +
+                      [[r['name'], '#%s dB' % r1(r['echo']), '#%s dB' % neg(r1(r['near'])), '#%s' % r3(r['stoi'])] for r in JT['rows']], cls='dp')
+                + '<p>目标是近端语音在参考麦克风上的<strong>直达声</strong>（波束会去混响，拿带混响的当标准答案会罚波束）。'
+                  '<strong>顺序确实有区别</strong>：自适应波束放在回声消除前面，回声只下降 %s dB；放在后面是 %s dB，差 <strong>%s dB</strong>，近端也差 %s dB。'
+                  '换成固定波束，前后只差 %s dB——和 A14 的结论一致：问题不在"波束"，在"权重会变"。</p>'
+                % (r1(JN['mvdr_echo']), r1(JN['cmvdr_echo']), r1(JN['order_gap_echo']), r1(JN['order_gap_near']), r1(JN['fixed_gap_echo']))))
+    o.append(trap('我原以为：自适应波束一定比固定波束好',
+                  '在这个场景里不是：自适应 MVDR 的近端分段信噪比 %s dB，固定 DAS 是 %s dB。噪声是弥散的（粉噪各麦独立生成），MVDR 能压的方向性干扰不存在，'
+                  '协方差的估计误差反而带来代价。MVDR 的价值在有方向性干扰时才出来——本实验没有放方向性干扰，所以没有量那一半。'
+                  % (r1(JN['cmvdr_near']), r1(JN['cdas_near']))))
     o.append(note('三段怎么串',
-                  '链路顺序是：<strong>回声消除（C）→ 自适应波束与分离（A）→ 单通道增强（B）</strong>，'
-                  'C 在最前。原因在 A14 里算过：波束权重每帧都在变，波束后面的 AEC 要辨识的路径就跟着变，'
-                  '指向只动 1°，AEC 的上限就掉到 14.6 dB，动 5° 掉到 5.03 dB。'
-                  '所以 AEC 要么在自适应波束<strong>之前</strong>（每路一个，算力 ×M），'
-                  '要么让波束固定 / 在远端有声时冻结权重。AEC 之后的那一级是 <strong>RES 加 NS 一起留着</strong>（上面的实测），'
-                  '先后顺序几乎无所谓。AEC 与波束的先后顺序来自 A14 的计算；<strong>本书没有把阵列、AEC、RES、NS '
-                  '四段一起跑成端到端实验</strong>，上面这一级的实测是在单麦克风上做的。'))
+                  '链路顺序是：<strong>回声消除（C）→ 波束（A）→ 残余抑制与单通道降噪（R、N）</strong>。上面的端到端实验验证了 A14 的计算：'
+                  '波束权重每帧都在变，波束后面的 AEC 要辨识的路径就跟着变——自适应波束放在 AEC 前面，回声多留 %s dB。'
+                  '所以 AEC 要么在自适应波束<strong>之前</strong>（每路一个，算力 ×M），要么让波束固定 / 在远端有声时冻结权重。'
+                  'AEC 之后那一级是 <strong>RES 加 NS 一起留着</strong>（上一步的实测），先后顺序几乎无所谓。'
+                  '这一组实验的局限：只有一种房间、一个近端方向、弥散噪声、近端说话时间已知（MVDR 的协方差更新用了这个"理想 VAD"），没有方向性干扰。'
+                  % r1(JN['order_gap_echo'])))
     o.append(trap('现场常见的五个翻车点',
                   '<p>① 只在安静房间测 ERLE，上线后一说话就坏——没测双讲。<br>'
                   '② 用 ERLE 当唯一指标，把 RES 调到近端发闷。<br>'
@@ -649,8 +667,8 @@ def build_echo():
              '<span><b>demo_aec_delay.py</b> C6（延迟估计）</span> '
              '<span><b>demo_aec_multi.py</b> C8</span> '
              '<span><b>demo_aec_duplex.py</b> C9</span> '
-             '<span><b>demo_aec_chain.py</b> C10</span> '
-             '<span><b>figs_fe.py / figs_fe2.py</b> 十张图</span> '
+             '<span><b>demo_aec_chain.py / demo_aec_joint.py</b> C10</span> '
+             '<span><b>figs_fe.py / figs_fe2.py</b> 十一张图</span> '
              '<span><b>fe.js</b> 全部公式</span>'
              '<p>每个 demo 独立运行，各写一个同名 JSON；正文、图与公式里的数都从 JSON 里取。</p></div>')
     o.append('</section>')

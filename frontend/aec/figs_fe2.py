@@ -289,10 +289,47 @@ def fig_chain():
 
 
 # ══════════════════════════════════════════════════════════════
+def fig_joint():
+    D = _j('demo_aec_joint.json')
+    W, H = 700, 430
+    o = ['<text x="10" y="18" class="ct">四段端到端：'
+         '<tspan font-weight="700">回声消除放在自适应波束之前，回声多压 %.1f dB</tspan>' % D['note']['order_gap_echo'] +
+         '<tspan class="cu"> · 固定波束前后无所谓</tspan></text>']
+    rows = D['rows']
+    short = ['只降噪', '单麦 C→R→N', 'DAS→C', 'MVDR→C', 'C→DAS', 'C→MVDR']
+    col = {'n_only': T3, 'c_single': T3, 'das_c': C1, 'mvdr_c': C2, 'c_das': C1, 'c_mvdr': C3}
+    for pi, (key, title, lo, hi, unit) in enumerate((('echo', '① 只有回声时，输出相对回声下降', 0, 35, 'dB'),
+                                                       ('near', '② 近端说话时，对直达声的分段信噪比', -5, 6, 'dB'))):
+        X0 = 16 + pi * 350
+        o.append(f'<text x="{X0}" y="52" class="blab">{title}</text>')
+        zero = X0 + 130 + (0 - lo) / (hi - lo) * 150
+        for i, r_ in enumerate(rows):
+            y = 80 + i * 30
+            o.append(f'<text x="{X0+122}" y="{y+4}" class="ctick" text-anchor="end" fill="{T2}">{short[i]}</text>')
+            v = r_[key]
+            x0, x1 = sorted((zero, X0 + 130 + (v - lo) / (hi - lo) * 150))
+            o.append(f'<rect x="{x0:.1f}" y="{y-8}" width="{max(x1-x0,1):.1f}" height="15" rx="2" fill="{col[r_["key"]]}" fill-opacity="0.88"/>')
+            o.append(f'<text x="{x1+6:.1f}" y="{y+4}" class="ctick" fill="{col[r_["key"]]}">{neg("%.1f" % v)} dB</text>')
+        if lo < 0:
+            o.append(f'<line x1="{zero:.1f}" y1="68" x2="{zero:.1f}" y2="{80+5*30+10}" stroke="{T3}" stroke-dasharray="2 3"/>')
+    n = D['note']
+    foot(o, H, [
+        ('同一套四麦阵列加喇叭的场景（%d 个种子）：加了阵列，回声下降从单麦的 %.1f dB 到 %.1f dB，近端分段信噪比从 %.1f dB 到 %.1f dB。'
+         % (len(D['const']['seeds']), n['c1_echo'], n['cdas_echo'], n['c1_near'], n['cdas_near']), None),
+        ('自适应波束放在回声消除<b>前面</b>：回声只下降 %.1f dB；放在<b>后面</b>：%.1f dB——差 <b>%.1f dB</b>。固定波束前后只差 %.1f dB。'
+         % (n['mvdr_echo'], n['cmvdr_echo'], n['order_gap_echo'], n['fixed_gap_echo']), C2),
+        ('MVDR 的权重相邻帧中位变化 %.1f%%——这就是 AEC 要追的那条"每帧都在变"的路径。' % (100 * n['w_change']), T2),
+        ('这个场景里自适应波束在近端质量上不如固定波束（%.1f 对 %.1f dB）：噪声是弥散的，MVDR 的优势发挥不出来。'
+         % (n['cmvdr_near'], n['cdas_near']), C3),
+    ], y0=300, dy=17)
+    return svg(W, H, o, '六种串法下的回声下降与近端质量')
+
+
+# ══════════════════════════════════════════════════════════════
 def main():
     OUT['dtd2'] = fig_dtd2()
     for n, fn in (('delay', 'fig_delay'), ('multi', 'fig_multi'), ('duplex', 'fig_duplex'),
-                  ('chain', 'fig_chain')):
+                  ('chain', 'fig_chain'), ('joint', 'fig_joint')):
         if fn in globals() and os.path.exists(os.path.join(HERE, 'demo_aec_%s.json' % n)):
             OUT[n] = globals()[fn]()
     json.dump(OUT, open(os.path.join(HERE, 'figs_fe2.json'), 'w'), ensure_ascii=False)
