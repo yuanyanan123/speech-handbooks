@@ -174,7 +174,7 @@ def main():
     body = fix_xref(fix_text(book1.build() + b2[:cut] + more.build(num) + b2[cut:] + new4.build(num) + new6.build(num)))
     html = (HEAD + EXTRA + MAST + '<div class="wrap">\n<div class="cols">\n'
             + toc_html() + '\n<main>\n' + body + FOOT + '\n</main>\n</div>\n</div>\n')
-    io.open('tts-handbook.html', 'w', encoding='utf-8').write(html)
+    io.open('tts-handbook.html', 'w', encoding='utf-8').write('<!doctype html>\n<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n' + html)
     print('tts-handbook.html  %.1f KB' % (len(html.encode()) / 1024))
     # 粗查
     for t in ('section', 'h2', 'figure', 'table'):

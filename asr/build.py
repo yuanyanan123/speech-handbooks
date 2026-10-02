@@ -238,7 +238,7 @@ def main():
     html = (HEAD + EXTRA + MAST + '<div class="wrap">\n<div class="cols">\n'
             + toc_html() + '\n<main>\n' + body + FOOT + '\n</main>\n</div>\n</div>\n'
             + SPY)
-    io.open('asr-handbook.html', 'w', encoding='utf-8').write(html)
+    io.open('asr-handbook.html', 'w', encoding='utf-8').write('<!doctype html>\n<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n' + html)
     print('asr-handbook.html  %.1f KB' % (len(html.encode()) / 1024))
     for t in ('section', 'h2', 'figure', 'table', 'details'):
         print('  <%s> %d / </%s> %d' % (t, len(re.findall('<%s[ >]' % t, html)),
