@@ -128,6 +128,7 @@ FOOT = '''<footer>
     滤波器加长总能覆盖时钟漂移、ERLE 越高越好、取最早的显著峰去估延迟、半波整流足以给立体声参考去相关、
     ERLE 每高 10 dB 能听见的近端就轻 10 dB、自适应波束一定比固定波束好。
     阵列、AEC、RES、NS 四段在 C10 里按六种顺序真的串起来跑过（一种房间、一个近端方向、弥散噪声，没有方向性干扰）。</p>
+    <p>C11 是理论补篇：神经方法、打断与唤醒/声纹的联动、回声尖峰的来源、带记忆的喇叭非线性——这四块<b>没有做实验</b>，只给定义、推导与评测规范，不含任何实测数字。</p>
         <p>姊妹篇：<a href="https://claude.ai/artifact/NL7s2XicLUVjGk8uq4jXvw">ASR 链路手册</a>
     ——语音识别的七代脉络；
     <a href="https://claude.ai/artifact/JoVn5ZfQeMhCGQbfScKuwC">TTS 合成手册</a>
