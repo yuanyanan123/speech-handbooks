@@ -328,6 +328,26 @@ mcd: String.raw`\mathrm{MCD}=\frac{10}{\ln 10}\sqrt{2\sum_{d=1}^{13}\big(c_d-\ha
  \qquad
  \underbrace{\tau_{\text{MCD,F0}}=${r(OB.tau['mcd-f0'], 2)}}
   _{\textstyle \text{排序互不相关}}`,
+
+// ══ 38 理论补篇 ════════════════════════════════════════════════
+resamp: String.raw`x'(t)=x(rt)\ \Longrightarrow\ 
+ \underbrace{T'=T/r}_{\text{时长}},\quad
+ \underbrace{f_0'=r\,f_0}_{\text{基频}},\quad
+ \underbrace{F_i'=r\,F_i}_{\text{共振峰}}`,
+xtalk: String.raw`C_{ij}=\frac{\partial\,\hat a_i}{\partial\,c_j},\qquad
+ \hat a_i:\ \text{实测的第 }i\text{ 个声学量},\ \ c_j:\ \text{第 }j\text{ 个控制量}
+ \qquad\text{理想：}\ C\ \text{为对角阵}`,
+vq: String.raw`\mathbf z_q=\mathbf e_{k^{\star}},\ \ k^{\star}=\arg\min_k\lVert\mathbf z_e-\mathbf e_k\rVert,\qquad
+ \underbrace{R\le\log_2 K}_{\text{每帧的信息上限（bit）}},\qquad
+ \mathcal L=\lVert x-\hat x\rVert^{2}+\lVert\mathrm{sg}[\mathbf z_e]-\mathbf e\rVert^{2}+\beta\lVert\mathbf z_e-\mathrm{sg}[\mathbf e]\rVert^{2}`,
+adv: String.raw`\min_{\text{Enc,Dec}}\ \max_{\text{Cls}}\ \Big[\ \mathcal L_{\text{rec}}
+ -\lambda\ \underbrace{\mathrm{CE}\big(\mathrm{Cls}(\mathrm{Enc}(X)),\ \text{说话人}\big)}_{\text{分类器想判对，编码器想让它判不对}}\ \Big]`,
+inorm: String.raw`\mathrm{IN}(\mathbf h)_{c,t}=\frac{h_{c,t}-\mu_c}{\sigma_c},\qquad
+ \mu_c=\frac1T\sum_t h_{c,t},\quad \sigma_c^{2}=\frac1T\sum_t(h_{c,t}-\mu_c)^{2}`,
+drift: String.raw`\underbrace{\mathrm{Var}[\Delta T_N]=N\,\sigma_d^{2}}_{\text{误差独立：}\ \sqrt N\ \text{增长}},\qquad
+ \underbrace{\mathbb{E}[\Delta T_N]=N\,b}_{\text{有系统偏差：}\ N\ \text{增长}},\qquad
+ \text{漂移率}=\frac{\lvert T_{\text{gen}}-T_{\text{ref}}\rvert}{T_{\text{ref}}}`,
+
 };
 
 const I = {
