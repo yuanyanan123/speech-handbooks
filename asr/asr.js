@@ -273,6 +273,28 @@ quant: String.raw`w_q=s\cdot\mathrm{clip}\!\Big(\mathrm{round}\big(\tfrac{w}{s}\
  \qquad
  \underbrace{s=\frac{\max\lvert w\rvert}{2^{b-1}-1}}
   _{\textstyle \substack{\text{按张量：整个矩阵一个 }s\\ \text{按通道：每个输出通道一个 }s}}`,
+
+// ══ 49 理论补篇 ════════════════════════════════════════════════
+dec: String.raw`\hat W=\arg\max_{W}\Big[\ \underbrace{\log P(X\mid W)}_{\text{声学}}
+ +\lambda\,\underbrace{\log P(W)}_{\text{语言模型}}
+ +\beta\,\underbrace{\lvert W\rvert}_{\text{词数}}\ \Big]`,
+wordok: String.raw`P(\text{词 }w\text{ 的 }n_w\text{ 个音素全对})\approx\prod_{i=1}^{n_w}(1-\epsilon_i),
+ \qquad
+ \text{WER}=\frac{S+D+I}{N_{\text{ref}}}`,
+conf: String.raw`c(w)=\sum_{\text{同一时间段内}}\ \gamma(w)\ \ \text{（confusion network 上词后验）},\qquad
+ \mathrm{AURC}=\int_{0}^{1}\mathrm{Risk}(\kappa)\,d\kappa,\quad
+ \mathrm{Risk}(\kappa)=\text{保留覆盖率 }\kappa\text{ 时的错误率}`,
+mer: String.raw`\mathrm{MER}=\frac{S+D+I}{N},\qquad
+ \text{计数单元：中文按字、英文按词}\ \ (N=N_{\text{字}}+N_{\text{词}})`,
+lora: String.raw`W'=W+\frac{\alpha}{r}\,B A,\qquad B\in\mathbb{R}^{d_{\text{out}}\times r},\ A\in\mathbb{R}^{r\times d_{\text{in}}},\qquad
+ \#\text{参数}=r\,(d_{\text{in}}+d_{\text{out}})`,
+sqnr: String.raw`\mathrm{SQNR}\approx 6.02\,b+4.77-20\log_{10}\frac{x_{\max}}{\sigma_x}\ \ [\mathrm{dB}],\qquad
+ \Delta=\frac{2x_{\max}}{2^{b}-1},\quad \sigma_q^{2}=\frac{\Delta^{2}}{12}`,
+smooth: String.raw`Y=\big(X\,\mathrm{diag}(s)^{-1}\big)\big(\mathrm{diag}(s)\,W\big),\qquad
+ s_j=\frac{\max_i\lvert X_{ij}\rvert^{\,\alpha}}{\max_k\lvert W_{jk}\rvert^{\,1-\alpha}}`,
+stitch: String.raw`\text{块长 }L,\ \text{重叠 }O:\quad
+ \text{算力}\times\frac{L}{L-O},\qquad O\ \ge\ \max(T_{\text{最长词}},\ T_{\text{上下文}})`,
+
 };
 
 const I = {

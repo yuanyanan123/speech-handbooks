@@ -64,7 +64,7 @@ for s_ in inner:
 print('    （同时用 --hot 与 --s3 的图：%d 张，三种信息各占一色，属有意）' % len(rg))
 caps = re.findall(r'<figcaption>(.*?)</figcaption>', newpart, re.S)
 chk(not [c for c in caps if any(t in c for t in ('<h3', '<table', '<figure', '<section'))], 'figcaption 内无块级内容')
-chk(len(caps) == 10, '新写的十张图都有图注（%d）' % len(caps))
+chk(len(caps) == 11, '新写的十一张图都有图注（%d）' % len(caps))
 
 print('── 4. 公式与格式符 ' + '─' * 43)
 chk('undefined' not in newpart and 'NaN' not in newpart and 'None' not in txt, '无 undefined / NaN / None')
@@ -88,7 +88,7 @@ DR = json.load(open('aec/demo_aec_drift.json')); RS = json.load(open('aec/demo_a
 RES0 = RS['res'][0]['near_segsnr']
 D2 = json.load(open('aec/demo_aec_dtd2.json')); DL = json.load(open('aec/demo_aec_delay.json'))
 MU2 = json.load(open('aec/demo_aec_multi.json')); DX = json.load(open('aec/demo_aec_duplex.json'))
-CH = json.load(open('aec/demo_aec_chain.json'))
+CH = json.load(open('aec/demo_aec_chain.json')); JT = json.load(open('aec/demo_aec_joint.json'))
 NUMS = {
     '%.2f' % AD['length_note']['d64_128']: '滤波器 64→128 ms 的 ERLE 收益',
     '%.1f' % AD['mu_tradeoff']['prod_spread']: 'μ 扫描里快与准之积的浮动',
@@ -112,6 +112,8 @@ NUMS = {
     '%.1f' % abs(DL['note']['over8']): '高估 8 ms 的 ERLE',
     '%.1f' % MU2['note']['base_drop']: '立体声换人后 ERLE 掉量',
     '%.1f' % abs(MU2['note']['base_mis']): '立体声失调',
+    '%.1f' % JT['note']['order_gap_echo']: '波束与 AEC 的先后顺序差',
+    '%.1f' % JT['note']['mvdr_echo']: '自适应波束在前的回声下降',
     '%.0f' % DX['kinds'][2]['erle']: '卡尔曼 AEC 的 ERLE',
     '%.1f' % CH['note']['order_gap'] if False else '%.2f' % CH['note']['order_gap']: 'RES/NS 顺序差',
     '%.1f' % RS['split_note']['gap']: '线性/RES 分工的最大差距',

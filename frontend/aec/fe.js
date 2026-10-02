@@ -198,6 +198,24 @@ barge: String.raw`s(t)=10\log_{10}\frac{P_e(t)}{P_{\hat y}(t)}
  \qquad
  \underbrace{\text{可检出}:\ \mathrm{NER}\ge\theta}
   _{\textstyle \substack{\theta=\text{校准段里最高的一次}\\ \text{比回声底高}\ ${r(DX.kinds[2].theta - DX.kinds[2].floor, 0)}\ \text{dB（卡尔曼）}}}`,
+// ══ C11 理论补篇 ═══════════════════════════════════════════════
+// ① 线性滤波器的上界：相干性
+cohbound: String.raw`\underbrace{\mathrm{ERLE}_{\max}}_{\text{任何线性时不变滤波器}}
+ =-10\log_{10}\!\big(1-\gamma_{xd}^{2}\big),\qquad
+ \gamma_{xd}^{2}(\omega)=\frac{|S_{xd}(\omega)|^{2}}{S_{xx}(\omega)\,S_{dd}(\omega)}`,
+// ② 带记忆的喇叭模型
+mempoly: String.raw`d(n)=\sum_{q}h_q\;u(n-q),\qquad
+ u(n)=\sum_{p\in\{1,3,5,\dots\}}\sum_{k=0}^{K-1}c_{p,k}\;x^{p}(n-k)`,
+// ③ 掩蔽的训练目标与代价
+irm: String.raw`M^{\star}(t,f)=\sqrt{\frac{P_s(t,f)}{P_s(t,f)+P_r(t,f)}},\qquad
+ \hat\theta=\arg\min_\theta\sum_{t,f}\big(M_\theta(t,f)-M^{\star}(t,f)\big)^{2},\qquad
+ \hat s=M_\theta\cdot E`,
+// ④ 打断的时延账
+stoplat: String.raw`T_{\text{stop}}=T_{\text{hold}}+\tfrac{T_{\text{smooth}}}{2}+T_{\text{vad}}+T_{\text{dec}}+T_{\text{buf}}+T_{\text{ramp}}`,
+// ⑤ 阈值与误触发：极值
+fa: String.raw`\theta=\mu_0+\sigma_0\,z_{1-p},\qquad
+ \mathbb{E}[\#\text{误触发}]\approx\frac{T}{T_{\text{blk}}}\,p_H,\qquad
+ p_H\ \xrightarrow{\ \text{块间相关}\ }\ \text{远大于}\ p^{H}`,
 };
 
 const I = {
@@ -215,6 +233,7 @@ const I = {
   dtstar: String.raw`\Delta t^{*}`,
   ppm6: String.raw`${ppm6}\ \text{ppm}`,
   kbest: String.raw`\kappa=${best.kappa}`,
+
   gknee: String.raw`\gamma=${knee.knee_gamma}`,
 };
 

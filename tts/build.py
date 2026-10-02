@@ -55,6 +55,7 @@ TOC = [
               ('s37', '33', '客观指标：和参考比，比的是什么')]),
     ('Ⅶ 难点与趋势', [('s29', '34', '当前的真正难点'), ('s30', '35', '技术趋势')]),
     ('附录', [('s31', '36', '公式、算例与自测'), ('s32', '37', '术语表')]),
+    ('Ⅷ 理论补篇', [('s38', '38', '理论补篇：控制、泄漏、转换与评测')]),
 ]
 
 
@@ -124,6 +125,7 @@ FOOT = '''<footer>
     听测功效、HiFi-GAN 的乘加数、采样温度的两种失效模式、
     流式声码器的感受野与块边界、克隆相似度的协议差异，以及 29–33 节的引导强度扫描、跨语种相似度、瓶颈维数与语音转换、
     长文本的上下文与算力账、三个客观指标的排序——都由随书脚本计算生成，可复算。</p>
+    <p>第 38 节是理论补篇：显式控制、口音泄漏与语码转换、语音转换的机制、长文本的真实测量、无参考指标——<b>没有做实验</b>，只给机理、规范与评测方法，不含任何实测数字。</p>
     <p>语音信号由源-滤波模型合成，基频、共振峰轨迹与音素边界是已知真值；
     这样"对齐准不准"、"梅尔谱丢了多少"才有客观答案，代价是它不是真录音，
     绝对数值不能直接和真实语料上的结果比——可比的是形状和量级。
@@ -162,11 +164,11 @@ def fix_text(html):
 
 
 def main():
-    import book1, book2, more
+    import book1, book2, more, new4
     num = {s: n for _, its in TOC for s, n, _ in its}
     b2 = book2.build()
     cut = b2.index('<div class="partmark"><span class="pn">Part Ⅶ</span>')       # 补篇插在难点与趋势之前
-    body = fix_xref(fix_text(book1.build() + b2[:cut] + more.build(num) + b2[cut:]))
+    body = fix_xref(fix_text(book1.build() + b2[:cut] + more.build(num) + b2[cut:] + new4.build(num)))
     html = (HEAD + EXTRA + MAST + '<div class="wrap">\n<div class="cols">\n'
             + toc_html() + '\n<main>\n' + body + FOOT + '\n</main>\n</div>\n</div>\n')
     io.open('tts-handbook.html', 'w', encoding='utf-8').write(html)
