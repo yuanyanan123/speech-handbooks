@@ -25,6 +25,7 @@ chk(len(re.findall(r'\bid="([^"]+)"', body)) == len(set(re.findall(r'\bid="([^"]
 print('── 公式与格式')
 K = json.load(open('fs_k.json'))
 K.update(json.load(open('fs_k2.json')))
+K.update(json.load(open('fs_k3.json')))
 unused = [k for k, v in K.items() if v not in body]
 chk(not unused, '所有公式都用上了（%d）' % len(K) + ('' if not unused else ' 未用：%s' % unused))
 chk('undefined' not in body and 'NaN' not in body and 'None' not in txt, '无 undefined / NaN / None')
@@ -48,12 +49,14 @@ miss = []
 for sid in ids:
     m = re.search(r'<section id="%s">.*?</section>' % sid, body, re.S)
     t = m.group(0)
-    if sid in ('u1', 'u14', 'u15', 'u16') or sid == 'g0':
+    if sid in ('u1', 'u14', 'u15', 'u16', 'u20', 'u21', 'u22') or sid == 'g0':
         continue
     if '评价' not in t or '工程问题' not in t and '工程' not in t:
         miss.append(sid)
 chk(not miss, '每节都含"评价"与"工程问题"' + ('' if not miss else ' 缺：%s' % miss))
 print('── 演进链')
-chk(body.count('解决了上一步的什么') >= 10, '方法演进总览表 %d 张' % body.count('解决了上一步的什么'))
+chk(body.count('解决了上一步的什么') >= 12, '方法演进总览表 %d 张' % body.count('解决了上一步的什么'))
+chk(len(ids) == 23, '章节数 %d（含导读）' % len(ids))
+chk(not re.findall(r'%[0-9]*[sdf]', txt), '算例没有残留格式符')
 print('\n未通过 %d 项' % len(bad))
 sys.exit(1 if bad else 0)

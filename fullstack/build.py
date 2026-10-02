@@ -20,8 +20,10 @@ TOC = [
     ('Ⅳ 理解与回复', [('u9', '09', '文本中枢：理解、回复与交给合成的方式')]),
     ('Ⅴ 合成', [('u10', '10', '文本前端：规范化、发音与韵律'), ('u11', '11', '声学模型：从音素到梅尔谱，以及"一对多"'),
                ('u12', '12', '声码器与神经编解码：从梅尔谱回到波形'), ('u13', '13', '合成的评价、流式与安全')]),
-    ('Ⅵ 合起来', [('u14', '14', '闭环与全链路架构：参考、延迟、状态机'), ('u15', '15', '评测体系与排障：从症状找到环节'),
-                ('u16', '16', '索引：每一节去哪看细节')]),
+    ('Ⅵ 合起来', [('u14', '14', '闭环与全链路架构：参考、延迟、状态机'), ('u15', '15', '评测体系与排障：从症状找到环节')]),
+    ('Ⅶ 链路的两端', [('u17', '16', '采集与播放的硬件通路'), ('u18', '17', '重采样与时钟同步'), ('u19', '18', '编解码与传输：丢包、抖动与带宽')]),
+    ('Ⅷ 推导、指标与算例', [('u20', '19', '关键推导补遗'), ('u21', '20', '评价指标的计算'), ('u22', '21', '全链路数值算例：一段数据的旅程')]),
+    ('索引', [('u16', '22', '索引：每一节去哪看细节')]),
 ]
 
 
@@ -82,8 +84,8 @@ FOOT = '''<footer>
 
 def splice(body):
     """把"方法演进"插到各节的"先进方法"之前（没有就插在"评价"之前）。"""
-    import evo_a, evo_b, evo_c
-    EVO = {'u2': evo_a.evo_u2, 'u3': evo_a.evo_u3, 'u4': evo_a.evo_u4, 'u5': evo_a.evo_u5,
+    import evo_a, evo_b, evo_c, evo_d
+    EVO = {'u9': evo_d.evo_u9, 'u13': evo_d.evo_u13, 'u2': evo_a.evo_u2, 'u3': evo_a.evo_u3, 'u4': evo_a.evo_u4, 'u5': evo_a.evo_u5,
            'u6': evo_b.evo_u6, 'u7': evo_b.evo_u7, 'u8': evo_b.evo_u8,
            'u10': evo_c.evo_u10, 'u11': evo_c.evo_u11, 'u12': evo_c.evo_u12}
     for sid, fn in EVO.items():
@@ -102,8 +104,10 @@ def splice(body):
 
 
 def main():
-    import book_a, book_b, book_c
-    body = fix_text(splice(book_a.build_a() + book_b.build_b() + book_c.build_c()))
+    import book_a, book_b, book_c, book_d, book_e
+    c = book_c.build_c()
+    k = c.index('<section id="u16">')
+    body = fix_text(splice(book_a.build_a() + book_b.build_b() + c[:k] + book_d.build_d() + book_e.build_e() + c[k:]))
     ids = re.findall(r'\bid="([^"]+)"', body)
     dup = sorted({i for i in ids if ids.count(i) > 1})
     if dup:
