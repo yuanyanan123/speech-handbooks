@@ -26,6 +26,7 @@ print('── 公式与格式')
 K = json.load(open('fs_k.json'))
 K.update(json.load(open('fs_k2.json')))
 K.update(json.load(open('fs_k3.json')))
+K.update(json.load(open('fs_k4.json')))
 unused = [k for k, v in K.items() if v not in body]
 chk(not unused, '所有公式都用上了（%d）' % len(K) + ('' if not unused else ' 未用：%s' % unused))
 chk('undefined' not in body and 'NaN' not in body and 'None' not in txt, '无 undefined / NaN / None')

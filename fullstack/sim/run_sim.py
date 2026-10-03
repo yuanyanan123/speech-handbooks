@@ -4,10 +4,10 @@
 import json, time, sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import common
-import sim_array, sim_aec, sim_enh, sim_asr, sim_tts, sim_misc
+import sim_array, sim_aec, sim_enh, sim_asr, sim_tts, sim_misc, sim_deep
 
 t0 = time.time()
-for m in (sim_array, sim_aec, sim_enh, sim_asr, sim_tts, sim_misc):
+for m in (sim_array, sim_aec, sim_enh, sim_asr, sim_tts, sim_misc, sim_deep):
     t = time.time(); m.run(); print('%-10s %5.1fs  累计 %d 项' % (m.__name__, time.time() - t, len(common.ROWS)))
 rows = common.ROWS
 bad = [r for r in rows if not r['ok']]

@@ -5,6 +5,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 K = json.load(open(os.path.join(HERE, 'fs_k.json')))
 K.update(json.load(open(os.path.join(HERE, 'fs_k2.json'))))
 K.update(json.load(open(os.path.join(HERE, 'fs_k3.json'))))
+K.update(json.load(open(os.path.join(HERE, 'fs_k4.json'))))
 CALC = json.load(open(os.path.join(HERE, 'calc.json')))
 F = json.load(open(os.path.join(HERE, 'figs.json')))
 

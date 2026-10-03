@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """拼《全栈音频链路手册》。先 node fs.js 渲染公式、python figs.py 生成图。"""
-import io, os, re, sys
+import io, os, re, sys, json
 HERE = os.path.dirname(os.path.abspath(__file__))
 os.chdir(HERE)
 sys.path.insert(0, HERE)
@@ -57,7 +57,7 @@ def mast(body):
     <h1>全栈音频链路手册</h1>
     <p class="dek">从一组多通道语音出发，走过阵列、回声消除、单通道增强、特征、识别、解码、理解、合成、声码器，再回到麦克风。
     每一步按同一个顺序写：原理与推导、方法演进（从最早的方法一路讲到最先进的做法）、先进方法、评价、工程问题、与上下游的交接卡。
-    全书 %d 节、一张总架构图、十一张网络结构图、一百多个公式；公式经 161 项独立仿真检验，文献附核对状态。
+    全书 %d 节、一张总架构图、十一张网络结构图、一百多个公式；公式经 %d 项独立仿真检验，文献附核对状态。
     本书没有真实设备或真实语音上的实验；要看那样的实验，每节末尾指向前端、ASR、TTS 三本详细手册。</p>
     <dl class="specstrip">
       <div class="spec"><dt>3 秒 × 4 麦 × 16 kHz 的 STFT</dt><dd>4×257×186<small>复数</small></dd></div>
@@ -70,7 +70,7 @@ def mast(body):
   </header>
 </div>
 <div class="ruler"></div>
-''' % nsec
+''' % (nsec, json.load(open('sim.json'))['n'])
 
 
 FOOT = '''<footer>
@@ -105,13 +105,14 @@ def splice(body):
 
 
 def add_cites(body):
-    import refs, book_f
-    for sid in refs.CITES:
+    import refs, book_f, book_deep
+    for sid in sorted(set(refs.CITES) | set(book_deep.DEEP)):
         if sid in ('u23', 'u24', 'u25'):
             continue
         a = body.index('<section id="%s">' % sid)
         e = body.index('</section>', a)
-        body = body[:e] + book_f.cite_note(sid) + body[e:]
+        add = (book_deep.DEEP[sid]() if sid in book_deep.DEEP else '') + book_f.cite_note(sid)
+        body = body[:e] + add + body[e:]
     return body
 
 
