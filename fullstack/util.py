@@ -3,6 +3,10 @@
 import json, os
 HERE = os.path.dirname(os.path.abspath(__file__))
 K = json.load(open(os.path.join(HERE, 'fs_k.json')))
+K.update(json.load(open(os.path.join(HERE, 'fs_k2.json'))))
+K.update(json.load(open(os.path.join(HERE, 'fs_k3.json'))))
+K.update(json.load(open(os.path.join(HERE, 'fs_k4.json'))))
+CALC = json.load(open(os.path.join(HERE, 'calc.json')))
 F = json.load(open(os.path.join(HERE, 'figs.json')))
 
 
@@ -73,3 +77,12 @@ def q(items):
 def iface(inp, out, assume, fail):
     """每一步末尾的"交接卡"：输入、输出、依赖的假设、失效时下游看到什么。"""
     return table(['交接', '内容'], [['输入', inp], ['输出', out], ['依赖的假设', assume], ['失效时下游看到什么', fail]], minw=520)
+
+
+def h4(t):
+    return '<h4>%s</h4>' % t
+
+
+def chain(rows):
+    """方法演进总览表：方法 | 解决了上一个的什么问题 | 核心假设 | 留下的问题"""
+    return table(['方法', '解决了上一步的什么', '核心假设', '留下的问题'], rows, minw=640)

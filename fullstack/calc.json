@@ -1,0 +1,210 @@
+{
+ "scene": {
+  "M": 4,
+  "d_cm": 3.5,
+  "theta": 60.0,
+  "fs": 16000,
+  "dur": 3.0
+ },
+ "delay": {
+  "tau_us": [
+   0.0,
+   51.02,
+   102.04,
+   153.06
+  ],
+  "tau_samples": [
+   0.0,
+   0.816,
+   1.633,
+   2.449
+  ],
+  "alias_hz": 4900.0,
+  "phase_1k": [
+   0.0,
+   0.3206,
+   0.6411,
+   0.9617
+  ]
+ },
+ "das": {
+  "wng_db": 6.02,
+  "di": {
+   "250": 0.05,
+   "500": 0.18,
+   "1000": 0.72,
+   "2000": 2.5,
+   "4000": 5.21
+  }
+ },
+ "mel": {
+  "mel8k": 2840.0,
+  "first_center": 82.8,
+  "last_center": 7358.6,
+  "step_mel": 33.26,
+  "width_first": 46.2,
+  "width_last": 475.8
+ },
+ "nlms": {
+  "L": 2048,
+  "L_ms": 128.0,
+  "rows": {
+   "0.1": {
+    "tau_samples": 10779,
+    "tau_ms": 673.7,
+    "M": 0.0526,
+    "erle_db": 52.8
+   },
+   "0.5": {
+    "tau_samples": 2731,
+    "tau_ms": 170.7,
+    "M": 0.3333,
+    "erle_db": 44.8
+   },
+   "1.0": {
+    "tau_samples": 2048,
+    "tau_ms": 128.0,
+    "M": 1.0,
+    "erle_db": 40.0
+   }
+  }
+ },
+ "spl": {
+  "p1pa": 94.0,
+  "double_dist_db": 6.02,
+  "tv1m": 60.0,
+  "user2m": 60.0,
+  "ser_db": 6.02
+ },
+ "drift": {
+  "ppm": 50,
+  "slip_per_s": 0.8,
+  "slip_10min": 480,
+  "ms_10min": 30.0
+ },
+ "gain": [
+  {
+   "xi_db": -10,
+   "gw": 0.091,
+   "glsa": 0.226,
+   "gstsa": 0.267,
+   "gw_db": -20.8,
+   "glsa_db": -12.9,
+   "gstsa_db": -11.5
+  },
+  {
+   "xi_db": -5,
+   "gw": 0.24,
+   "glsa": 0.371,
+   "gstsa": 0.436,
+   "gw_db": -12.4,
+   "glsa_db": -8.6,
+   "gstsa_db": -7.2
+  },
+  {
+   "xi_db": 0,
+   "gw": 0.5,
+   "glsa": 0.558,
+   "gstsa": 0.641,
+   "gw_db": -6.0,
+   "glsa_db": -5.1,
+   "gstsa_db": -3.9
+  },
+  {
+   "xi_db": 5,
+   "gw": 0.76,
+   "glsa": 0.764,
+   "gstsa": 0.823,
+   "gw_db": -2.4,
+   "glsa_db": -2.3,
+   "gstsa_db": -1.7
+  },
+  {
+   "xi_db": 10,
+   "gw": 0.909,
+   "glsa": 0.909,
+   "gstsa": 0.932,
+   "gw_db": -0.8,
+   "glsa_db": -0.8,
+   "gstsa_db": -0.6
+  },
+  {
+   "xi_db": 20,
+   "gw": 0.99,
+   "glsa": 0.99,
+   "gstsa": 0.993,
+   "gw_db": -0.1,
+   "glsa_db": -0.1,
+   "gstsa_db": -0.1
+  }
+ ],
+ "shape": {
+  "N": 48000,
+  "T_stft": 186,
+  "F": 257,
+  "T_mel": 298,
+  "T_enc": 75,
+  "stft_complex": 191208
+ },
+ "ctc": {
+  "T": 75,
+  "U": 7,
+  "log10_paths": 15.3
+ },
+ "wer": {
+  "N": 10,
+  "S": 1,
+  "D": 1,
+  "I": 1,
+  "wer": 0.3
+ },
+ "tts": {
+  "fs": 22050,
+  "hop": 256,
+  "frames": 258,
+  "samples": 66150,
+  "phones": 14,
+  "avg_dur_frames": 18.4,
+  "fps": 86.13,
+  "nfe": 10,
+  "forwards_cfg": 20,
+  "codec_frames": 225,
+  "codec_tokens": 1800,
+  "codec_bits": 18000,
+  "codec_bytes": 2250,
+  "upsample": [
+   8,
+   8,
+   2,
+   2
+  ],
+  "upsample_prod": 256
+ },
+ "resample": {
+  "ratio_num": 320,
+  "ratio_den": 441,
+  "ref_samples": 48000.0
+ },
+ "lat": {
+  "stft_win_ms": 32.0,
+  "stft_hop_ms": 16.0,
+  "mel_win_ms": 25.0,
+  "mel_hop_ms": 10.0,
+  "enc_frame_ms": 40.0
+ },
+ "net": {
+  "bitrate": 24000,
+  "frame_ms": 20,
+  "payload_bytes": 60,
+  "header": 40,
+  "bw_kbps": 40.0,
+  "pkts_per_s": 50,
+  "g711_kbps": 64,
+  "g711_payload": 160,
+  "g711_bw_kbps": 80.0,
+  "zoh_droop_db": -3.92,
+  "sqnr16": 98.1,
+  "sqnr24": 146.2,
+  "ds_gain_osr64_L1": 54.2
+ }
+}
