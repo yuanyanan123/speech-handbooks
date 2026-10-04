@@ -443,3 +443,246 @@ def run():
     _old_run()
     for f in (d13, d14, d15, d16, d17, d18, d19, d20):
         f()
+
+
+# ════════ 第三批（D21–D34）：架构、传输、文本中枢、文本前端、指标、算例复核 ════════
+def d21():
+    """STFT-OLA 流式处理的算法延迟 = W − H，级联相加"""
+    g = rng(71)
+    def ola_stream(x, W, H):
+        w = np.sqrt(np.hanning(W + 1)[:-1])                                     # 周期 sqrt-Hann：分析×合成 = Hann，满足 COLA
+        buf = np.zeros(W); ob = np.zeros(W); out = []
+        for s in range(0, len(x) - H + 1, H):
+            buf = np.concatenate((buf[H:], x[s:s + H]))
+            fr = np.fft.irfft(np.fft.rfft(buf * w))                             # 恒等处理
+            ob = ob + fr * w
+            out.append(ob[:H].copy() * (2 * H / W))                      # Σ Hann(hop H) = W/(2H)，归一化
+            ob = np.concatenate((ob[H:], np.zeros(H)))
+        return np.concatenate(out)
+    x = g.standard_normal(60000)
+    def lag(y):
+        n = min(len(x), len(y))
+        c = np.correlate(y[:n], x[:n], 'full'); return int(np.argmax(c)) - (n - 1)
+    y1 = ola_stream(x, 512, 256)
+    check('D21a', '14', 'ola_delay', '单级 STFT-OLA（W=512, H=256）的延迟 = W−H（样点）', 256, lag(y1), 0.0)
+    y2 = ola_stream(y1, 480, 160)
+    check('D21b', '14', 'ola_delay', '两级级联（再接 W=480, H=160）的总延迟 = Σ(Wᵢ−Hᵢ)', 256 + 320, lag(y2), 0.0)
+    n = min(len(x), len(y2)); sl = slice(2000, n - 2000)
+    check('D21c', '14', 'ola_delay', '恒等处理的重建误差（延迟对齐后，dB）', -200.0, 10 * np.log10(np.mean((np.roll(y2, -(256 + 320))[:n][sl] - x[:n][sl]) ** 2) + 1e-30), 0.0, 'le')
+
+
+def d22():
+    """CUSUM：检测延迟 ≈ h/I，误报间隔 ≥ e^h"""
+    g = rng(72); mu, sg = 1.0, 1.0; I = mu ** 2 / (2 * sg ** 2)
+    def run(h, shift, maxn=200000):
+        s = 0.0; t = 0
+        while t < maxn:
+            t += 1
+            x = g.standard_normal() * sg + (mu if shift else 0.0)
+            s = max(0.0, s + (mu / sg ** 2) * (x - mu / 2))
+            if s > h: return t
+        return maxn
+    for h in (4.0, 6.0):
+        d = np.mean([run(h, True) for _ in range(4000)])
+        check('D22a', '14', 'cusum', '均值突变后的平均检测延迟 ≈ (h + 过冲)/I（h=%g）' % h, h / I, d, 0.35, 'rel')
+    arl0 = np.mean([run(4.0, False) for _ in range(800)])
+    check('D22b', '14', 'cusum', '误报的平均间隔不低于 e^h（h=4）', np.exp(4.0), arl0, 0.0, 'ge')
+
+
+def d23():
+    """抖动缓冲：延迟目标 μ+kσ 的迟到率"""
+    g = rng(73); n = 6_000_000; mu, sg = 40.0, 10.0
+    xg = g.normal(mu, sg, n)
+    for k in (2.0, 3.0):
+        check('D23a', '18', 'jit_late', '高斯抖动：迟到率 = Q(k)（k=%g）' % k, norm.sf(k), np.mean(xg > mu + k * sg), 0.06, 'rel')
+    s2 = np.log(1 + (sg / mu) ** 2); m2 = np.log(mu) - s2 / 2
+    xl = g.lognormal(m2, np.sqrt(s2), n)                                       # 与高斯同均值同标准差的重尾分布
+    late = np.mean(xl > mu + 3 * sg)
+    check('D23b', '18', 'jit_late', '重尾（对数正态）下，同一 μ+3σ 的迟到率明显高于 Q(3)（≥ 1.5 倍）', 1.5 * norm.sf(3.0), late, 0.0, 'ge')
+
+
+def d24():
+    """交织把突发丢包变成近似独立丢包"""
+    g = rng(74); n = 4_000_000
+    p, r = 0.02, 0.25; pi_b = p / (p + r)
+    u = g.random(n); st = np.zeros(n, dtype=bool); s = False
+    for i in range(n):
+        s = (u[i] < p) if not s else (u[i] >= r)
+        st[i] = s
+    nn, kk = 10, 8
+    pred = sum(comb(nn, i) * pi_b ** i * (1 - pi_b) ** (nn - i) for i in range(nn - kk + 1, nn + 1))
+    def fail_rate(D):
+        blk = nn * D; m = n // blk
+        a = st[:m * blk].reshape(m, nn, D)                                    # 第 i 个码字取每隔 D 个包的 nn 个
+        lost = a.sum(1)                                                       # [m, D]
+        return np.mean(lost > nn - kk)
+    f1, f64 = fail_rate(1), fail_rate(64)
+    check('D24a', '18', 'interleave', '交织深度 64：失败率接近独立丢包的二项右尾', pred, f64, 0.15, 'rel')
+    check('D24b', '18', 'interleave', '不交织（深度 1）：失败率与独立假设显著不同（相对差 ≥ 20%）', 0.2, abs(f1 - pred) / pred, 0.0, 'ge')
+
+
+def d25():
+    """n-best 置信度的温度标定：最大似然恢复真温度"""
+    from scipy.optimize import minimize_scalar
+    g = rng(75); U, Nb, tau = 60000, 5, 2.0
+    s = g.normal(0, 3.0, (U, Nb))
+    p = np.exp(s / tau); p /= p.sum(1, keepdims=True)
+    y = np.array([g.choice(Nb, p=pi) for pi in p[:20000]]); s = s[:20000]
+    def nll(T):
+        z = s / T; z = z - z.max(1, keepdims=True)
+        lp = z - np.log(np.exp(z).sum(1, keepdims=True))
+        return -lp[np.arange(len(y)), y].mean()
+    T = minimize_scalar(nll, bounds=(0.3, 10), method='bounded').x
+    check('D25a', '9', 'temp_cal', '温度标定：NLL 最小化恢复真温度 τ=2', tau, T, 0.04, 'rel')
+    check('D25b', '9', 'temp_cal', '标定后的 NLL 低于未标定（T=1）', nll(1.0), nll(T), 0.0, 'le')
+
+
+def d26():
+    """对话状态的贝叶斯更新 = HMM 前向滤波；与暴力枚举一致"""
+    g = rng(76); S, T = 3, 4
+    Tm = g.dirichlet(np.ones(S), S)                                          # T[s'->s]
+    b0 = g.dirichlet(np.ones(S))
+    L = g.random((T, S)) + 0.05                                              # 每步观测似然 P(o_t|s)
+    b = b0.copy()
+    for t in range(T):
+        b = L[t] * (Tm.T @ b); b = b / b.sum()
+    tot = np.zeros(S)
+    for path in product(range(S), repeat=T):
+        pr = b0[path[0]] * 1.0
+        # 与滤波一致的约定：先转移再观测
+        pr = 1.0; prev = None
+        for t, st in enumerate(path):
+            pr *= (b0 @ Tm[:, st] if t == 0 else Tm[prev, st]) * L[t, st]
+            prev = st
+        tot[path[-1]] += pr
+    tot /= tot.sum()
+    check('D26', '9', 'belief', '信念更新（滤波递推）与暴力枚举联合分布的最大偏差', 0.0, float(np.max(np.abs(b - tot))), 1e-12)
+
+
+def d27():
+    """时长控制：总时长约束下的最小二乘分配"""
+    from scipy.optimize import minimize
+    g = rng(77); m = 14
+    mu = g.uniform(8, 30, m); var = g.uniform(2, 20, m); Ttot = 1.25 * mu.sum()
+    dc = mu + var * (Ttot - mu.sum()) / var.sum()
+    res = minimize(lambda d: np.sum((d - mu) ** 2 / var), mu, constraints=({'type': 'eq', 'fun': lambda d: d.sum() - Ttot},), method='SLSQP', options={'ftol': 1e-14, 'maxiter': 500})
+    check('D27a', '10', 'dur_alloc', '闭式分配 d = μ + σ²(T−Σμ)/Σσ² 与数值约束优化的最大偏差', 0.0, float(np.max(np.abs(dc - res.x))), 1e-4)
+    check('D27b', '10', 'dur_alloc', '闭式解满足总时长约束', Ttot, dc.sum(), 1e-9)
+
+
+def d28():
+    """多音字消歧：贝叶斯最优的准确率 Φ(d'/2)"""
+    g = rng(78); n = 3_000_000
+    for dp in (1.0, 2.0, 3.0):
+        y = g.random(n) < 0.5
+        x = np.where(y, dp / 2, -dp / 2) + g.standard_normal(n)
+        check('D28a', '10', 'bayes_acc', '单特征：准确率 Φ(d\'/2)（d\'=%g）' % dp, norm.cdf(dp / 2), np.mean((x > 0) == y), 0.003)
+    ds = np.array([1.0, 1.0, 1.5, 0.5])                                       # 四个独立的上下文特征
+    y = g.random(n) < 0.5
+    X = np.where(y[:, None], ds / 2, -ds / 2) + g.standard_normal((n, len(ds)))
+    llr = (X * ds).sum(1)                                                     # 对数似然比 ∝ Σ dₖ xₖ
+    check('D28b', '10', 'bayes_acc', '四个独立特征：d\'² 相加，准确率 Φ(√Σdₖ²/2)', norm.cdf(np.sqrt(np.sum(ds ** 2)) / 2), np.mean((llr > 0) == y), 0.003)
+
+
+def d29():
+    """相关系数的 Fisher z 置信区间覆盖率"""
+    g = rng(79); rho, n, reps = 0.8, 30, 20000
+    C = np.array([[1, rho], [rho, 1]]); L = np.linalg.cholesky(C)
+    cov = 0
+    for _ in range(reps):
+        z = g.standard_normal((n, 2)) @ L.T
+        r = np.corrcoef(z.T)[0, 1]
+        zz = np.arctanh(r); h = 1.96 / np.sqrt(n - 3)
+        cov += (np.tanh(zz - h) <= rho <= np.tanh(zz + h))
+    check('D29', '20', 'fisher_z', 'Fisher z 的 95% 置信区间的实际覆盖率（n=30, ρ=0.8）', 0.95, cov / reps, 0.01)
+
+
+def d30():
+    """SI-SDR：对尺度不变，且等于 10lg(cos²/(1−cos²))"""
+    g = rng(80); n = 16000
+    s = g.standard_normal(n); sh = 0.7 * s + 0.4 * g.standard_normal(n)
+    def sisdr(sh, s):
+        a = (sh @ s) / (s @ s); t = a * s; e = sh - t
+        return 10 * np.log10((t @ t) / (e @ e))
+    base = sisdr(sh, s)
+    worst = max(abs(sisdr(c * sh, s) - base) for c in (0.01, 0.3, 4.0, -2.0, 100.0))
+    check('D30a', '20', 'sisdr', 'SI-SDR 对估计信号的任意缩放不变（最大偏差，dB）', 0.0, worst, 1e-9)
+    cs = (sh @ s) / (np.linalg.norm(sh) * np.linalg.norm(s))
+    check('D30b', '20', 'sisdr', 'SI-SDR = 10·lg[cos²/(1−cos²)]（dB）', 10 * np.log10(cs ** 2 / (1 - cs ** 2)), base, 1e-9)
+
+
+def d31():
+    """COLA 条件与 STFT 重建"""
+    N = 512; w = np.hanning(N + 1)[:-1]
+    def ola_sum(win, H, p=1):
+        acc = np.zeros(N * 8)
+        for s in range(0, len(acc) - N + 1, H):
+            acc[s:s + N] += win ** p
+        mid = acc[N * 2:N * 6]
+        return 20 * np.log10(mid.max() / mid.min())
+    check('D31a', '1', 'cola', 'Hann 窗、50% 重叠：Σw 恒定（纹波，dB）', 0.0, ola_sum(w, N // 2), 1e-9)
+    check('D31b', '1', 'cola', 'Hann 窗、75% 重叠：Σw² 恒定（纹波，dB）', 0.0, ola_sum(w, N // 4, 2), 1e-9)
+    check('D31c', '1', 'cola', 'Hann 窗平方、50% 重叠：Σw² 不恒定（纹波 > 1 dB）', 1.0, ola_sum(w, N // 2, 2), 0.0, 'ge')
+
+
+def d32():
+    """算例复核 1：弥散场中的 DAS 指向性指数（蒙特卡洛合成扩散场）"""
+    g = rng(82); M, d, c = 4, 0.035, 343.0
+    pos = d * np.arange(M); K = 40; reps = 40000
+    table = {250: 0.05, 500: 0.18, 1000: 0.72, 2000: 2.5, 4000: 5.21}
+    for f, pred in table.items():
+        k = 2 * np.pi * f / c
+        cosT = g.uniform(-1, 1, (reps, K))                                     # 各向同性：cosθ 均匀；每个实现独立抽方向
+        amp = cn(g, reps, K)
+        X = (np.exp(-1j * k * pos[None, :, None] * cosT[:, None, :]) * amp[:, None, :]).sum(2)   # [reps, M]
+        pw = np.mean(np.abs(X.mean(1)) ** 2)                                    # 目标在侧向：DAS 权为 1/M（无相位补偿）
+        p1 = np.mean(np.abs(X) ** 2)
+        di = 10 * np.log10(p1 / pw)
+        check('D32', '21', 'das_di', '算例表：弥散场 DAS 的 DI（dB），%d Hz' % f, pred, di, 0.15)
+
+
+def d33():
+    """算例复核 2：维纳 / LSA / MMSE-STSA 增益，对后验做数值积分得到"""
+    from scipy.special import i0e, expn, i1e
+    xis = {-10: 0.1, -5: 10 ** -0.5, 0: 1.0, 5: 10 ** 0.5, 10: 10.0, 20: 100.0}
+    for dB, xi in xis.items():
+        ln, ls = 1.0, xi; gam = 1 + xi; R = np.sqrt(gam * ln)
+        A = np.linspace(1e-6, R + 12 * np.sqrt(ln) + 6 * np.sqrt(ls), 400001)
+        # p(A|R) ∝ p(R|A) p(A)，对相位边缘化后含 I0；用 i0e 做稳定化
+        logp = np.log(2 * A / ls) - A ** 2 / ls + np.log(i0e(2 * R * A / ln)) + 2 * R * A / ln - (R ** 2 + A ** 2) / ln
+        p = np.exp(logp - logp.max()); p /= np.trapezoid(p, A)
+        g_stsa = np.trapezoid(A * p, A) / R
+        g_lsa = np.exp(np.trapezoid(np.log(A) * p, A)) / R
+        # 闭式（Ephraim–Malah）
+        v = xi / (1 + xi) * gam
+        G_stsa = (np.sqrt(np.pi) / 2) * (np.sqrt(v) / gam) * ((1 + v) * i0e(v / 2) + v * i1e(v / 2))
+        G_lsa = xi / (1 + xi) * np.exp(0.5 * expn(1, v))
+        check('D33a', '21', 'gain3', 'MMSE-STSA 增益：闭式 vs 后验数值积分（ξ=%d dB）' % dB, G_stsa, g_stsa, 0.003)
+        check('D33b', '21', 'gain3', 'LSA 增益：闭式 vs 后验数值积分（ξ=%d dB）' % dB, G_lsa, g_lsa, 0.003)
+
+
+def d34():
+    """算例复核 3：L=2048 的 NLMS，ERLE 上界 = 10lg(10⁴/M)，M=μ/(2−μ)"""
+    g = rng(84); L = 2048; sv = 0.01
+    h = g.standard_normal(L) * np.exp(-np.arange(L) / 600.0); h /= np.linalg.norm(h)        # ‖h‖²=1 → 回声功率 1，噪声 1e-4（40 dB）
+    for mu in (0.1, 0.5, 1.0):
+        tau = L / (mu * (2 - mu)); N = int(18 * tau)
+        x = g.standard_normal(N + L); v = g.standard_normal(N) * sv
+        w = np.zeros(L); acc = []
+        xv = x[:L][::-1].copy()
+        for n in range(N):
+            xv = x[n:n + L][::-1]
+            e = xv @ (h - w) + v[n]
+            w += mu * e * xv / (xv @ xv + 1e-12)
+            if n >= int(0.9 * N):
+                acc.append(np.sum((h - w) ** 2))
+        erle = 10 * np.log10(1.0 / np.mean(acc))
+        M = mu / (2 - mu)
+        check('D34', '21', 'erle_bound', '算例表：NLMS 稳态 ERLE（dB），μ=%g' % mu, 10 * np.log10(1e4 / M), erle, 1.5)
+
+
+_old_run2 = run
+def run():
+    _old_run2()
+    for f in (d21, d22, d23, d24, d25, d26, d27, d28, d29, d30, d31, d32, d33, d34):
+        f()

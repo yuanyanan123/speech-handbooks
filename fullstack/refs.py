@@ -85,12 +85,21 @@ R = [
  ('coxwm', 'Cox, I. J., Kilian, J., Leighton, F. T., Shamoon, T. Secure spread spectrum watermarking for multimedia. IEEE Trans. Image Process. 6(12), 1997.', '13', 'C'),
  ('p1401', 'ITU-T Rec. P.1401 Methods, metrics and procedures for statistical evaluation, qualification and comparison of objective quality prediction models.', '13, 15', 'C'),
  ('gray', 'Gray, R. M., Neuhoff, D. L. Quantization. IEEE Trans. Inf. Theory 44(6), 1998.（量化与载荷）', '16', 'C'),
+ ('allen77', 'Allen, J. B., Rabiner, L. R. A unified approach to short-time Fourier analysis and synthesis. Proc. IEEE 65(11), 1977.（STFT 的重叠相加与 COLA 条件）', '1', 'C'),
+ ('guo17', 'Guo, C., Pleiss, G., Sun, Y., Weinberger, K. Q. On calibration of modern neural networks. ICML 2017.（温度标定）', '9', 'C'),
+ ('kaelbling', 'Kaelbling, L. P., Littman, M. L., Cassandra, A. R. Planning and acting in partially observable stochastic domains. Artif. Intell. 101, 1998.（信念状态）', '9', 'C'),
+ ('dudahart', 'Duda, R. O., Hart, P. E., Stork, D. G. Pattern Classification, 2nd ed. Wiley, 2001.（贝叶斯分类与 d′）', '10', 'C'),
+ ('page54', 'Page, E. S. Continuous inspection schemes. Biometrika 41(1/2), 1954.（CUSUM）', '14', 'C'),
+ ('lorden71', 'Lorden, G. Procedures for reacting to a change in distribution. Ann. Math. Statist. 42(6), 1971.', '14', 'C'),
+ ('fisher15', 'Fisher, R. A. Frequency distribution of the values of the correlation coefficient in samples from an indefinitely large population. Biometrika 10(4), 1915.', '20', 'C'),
 ]
 D = dict((r[0], r) for r in R)
 IDX = dict((r[0], i + 1) for i, r in enumerate(R))
 
 # 各节"依据的文献"
 CITES = {
+ 'u1': ['allen77'],
+ 'u14': ['page54', 'lorden71'],
  'u2': ['cox', 'capon', 'frost', 'gj', 'schmidt', 'kc', 'souden'],
  'u3': ['haykin', 'bmc', 'ev'],
  'u4': ['doclo', 'boll', 'em84', 'em85', 'evt', 'martin', 'cohen', 'wang18', 'erdogan', 'kolbaek', 'tasnet', 'dccrn', 'fsn', 'dfn2', 'sgmse'],
@@ -100,13 +109,13 @@ CITES = {
  'u8': ['och', 'kn', 'cg', 'mohri', 'mwer'],
  'u11': ['hb', 'mlpg', 'tacotron2', 'fs2', 'vits', 'ddpm', 'cfm', 'cfg'],
  'u12': ['cover', 'wavenet', 'lpcnet', 'gl', 'gan', 'lsgan', 'hifigan', 'soundstream', 'encodec'],
- 'u9': ['chow'],
- 'u10': ['hb', 'lafferty'],
+ 'u9': ['chow', 'guo17', 'kaelbling'],
+ 'u10': ['hb', 'lafferty', 'dudahart'],
  'u13': ['bs1534', 'coxwm'],
  'u15': ['efron', 'p1401'],
  'u17': ['schreier', 'gray'],
  'u18': ['kaiser'],
  'u19': ['gilbert', 'ramjee', 'opus'],
  'u20': ['haykin', 'ev', 'em84', 'rabiner', 'ctc', 'vaswani', 'gan', 'lsgan', 'ddpm', 'cfm'],
- 'u21': ['pesq', 'p862', 'stoi', 'sisdr', 'bs1534'],
+ 'u21': ['pesq', 'p862', 'stoi', 'sisdr', 'bs1534', 'fisher15'],
 }
