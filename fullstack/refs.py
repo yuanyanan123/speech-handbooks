@@ -81,6 +81,10 @@ R = [
  ('cover', 'Cover, T. M., Thomas, J. A. Elements of Information Theory, 2nd ed. Wiley, 2006.（率失真函数）', '12', 'C'),
  ('efron', 'Efron, B., Tibshirani, R. J. An Introduction to the Bootstrap. Chapman & Hall, 1993.', '15', 'C'),
  ('gilbert', 'Gilbert, E. N. Capacity of a burst-noise channel. Bell Syst. Tech. J. 39(5), 1960.（Gilbert–Elliott 模型）', '18', 'C'),
+ ('kaiser', 'Kaiser, J. F. Nonrecursive digital filter design using the I0-sinh window function. Proc. IEEE ISCAS 1974.（阶数与 β 的经验式亦见 Oppenheim & Schafer, Discrete-Time Signal Processing, 3rd ed., 2010）', '17', 'C'),
+ ('coxwm', 'Cox, I. J., Kilian, J., Leighton, F. T., Shamoon, T. Secure spread spectrum watermarking for multimedia. IEEE Trans. Image Process. 6(12), 1997.', '13', 'C'),
+ ('p1401', 'ITU-T Rec. P.1401 Methods, metrics and procedures for statistical evaluation, qualification and comparison of objective quality prediction models.', '13, 15', 'C'),
+ ('gray', 'Gray, R. M., Neuhoff, D. L. Quantization. IEEE Trans. Inf. Theory 44(6), 1998.（量化与载荷）', '16', 'C'),
 ]
 D = dict((r[0], r) for r in R)
 IDX = dict((r[0], i + 1) for i, r in enumerate(R))
@@ -98,9 +102,10 @@ CITES = {
  'u12': ['cover', 'wavenet', 'lpcnet', 'gl', 'gan', 'lsgan', 'hifigan', 'soundstream', 'encodec'],
  'u9': ['chow'],
  'u10': ['hb', 'lafferty'],
- 'u13': ['bs1534'],
- 'u15': ['efron'],
- 'u17': ['schreier'],
+ 'u13': ['bs1534', 'coxwm'],
+ 'u15': ['efron', 'p1401'],
+ 'u17': ['schreier', 'gray'],
+ 'u18': ['kaiser'],
  'u19': ['gilbert', 'ramjee', 'opus'],
  'u20': ['haykin', 'ev', 'em84', 'rabiner', 'ctc', 'vaswani', 'gan', 'lsgan', 'ddpm', 'cfm'],
  'u21': ['pesq', 'p862', 'stoi', 'sisdr', 'bs1534'],

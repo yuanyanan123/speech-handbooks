@@ -298,3 +298,148 @@ def d12():
 def run():
     for f in (d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12):
         f()
+
+
+# ════════ 第二批（D13–D20）：评价、评测、硬件、时钟 ════════
+from scipy.stats import norm
+
+
+def d13():
+    """MOS 的方差分解：条目 × 评分员交叉设计"""
+    g = rng(63); I, J = 20, 15
+    si, sr, se = 0.5, 0.35, 0.8
+    reps = 20000
+    a = g.standard_normal((reps, I, 1)) * si
+    b = g.standard_normal((reps, 1, J)) * sr
+    e = g.standard_normal((reps, I, J)) * se
+    m = (3.8 + a + b + e).mean((1, 2))
+    pred = si ** 2 / I + sr ** 2 / J + se ** 2 / (I * J)
+    check('D13a', '13', 'mos_var', 'MOS 均值的方差：σᵢ²/I + σᵣ²/J + σₑ²/(IJ)', pred, m.var(), 0.03, 'rel')
+    # 评分员很多时，方差趋于下限 σᵢ²/I（条目效应不会被评分员平均掉）
+    J2 = 600
+    a2 = g.standard_normal((reps, I, 1)) * si
+    b2 = g.standard_normal((reps, 1, J2)) * sr
+    e2 = g.standard_normal((reps, I, J2)) * se
+    m2 = (3.8 + a2 + b2 + e2).mean((1, 2))
+    check('D13b', '13', 'mos_var', '评分员增至 600 人：方差 → σᵢ²/I + 小项，下限不被评分员数消掉', si ** 2 / I + sr ** 2 / J2 + se ** 2 / (I * J2), m2.var(), 0.04, 'rel')
+    check('D13c', '13', 'mos_var', '600 人时的方差仍不低于 σᵢ²/I（条目数决定下限）', si ** 2 / I, m2.var(), 0.0, 'ge')
+
+
+def d14():
+    """流式合成：不欠载所需的最小预缓冲"""
+    g = rng(64)
+    c = 0.20                                                                    # 每块音频时长（s）
+    worst = 0
+    ok_at = ok_below = True
+    for trial in range(200):
+        n = 60
+        p = g.lognormal(np.log(0.14), 0.45, n)                                  # 每块的生成耗时
+        A = np.cumsum(p)
+        T0 = max(A[k] - k * c for k in range(n))                                # 闭式：最小起播时刻
+        def underrun(start):
+            for k in range(n):
+                if A[k] > start + k * c + 1e-12:
+                    return True
+            return False
+        ok_at &= not underrun(T0)
+        ok_below &= underrun(T0 - 1e-6)
+    check('D14a', '13', 'prebuf', '起播时刻 T₀ = max_k(A_k − (k−1)c) 时不欠载（200 组）', 1.0, float(ok_at), 0.0)
+    check('D14b', '13', 'prebuf', '早 1 微秒起播就欠载（该下界是紧的）', 1.0, float(ok_below), 0.0)
+
+
+def d15():
+    """扩频水印的检测：误报率与检出率"""
+    g = rng(65); N, sx, alpha = 4000, 1.0, 0.04
+    w = np.sign(g.standard_normal(N))
+    reps = 40000
+    x = g.standard_normal((reps, N)) * sx
+    z0 = (x @ w) / (sx * np.sqrt(N))
+    z1 = ((x + alpha * w) @ w) / (sx * np.sqrt(N))
+    tau = 2.0
+    check('D15a', '13', 'wm_det', '未加水印时的误报率 = Q(τ)', norm.sf(tau), np.mean(z0 > tau), 0.1, 'rel')
+    check('D15b', '13', 'wm_det', '检出率 = Q(τ − α√N/σ)', norm.sf(tau - alpha * np.sqrt(N) / sx), np.mean(z1 > tau), 0.03, 'rel')
+
+
+def d16():
+    """串联链路的错误归因"""
+    g = rng(66); n = 2_000_000
+    e = np.array([0.02, 0.05, 0.03])
+    fail = g.random((n, 3)) < e
+    E = 1 - np.prod(1 - e)
+    check('D16a', '15', 'chain_attr', '串联总错误率 E = 1 − Π(1−eᵢ)', E, np.mean(fail.any(1)), 0.02, 'rel')
+    for i in range(3):
+        f2 = fail.copy(); f2[:, i] = False
+        pred = 1 - (1 - E) / (1 - e[i])
+        check('D16b', '15', 'chain_attr', '把第 %d 环节换成"完美"后的错误率' % (i + 1), pred, np.mean(f2.any(1)), 0.02, 'rel')
+
+
+def d17():
+    """配对比较的方差：2σ²(1−ρ)/n"""
+    g = rng(67); n, s, reps = 300, 1.0, 20000
+    for rho in (0.0, 0.5, 0.9):
+        C = np.array([[1, rho], [rho, 1]]) * s ** 2
+        L = np.linalg.cholesky(C)
+        z = g.standard_normal((reps, n, 2)) @ L.T
+        d = (z[..., 0] - z[..., 1]).mean(1)
+        check('D17', '15', 'paired', '配对差均值的方差（ρ=%g）' % rho, 2 * s ** 2 * (1 - rho) / n, d.var(), 0.04, 'rel')
+
+
+def d18():
+    """ADC 载荷：量化噪声与削波噪声的折中"""
+    g = rng(68); n = 1_500_000; N = 8
+    xg = g.standard_normal(n)
+    xl = g.laplace(0, 1 / np.sqrt(2), n)                                        # 方差 1
+    def sim(x, A):
+        D = 2 * A / 2 ** N
+        y = np.clip(np.round(x / D) * D, -A, A)
+        return np.mean((x - y) ** 2)
+    def pred_g(A):
+        return (2 * A / 2 ** N) ** 2 / 12 + 2 * ((1 + A ** 2) * norm.sf(A) - A * norm.pdf(A))
+    def pred_l(A):
+        return (2 * A / 2 ** N) ** 2 / 12 + np.exp(-np.sqrt(2) * A)
+    db = lambda d: -10 * np.log10(d)
+    for A in (2.0, 3.0, 4.0, 5.0):
+        check('D18a', '16', 'adc_load', '高斯信号的 SNR（dB），载荷 A=%gσ' % A, db(pred_g(A)), db(sim(xg, A)), 0.25)
+    for A in (3.0, 5.0, 7.0):
+        check('D18b', '16', 'adc_load', '拉普拉斯信号（语音的常用模型）的 SNR（dB），A=%gσ' % A, db(pred_l(A)), db(sim(xl, A)), 0.25)
+    grid = np.linspace(1.5, 9, 31)
+    check('D18c', '16', 'adc_load', '最优载荷：闭式与仿真的网格 argmin（σ 的倍数）', grid[np.argmin([pred_l(a) for a in grid])], grid[np.argmin([sim(xl, a) for a in grid])], 0.5)
+
+
+def d19():
+    """Kaiser 窗设计：阶数与阻带衰减"""
+    from scipy.signal import firwin, freqz
+    for A in (60, 80, 100):
+        dw = 0.05 * np.pi                                                       # 过渡带宽（rad/sample）
+        Nt = int(np.ceil((A - 7.95) / (2.285 * dw))) + 1
+        Nt += (Nt % 2 == 0)
+        beta = 0.1102 * (A - 8.7) if A > 50 else 0
+        fc = 0.5 * np.pi / np.pi
+        h = firwin(Nt, 0.5, window=('kaiser', beta))                            # 截止 0.5（相对奈奎斯特）
+        w, H = freqz(h, worN=8192)
+        stop = np.abs(H[w >= 0.5 * np.pi + dw / 2])
+        att = -20 * np.log10(stop.max())
+        check('D19', '17', 'kaiser', '按 Kaiser 经验式设计 A=%d dB，实测阻带衰减不低于 A−2 dB（实测 %.1f）' % (A, att), A - 2, att, 0.0, 'ge')
+
+
+def d20():
+    """时钟漂移的估计：斜率估计量的方差"""
+    g = rng(69); T = 0.02; reps = 6000
+    for N, sig in ((200, 2e-4), (1000, 2e-4)):
+        k = np.arange(N); tk = k * T
+        pred = sig ** 2 / np.sum((tk - tk.mean()) ** 2)
+        d = 30e-6
+        est = []
+        for _ in range(reps):
+            ts = k * T * (1 + d) + g.standard_normal(N) * sig
+            est.append(np.polyfit(tk, ts, 1)[0] - 1)
+        est = np.array(est)
+        check('D20a', '17', 'drift_est', '漂移估计的方差 σ²/Σ(t−t̄)²（ppm²，N=%d）' % N, pred * 1e12, est.var() * 1e12, 0.06, 'rel')
+        check('D20b', '17', 'drift_est', '漂移估计无偏（N=%d，偏差/ppm）' % N, 30.0, est.mean() * 1e6, 3.0)
+
+
+_old_run = run
+def run():
+    _old_run()
+    for f in (d13, d14, d15, d16, d17, d18, d19, d20):
+        f()
