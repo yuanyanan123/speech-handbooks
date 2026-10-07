@@ -3101,9 +3101,218 @@
    "dev": 0.0541,
    "crit": "|偏差| ≤ 1.5",
    "ok": true
+  },
+  {
+   "id": "D35a",
+   "sec": "15",
+   "formula": "power_n",
+   "what": "按公式取样本量 n 时，检验功效 ≈ 0.80",
+   "pred": 0.8,
+   "sim": 0.8044,
+   "dev": 0.0044,
+   "crit": "|偏差| ≤ 0.02",
+   "ok": true
+  },
+  {
+   "id": "D35b",
+   "sec": "15",
+   "formula": "power_n",
+   "what": "无真实差距时的假阳性率 = α/2（单侧）",
+   "pred": 0.025,
+   "sim": 0.0266,
+   "dev": 0.064,
+   "crit": "相对偏差 ≤ 10%",
+   "ok": true
+  },
+  {
+   "id": "D35c",
+   "sec": "15",
+   "formula": "power_n",
+   "what": "要分辨的差距减半，所需样本量约 ×4",
+   "pred": 4.0,
+   "sim": 3.9848,
+   "dev": 0.0152,
+   "crit": "|偏差| ≤ 0.05",
+   "ok": true
+  },
+  {
+   "id": "D36",
+   "sec": "16",
+   "formula": "gain_stage",
+   "what": "输入等效噪声（dB re 满量程），σm²+σq²/G²，G=1",
+   "pred": -43.863,
+   "sim": -43.8677,
+   "dev": 0.0046,
+   "crit": "|偏差| ≤ 0.1",
+   "ok": true
+  },
+  {
+   "id": "D36",
+   "sec": "16",
+   "formula": "gain_stage",
+   "what": "输入等效噪声（dB re 满量程），σm²+σq²/G²，G=2",
+   "pred": -44.2862,
+   "sim": -44.2883,
+   "dev": 0.0021,
+   "crit": "|偏差| ≤ 0.1",
+   "ok": true
+  },
+  {
+   "id": "D36",
+   "sec": "16",
+   "formula": "gain_stage",
+   "what": "输入等效噪声（dB re 满量程），σm²+σq²/G²，G=4",
+   "pred": -44.3988,
+   "sim": -44.4008,
+   "dev": 0.002,
+   "crit": "|偏差| ≤ 0.1",
+   "ok": true
+  },
+  {
+   "id": "D36",
+   "sec": "16",
+   "formula": "gain_stage",
+   "what": "输入等效噪声（dB re 满量程），σm²+σq²/G²，G=8",
+   "pred": -44.4274,
+   "sim": -44.4291,
+   "dev": 0.0017,
+   "crit": "|偏差| ≤ 0.1",
+   "ok": true
+  },
+  {
+   "id": "D37",
+   "sec": "17",
+   "formula": "lin_interp",
+   "what": "线性插值重采样的信噪比（dB），500 Hz",
+   "pred": 49.0706,
+   "sim": 49.0732,
+   "dev": 0.0026,
+   "crit": "|偏差| ≤ 0.6",
+   "ok": true
+  },
+  {
+   "id": "D37",
+   "sec": "17",
+   "formula": "lin_interp",
+   "what": "线性插值重采样的信噪比（dB），1000 Hz",
+   "pred": 37.0294,
+   "sim": 37.057,
+   "dev": 0.0276,
+   "crit": "|偏差| ≤ 0.6",
+   "ok": true
+  },
+  {
+   "id": "D37",
+   "sec": "17",
+   "formula": "lin_interp",
+   "what": "线性插值重采样的信噪比（dB），2000 Hz",
+   "pred": 24.9882,
+   "sim": 25.1115,
+   "dev": 0.1232,
+   "crit": "|偏差| ≤ 1",
+   "ok": true
+  },
+  {
+   "id": "D38a",
+   "sec": "18",
+   "formula": "mm1",
+   "what": "M/M/1 平均逗留时间 1/(μ−λ)（ρ=0.5）",
+   "pred": 2.0,
+   "sim": 2.0018,
+   "dev": 0.0009,
+   "crit": "相对偏差 ≤ 4%",
+   "ok": true
+  },
+  {
+   "id": "D38b",
+   "sec": "18",
+   "formula": "mm1",
+   "what": "M/M/1 逗留时间的 99 分位 = ln100/(μ−λ)（ρ=0.5）",
+   "pred": 9.2103,
+   "sim": 9.2393,
+   "dev": 0.0031,
+   "crit": "相对偏差 ≤ 5%",
+   "ok": true
+  },
+  {
+   "id": "D38a",
+   "sec": "18",
+   "formula": "mm1",
+   "what": "M/M/1 平均逗留时间 1/(μ−λ)（ρ=0.8）",
+   "pred": 5.0,
+   "sim": 4.9861,
+   "dev": 0.0028,
+   "crit": "相对偏差 ≤ 4%",
+   "ok": true
+  },
+  {
+   "id": "D38b",
+   "sec": "18",
+   "formula": "mm1",
+   "what": "M/M/1 逗留时间的 99 分位 = ln100/(μ−λ)（ρ=0.8）",
+   "pred": 23.0259,
+   "sim": 22.546,
+   "dev": 0.0208,
+   "crit": "相对偏差 ≤ 5%",
+   "ok": true
+  },
+  {
+   "id": "D39a",
+   "sec": "23",
+   "formula": "rnnt_lat",
+   "what": "RNN-T 前向递推 = 暴力枚举全部对齐路径的概率和",
+   "pred": 0.0004,
+   "sim": 0.0004,
+   "dev": 0.0,
+   "crit": "|偏差| ≤ 1e-12",
+   "ok": true
+  },
+  {
+   "id": "D39b",
+   "sec": "23",
+   "formula": "rnnt_lat",
+   "what": "对齐路径数 = C(T+U−1, U)",
+   "pred": 20.0,
+   "sim": 20.0,
+   "dev": 0.0,
+   "crit": "|偏差| ≤ 0",
+   "ok": true
+  },
+  {
+   "id": "D40a",
+   "sec": "23",
+   "formula": "stft_parseval",
+   "what": "Σ|STFT|² = N_fft·(Σw²/H)·‖x‖²（边缘帧忽略，相对偏差）",
+   "pred": 1226562970.7,
+   "sim": 1225479851.6971,
+   "dev": 0.0009,
+   "crit": "相对偏差 ≤ 1%",
+   "ok": true
+  },
+  {
+   "id": "D40b",
+   "sec": "23",
+   "formula": "stft_parseval",
+   "what": "Hann：Σw² = 3W/8",
+   "pred": 384.0,
+   "sim": 384.0,
+   "dev": 0.0,
+   "crit": "|偏差| ≤ 1e-09",
+   "ok": true
+  },
+  {
+   "id": "D40c",
+   "sec": "23",
+   "formula": "stft_parseval",
+   "what": "对数幅度损失对整体增益的响应：增益 c 引起的平移 = ln c",
+   "pred": -0.3567,
+   "sim": -0.3567,
+   "dev": 0.0,
+   "crit": "|偏差| ≤ 0.001",
+   "ok": true
   }
  ],
- "n": 282,
- "n_ok": 282,
- "runtime_s": 107.0
+ "n": 301,
+ "n_ok": 301,
+ "runtime_s": 147.4
 }

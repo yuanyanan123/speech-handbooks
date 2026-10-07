@@ -107,10 +107,14 @@ def splice(body):
 def add_cites(body):
     import refs, book_f, book_deep
     for sid in sorted(set(refs.CITES) | set(book_deep.DEEP)):
-        if sid in ('u23', 'u24', 'u25'):
-            continue
         a = body.index('<section id="%s">' % sid)
         e = body.index('</section>', a)
+        if sid in ('u23', 'u24', 'u25'):                       # 这几节自带"依据的文献"，深化块插在它之前
+            if sid in book_deep.DEEP:
+                k = body.rfind('<div class="note"><span class="tag">依据的文献', a, e)
+                k = k if k >= 0 else e
+                body = body[:k] + book_deep.DEEP[sid]() + body[k:]
+            continue
         add = (book_deep.DEEP[sid]() if sid in book_deep.DEEP else '') + book_f.cite_note(sid)
         body = body[:e] + add + body[e:]
     return body

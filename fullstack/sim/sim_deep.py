@@ -686,3 +686,108 @@ def run():
     _old_run2()
     for f in (d21, d22, d23, d24, d25, d26, d27, d28, d29, d30, d31, d32, d33, d34):
         f()
+
+
+# ════════ 第四批（D35–D40）：功效、增益分配、插值、排队、RNN-T 格、谱损失 ════════
+def d35():
+    """配对比较的样本量与功效"""
+    g = rng(91); sd, delta, alpha, power = 0.05, 0.01, 0.05, 0.8
+    zA, zB = norm.isf(alpha / 2), norm.isf(1 - power)
+    n = int(np.ceil(((zA + zB) * sd / delta) ** 2))
+    reps = 40000
+    d = g.standard_normal((reps, n)) * sd + delta                               # 逐句差，真实差距 Δ
+    z = d.mean(1) / (sd / np.sqrt(n))
+    check('D35a', '15', 'power_n', '按公式取样本量 n 时，检验功效 ≈ 0.80', 0.80, np.mean(z > zA), 0.02)
+    z0 = (g.standard_normal((reps, n)) * sd).mean(1) / (sd / np.sqrt(n))
+    check('D35b', '15', 'power_n', '无真实差距时的假阳性率 = α/2（单侧）', alpha / 2, np.mean(z0 > zA), 0.1, 'rel')
+    n2 = int(np.ceil(((zA + zB) * sd / (delta / 2)) ** 2))
+    check('D35c', '15', 'power_n', '要分辨的差距减半，所需样本量约 ×4', 4.0, n2 / n, 0.05)
+
+
+def d36():
+    """增益分配：输入等效噪声 = σm² + σq²/G²"""
+    g = rng(92); N, A = 8, 1.0; D = 2 * A / 2 ** N; sm = 0.006
+    n = 3_000_000
+    base = g.standard_normal(n) * sm
+    for G in (1, 2, 4, 8):
+        y = np.clip(np.round(G * base / D) * D, -A, A) / G
+        pred = sm ** 2 + (D ** 2 / 12) / G ** 2
+        check('D36', '16', 'gain_stage', '输入等效噪声（dB re 满量程），σm²+σq²/G²，G=%d' % G, 10 * np.log10(pred), 10 * np.log10(np.mean(y ** 2)), 0.1)
+
+
+def d37():
+    """线性插值的误差：SNR ≈ 10lg(120/ω⁴)"""
+    g = rng(93); fs = 16000.0; n = 400000
+    for f, tol in ((500, 0.6), (1000, 0.6), (2000, 1.0)):
+        w = 2 * np.pi * f / fs
+        k = g.integers(100, 100000, n); al = g.random(n)
+        x = lambda t: np.sin(w * t + 0.3)
+        true = x(k + al); lin = (1 - al) * x(k) + al * x(k + 1)
+        snr = 10 * np.log10(np.mean(true ** 2) / np.mean((true - lin) ** 2))
+        check('D37', '17', 'lin_interp', '线性插值重采样的信噪比（dB），%d Hz' % f, 10 * np.log10(120 / w ** 4), snr, tol)
+
+
+def d38():
+    """排队论：M/M/1 的逗留时间 ~ Exp(μ−λ)"""
+    g = rng(94); n = 2_000_000; mu = 1.0
+    for rho in (0.5, 0.8):
+        lam = rho * mu
+        A = g.exponential(1 / lam, n); S = g.exponential(1 / mu, n)
+        W = np.zeros(n); w = 0.0
+        for i in range(1, n):
+            w = max(0.0, w + S[i - 1] - A[i]); W[i] = w
+        T = W + S
+        check('D38a', '18', 'mm1', 'M/M/1 平均逗留时间 1/(μ−λ)（ρ=%g）' % rho, 1 / (mu - lam), T.mean(), 0.04, 'rel')
+        check('D38b', '18', 'mm1', 'M/M/1 逗留时间的 99 分位 = ln100/(μ−λ)（ρ=%g）' % rho, np.log(100) / (mu - lam), np.quantile(T, 0.99), 0.05, 'rel')
+
+
+def d39():
+    """RNN-T 格：路径数 C(T+U−1,U)，前向算法 = 暴力枚举"""
+    g = rng(95); T, U, V = 4, 3, 4
+    lab = [1, 3, 2]
+    Pk = g.dirichlet(np.ones(V), (T, U + 1))                                      # P(k | t, u)
+    # 暴力枚举：在 (t,u) 处发出 blank(0) → (t+1,u)；发出 lab[u] → (t,u+1)；终止：(T−1,U) 处发出 blank
+    tot = 0.0; npaths = 0
+    def rec(t, u, pr):
+        nonlocal tot, npaths
+        if t == T - 1 and u == U:
+            tot += pr * Pk[t, u, 0]; npaths += 1; return
+        if t < T - 1:
+            rec(t + 1, u, pr * Pk[t, u, 0])
+        if u < U:
+            rec(t, u + 1, pr * Pk[t, u, lab[u]])
+    rec(0, 0, 1.0)
+    al = np.zeros((T, U + 1)); al[0, 0] = 1.0
+    for t in range(T):
+        for u in range(U + 1):
+            if t == 0 and u == 0: continue
+            v = 0.0
+            if t > 0: v += al[t - 1, u] * Pk[t - 1, u, 0]
+            if u > 0: v += al[t, u - 1] * Pk[t, u - 1, lab[u - 1]]
+            al[t, u] = v
+    fw = al[T - 1, U] * Pk[T - 1, U, 0]
+    check('D39a', '23', 'rnnt_lat', 'RNN-T 前向递推 = 暴力枚举全部对齐路径的概率和', tot, fw, 1e-12)
+    check('D39b', '23', 'rnnt_lat', '对齐路径数 = C(T+U−1, U)', comb(T + U - 1, U), npaths, 0.0)
+
+
+def d40():
+    """谱损失的尺度：Σ|STFT|² = N_fft·(Σw²/H)·‖x‖²"""
+    g = rng(96); Nf, H = 1024, 256; w = np.hanning(Nf + 1)[:-1]
+    x = g.standard_normal(800000)
+    nfr = 1 + (len(x) - Nf) // H
+    idx = np.arange(Nf)[None] + H * np.arange(nfr)[:, None]
+    X = np.fft.fft(x[idx] * w, axis=1)
+    lhs = np.sum(np.abs(X) ** 2)
+    pred = Nf * (np.sum(w ** 2) / H) * np.sum(x ** 2)
+    check('D40a', '23', 'stft_parseval', 'Σ|STFT|² = N_fft·(Σw²/H)·‖x‖²（边缘帧忽略，相对偏差）', pred, lhs, 0.01, 'rel')
+    check('D40b', '23', 'stft_parseval', 'Hann：Σw² = 3W/8', 3 * Nf / 8, np.sum(w ** 2), 1e-9)
+    y = 0.7 * x
+    lm = lambda a: np.log(np.abs(np.fft.rfft(a[idx] * w, axis=1)) + 1e-9)
+    check('D40c', '23', 'stft_parseval', '对数幅度损失对整体增益的响应：增益 c 引起的平移 = ln c', np.log(0.7), float(np.mean(lm(y) - lm(x))), 1e-3)
+
+
+_old_run3 = run
+def run():
+    _old_run3()
+    for f in (d35, d36, d37, d38, d39, d40):
+        f()

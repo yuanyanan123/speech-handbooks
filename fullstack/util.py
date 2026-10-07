@@ -8,6 +8,7 @@ K.update(json.load(open(os.path.join(HERE, 'fs_k3.json'))))
 K.update(json.load(open(os.path.join(HERE, 'fs_k4.json'))))
 K.update(json.load(open(os.path.join(HERE, 'fs_k5.json'))))
 K.update(json.load(open(os.path.join(HERE, 'fs_k6.json'))))
+K.update(json.load(open(os.path.join(HERE, 'fs_k7.json'))))
 CALC = json.load(open(os.path.join(HERE, 'calc.json')))
 F = json.load(open(os.path.join(HERE, 'figs.json')))
 
